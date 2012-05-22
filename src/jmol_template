@@ -1,0 +1,68 @@
+<<pdbfilename>>
+
+function ColorDefault() {
+  select all
+  color cpk
+  select none
+}
+
+function ColorFragments(type) {
+  if type == "default" {
+    ColorDefault()
+  }
+
+  if type == "fragments" {
+    ColorByFragment()
+  }
+  if type == "buffer" {
+    ColorByBuffer()
+  }
+  if type == "active" {
+    ColorByActive()
+  }
+}
+function ColorByFragment() {
+<<fragments>>
+select none
+}
+function ColorByBuffer() {
+select all
+color green
+select none
+<<buffer>>
+select none
+}
+function ColorByActive() {
+select all
+color green
+select none
+<<buffer>>
+<<active>>
+select none
+}
+
+function ColorByBackbone() {
+  ColorDefault()
+<<backbone>>
+select none
+}
+
+function LabelFragments() {
+<<labels>>
+}
+
+function DrawBreakPoints() {
+<<breakpoints>>
+}
+
+function HideBreakPoints() {
+draw cb* off
+}
+
+function ShowBreakPoints() {
+draw cb* on
+}
+
+ColorFragments("fragments")
+DrawBreakPoints()
+HideBreakPoints()
