@@ -14,6 +14,8 @@ Since you found this file, it is obvious that you also found the source code. If
 
 "www.github.com/FragIt/fragit-main":http://www.github.com/FragIt/fragit-main
 
+If you prefer to download the source in an archive, it is available from the "Downloads page":https://github.com/FragIt/fragit-main/downloads
+
 h2. Installing FragIt
 
 FragIt is a python library and installation is quite straight forward
