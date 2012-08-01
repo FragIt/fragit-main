@@ -71,9 +71,13 @@ class FragItData(dict):
     self['fragmentpatterns'] = dict()
     self['fragmentpatterns']['peptide']="[$(CN)][$(C(=O)NCC(=O))]"
     self['fragmentpatterns']['a-d-pyranose']="[$(C1C(CO)OC(O)C(O)C1(O))][$(OC1C(O)C(O)CC(CO)O1)]"
+    self['fragmentpatterns']['dnabackbone'] = "[$(CCOP)][$(CC1OCCC1)]"
 
     self['protectpatterns'] = dict()
     self['protectpatterns']['nterminal']="[$([NH2]),$([NH3])]CC(=O)[$(NCC=O)]"
+
+    self['mergepatterns'] = dict()
+    self['mergepatterns']['glycine']="" # do not merge by default
 
     self['explicitfragmentpairs'] = dict()
     self['explicitfragmentpairs']['pairs']="" # semi-colon separated list, i.e. 11,12;32,33;44,45
@@ -81,7 +85,8 @@ class FragItData(dict):
     self['explicitprotectatoms'] = dict()
     self['explicitprotectatoms']['atomids']="" # list of integers
 
-  def getType(self, option):
+  def getType(self, option, section):
+    if "pattern" in section: return str
     if not self.data_types.has_key(option):
       raise ValueError("Option '%s' is not recognized." % option)
     return self.data_types[option]
@@ -99,6 +104,8 @@ class FragItConfig(object):
       if not self.cfg.has_section(section): self.cfg.add_section(section)
       for key in self.values[section].keys():
         value = self.values[section][key]
+	if "atomids" == key or "pairs" == key:
+		value = ""
         self.cfg.set(section,key,value)
 
   def readConfigurationFromFile(self, filename):
@@ -111,10 +118,10 @@ class FragItConfig(object):
         raise KeyError("Section '%s' is not recognized." % section)
 
       for key in self.cfg.options(section):
-        if not self.values[section].has_key(key):
+        if not self.values[section].has_key(key) and "pattern" not in section: # dubious hack to make custom patterns writable.
           raise KeyError("Option '%s' in '%s' is not recognized." % (key,section))
 
-        format = self.values.getType(key)
+        format = self.values.getType(key,section)
 	value = format(self.cfg.get(section,key))
 	if format == type(True):
 		value = (self.cfg.get(section,key)).lower() == "true"
@@ -171,6 +178,9 @@ class FragItConfig(object):
     if not is_dict(value): raise TypeError
     self.values['protectpatterns'] = value
 
+  def clearProtectPatterns(self):
+    self.values['protectpatterns'] = dict()
+
   def getExplicitlyProtectedAtoms(self):
     values = self.values['explicitprotectatoms']['atomids']
     if len(values) > 0:
@@ -190,6 +200,7 @@ class FragItConfig(object):
   def getExplicitlyBreakAtomPairs(self):
     values = self.values['explicitfragmentpairs']['pairs']
     if len(values) > 0:
+      if values[-1] == ";": values = values[:-1]
       list_of_ids = values.split(";")
       return map(self._pair_to_tuple, list_of_ids)
     return []
@@ -222,6 +233,12 @@ class FragItConfig(object):
   def setOutputFormat(self, value):
     if not is_string(value): raise TypeError
     self.values['fragmentation']['writer'] = value
+
+  def enableMergeGlycinePattern(self):
+    self.values['mergepatterns']['glycine'] = "O=CN[CX4H2]" # use to match glycine to get fragment indices
+
+  def getMergePatterns(self):
+    return self.values['mergepatterns']
 
   # output options
   def getBoundaries(self):

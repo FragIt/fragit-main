@@ -262,7 +262,8 @@ class Gamess(Standard):
 		return "".join([self._getBasisAtoms(ilayer) for ilayer in range(1, self._nlayers+1)])
 
 	def _getBasisAtoms(self, ilayer):
-		return "".join([self._formatSingleAtomBasis(ilayer,atom) for atom in ["h","c","n","o","s"]])
+		atoms = Uniqify([self._elements.GetSymbol(atom.GetAtomicNum()) for atom in self._fragmentation.getAtoms()])
+		return "".join([self._formatSingleAtomBasis(ilayer,atom) for atom in atoms])
 
 	def _formatSingleAtomBasis(self,ilayer,atom):
 		return "%s-%i %i\n" % (atom,ilayer,self._elements.GetAtomicNum(atom))

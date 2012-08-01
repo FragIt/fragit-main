@@ -1,8 +1,10 @@
+#!/usr/bin/env python
 """
 **********************************************************************
-strings.py
+__main__.py - FragIt command line executable
 
-Copyright (C) 2011-2012 Casper Steinmann
+Copyright (C) 2010-2011 Mikael W. Ibsen
+Some portions Copyright (C) 2011 Casper Steinmann
 
 This file is part of the FragIt project.
 
@@ -22,10 +24,5 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 02110-1301, USA.
 ***********************************************************************/
 """
-
-version = ("1","0","1")
-version_str = ".".join(version)
-
-description = """FragIt fragments molecules for fragment based methods. The output of FragIt is an input file which can be run in a suitable quantum chemistry program"""
-
-usage = "Usage: %prog <options> molecule"
+from fragit.cmdline import main
+main()

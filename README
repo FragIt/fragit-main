@@ -1,0 +1,7 @@
+FragIt is a python based tool that allows you to quickly fragment
+a molecule and use the output as an input file in quantum chemistry
+programs that supports such fragment based methods.
+
+Currently, only the Fragment Molecular Orbital (FMO) method in GAMESS
+is supported, but FragIt has been developed to easily allow for other
+output writers to be added quickly.

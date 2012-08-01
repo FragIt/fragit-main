@@ -50,22 +50,23 @@ def main(argv=None):
 	configuration.add_option("--use-config", dest="useconfigfile", type=str, default="", metavar="filename",
 					help="Specify configuration file to use. This will ignore other command line parameters.")
         configuration.add_option("--make-config", dest="makeconfigfile", type=str, default="", metavar="filename",
-					help="Specify a filename to use as a configuration file. Use command line options to modify defaults.")
+					help="Specify a filename to use as a configuration file. Use command line options to modify defaults. It is possible to use this command without specifying an input file to generate a clean configuration file.")
 
 	general.add_option("-m", "--maxfragsize", dest="maxFragmentSize", type=int, default=50,metavar="integer",
 				help="The maximum fragment size allowed [default: %default]")
-#	general.add_option("-c", "--combine", action="store_true", dest="group", default=False,
-#				help="Use together with the -g option to combine fragments in groups.")
 	general.add_option("-g", "--groupcount", dest="groupcount", type=int, default=1,metavar="integer",
 				help="Specify number of consecutive fragments to combine into a single fragment [default: %default]")
-
+	general.add_option("--disable-protection", dest="disable_protection", action="store_true", default=False,
+				help="Specify this flag to disable the use protection patterns.")
+	general.add_option("--merge-glycine", action="store_true", dest="merge_glycine", default=False,
+				help="Merge a glycine to the neighbor fragment when fragmenting proteins.")
 	output.add_option("--output-format", dest="format", type=str, default="GAMESS",
 				help="Output format [%default]")
 	output.add_option("--output-boundaries", dest="boundaries", type=str, default="",metavar="list of floats",
 				help="Specifies boundaries for multiple layers. Must be used with --central-fragment option")
 	output.add_option("--output-central-fragment", dest="central_fragment", type=int, default=0, metavar="integer",
 				help="Specifies the fragment to use as the central one. Used in combination with --output-boundaries to make layered inputs")
-	output.add_option("--output-active-atoms", dest="active_atoms_distance", type=float, default=0.0, metavar="float",
+	output.add_option("--output-active-distance", dest="active_atoms_distance", type=float, default=0.0, metavar="float",
 				help="Atoms within this distance from --output-central-fragment will be active. Use with --output-buffer-distance to add buffer region between active and frozen parts. [default: %default]")
 	output.add_option("--output-buffer-distance", dest="maximum_buffer_distance", type=float, default=3.0, metavar="float",
 				help="Maximum distance in angstrom from active fragments from which to include nearby fragments as buffers. This option adds and extends to --output-boundaries. [default: %default]")
@@ -80,6 +81,12 @@ def main(argv=None):
 	parser.add_option_group(general)
 	parser.add_option_group(output)
 	(options, args) = parser.parse_args(argv)
+
+	if len(args) == 0 and len(options.makeconfigfile) > 0:
+		from config import FragItConfig
+		cfg = FragItConfig()
+		cfg.writeConfigurationToFile(options.makeconfigfile)
+		sys.exit()
 
 	if len(args) != 1:
 		parser.print_help()
@@ -107,8 +114,13 @@ def main(argv=None):
 
 
 	# do the fragmentation procedure
+	if options.disable_protection:
+		fragmentation.clearProtectPatterns()
+	if options.merge_glycine:
+		fragmentation.enableMergeGlycinePattern()
 	fragmentation.beginFragmentation()
 	fragmentation.doFragmentation()
+	fragmentation.doFragmentMerging()
 	if fragmentation.getFragmentGroupCount() > 1:
 		fragmentation.doFragmentGrouping()
 	fragmentation.finishFragmentation()

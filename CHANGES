@@ -1,0 +1,36 @@
+FragIt v1.0.0 Release Notes
+===========================
+
+Updates since v0.9
+------------------
+
+ * The code is now distributed as a library
+
+ * Rename option for distance based layering to
+     --output-active-distance
+
+ * Add option to disable protection patterns
+   from command line
+
+ * Add fragmentation of DNA
+
+ * Add code and patterns to squash glycine to
+   neighbor fragments. Other fragments can
+   also be squashed via the new squashpatterns
+   group in the configuration files
+
+ * Add possibility to generate configuration
+   file without needing an input file. In the
+   same instance, file-specific fragmentation
+   info has been removed from the configuration
+   files.
+
+
+Fixes since v0.9
+------------------
+
+ * Add fix so custom patterns work consistently
+   in all cases.
+
+ * Add fix to make explicit pairs of atoms always
+   work

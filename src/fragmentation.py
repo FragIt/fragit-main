@@ -47,12 +47,44 @@ class Fragmentation(FragItConfig):
 		self._fragments = []
 		self._backbone_atoms = []
 		self._atoms = [mol.GetAtom(i) for i in range(1,mol.NumAtoms()+1)]
+		self._mergeable_atoms = []
 
 	def beginFragmentation(self):
 		self.identifyBackboneAtoms()
+		self.identifyMergeableAtoms()
 		self.identifyResidues()
 		self.determineFormalCharges()
 		self.setProtectedAtoms()
+
+	def identifyMergeableAtoms(self):
+		patterns = self.getMergePatterns()
+		for pattern in patterns:
+			if len(patterns[pattern]) == 0: continue
+			value = self._getAtomsToProtect(patterns[pattern])
+			value.sort()
+			self._mergeable_atoms.extend(value)
+
+	def doFragmentMerging(self):
+		fragments_to_merge = self.getFragmentsToMerge()
+		if len(fragments_to_merge) == 0: return
+		fragments = self.getFragments()
+		fragments_to_merge.reverse()
+		for fragment_id in fragments_to_merge:
+			previous_fragment = fragment_id-1
+			ifrag = fragments.pop(fragment_id)
+			jfrag = fragments[previous_fragment].extend(ifrag)
+
+		self._fragments = fragments[:]
+		self._CleanMergedBonds()
+
+	def getFragmentsToMerge(self):
+		fragments = self.getFragments()
+		fragments_to_merge = []
+		for i,fragment in enumerate(fragments):
+			for sid in self._mergeable_atoms:
+				if sid in fragment and i not in fragments_to_merge:
+					fragments_to_merge.append(i)
+		return fragments_to_merge
 
 	def doFragmentation(self):
 		self.breakBonds()
@@ -161,7 +193,7 @@ class Fragmentation(FragItConfig):
 
 	def isValidExplicitBond(self, pair):
 		if pair[0] == pair[1]: raise ValueError("fragment pair must be two different atoms.")
-		if self.mol.GetBond(pair[0],pair[1]) == None: raise ValueError("frag pair must be connected.")
+		if self.mol.GetBond(pair[0],pair[1]) == None: raise ValueError("fragment pair must be connected.")
 		return True
 
 	def determineFragments(self):
@@ -181,6 +213,14 @@ class Fragmentation(FragItConfig):
 		frag_sizes = lenOfLists(self._fragments)
 		if (max(frag_sizes) > self.getMaximumFragmentSize()):
 			raise ValueError("Fragment size too big. Found %i, Max is %i" % (max(frag_sizes),self.getMaximumFragmentSize()))
+
+	def _CleanMergedBonds(self):
+		broken_bonds = self.getExplicitlyBreakAtomPairs()
+		fragments = self.getFragments()
+		for bond in broken_bonds:
+			for fragment in fragments:
+				if bond[0] in fragment and bond[1] in fragment:
+					self.popExplicitlyBreakAtomPairs(bond)
 
 	def doFragmentGrouping(self):
                 if len(self._fragments) == 0: raise ValueError("You must fragment the molecule first.")
