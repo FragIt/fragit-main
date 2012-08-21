@@ -61,7 +61,7 @@ class FragItData(dict):
 
     self['output'] = dict()
     self['output']['boundaries']=""
-    self['output']['buffer']=4.0
+    self['output']['buffer']=0.0
     self['output']['active']=0.0
     self['output']['freezebackbone']=False
     self['output']['writepymol']=False

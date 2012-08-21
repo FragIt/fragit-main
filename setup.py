@@ -23,6 +23,9 @@
 import sys
 from distutils.core import setup
 
+# use the source code to get version information
+from src.strings import version_str
+
 __doc__="""FragIt: a tool to fragment molecules for fragment based methods.
 
 FragIt is a python based tool that allows you to quickly fragment
@@ -54,7 +57,7 @@ def setup_fragit():
   fragit_prefix = 'lib/python%i.%i/site-packages/fragit' %(sys.version_info[0], sys.version_info[1])
 
   setup(name="fragit",
-        version="1.0.1",
+        version=version_str,
         url = "http://github.com/cstein/quantumpy",
         author = "Casper Steinmann",
         author_email = "steinmann@chem.ku.dk",
