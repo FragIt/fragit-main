@@ -43,6 +43,17 @@ class Gamess(Standard):
 		if self._do_pymol: self._dump_pymol()
 		if self._do_jmol: self._dump_jmol()
 
+	def _setupLayeredInformation(self):
+		self._fragment_layers = self._getFragmentLayersFromFragment()
+
+	def _getFragmentLayersFromFragment(self):
+		fragments = self._fragmentation.getFragments()
+		if self._central_fragment == 0: return array([1 for i in fragments])
+		other_fragment = fragments[self._central_fragment-1]
+		distances = self._getFragmentDistancesVector(other_fragment)
+		layers = self._getLayersFromDistances(distances)
+		return layers
+
 	def _dump_pymol(self):
                 from pymol import PymolTemplate
 		pt = PymolTemplate(self._input_filename, self._output_filename)
@@ -65,9 +76,6 @@ class Gamess(Standard):
 	def _writeTemplateFile(self, template):
 		template.override()
 		template.write()
-
-	def _setupLayeredInformation(self):
-		self._fragment_layers = self._getFragmentLayersFromFragment()
 
 	def _setupActiveFragmentsInformation(self):
 		active_atoms = self._getActiveAtomsFromFragments()
@@ -179,7 +187,7 @@ class Gamess(Standard):
 		return self._get_FMOPRP_basestring() % self._calculateOrbitalGuess()
 
 	def _get_FMOPRP_basestring(self):
-		return " $FMOPRP NPRINT=9 NGUESS=%i NGRFMO(1)=1 $END"
+		return " $FMOPRP NPRINT=9 NGUESS=%i $END"
 
 	def _calculateOrbitalGuess(self):
 		nguess = 6 # project orbitals out of huckel guess
@@ -262,7 +270,9 @@ class Gamess(Standard):
 		return "".join([self._getBasisAtoms(ilayer) for ilayer in range(1, self._nlayers+1)])
 
 	def _getBasisAtoms(self, ilayer):
-		atoms = Uniqify([self._elements.GetSymbol(atom.GetAtomicNum()) for atom in self._fragmentation.getAtoms()])
+		atom_numbers = Uniqify([atom.GetAtomicNum() for atom in self._fragmentation.getAtoms()])
+		atom_numbers.sort()
+		atoms = [self._elements.GetSymbol(atom_number) for atom_number in atom_numbers]
 		return "".join([self._formatSingleAtomBasis(ilayer,atom) for atom in atoms])
 
 	def _formatSingleAtomBasis(self,ilayer,atom):
@@ -337,14 +347,6 @@ class Gamess(Standard):
 		list2D = listTo2D(layers, 10, '%i')
 		return "      LAYER(1)=%s" % join2D(list2D, ',', ",\n               ")
 		
-	def _getFragmentLayersFromFragment(self):
-		fragments = self._fragmentation.getFragments()
-		if self._central_fragment == 0: return array([1 for i in fragments])
-		other_fragment = fragments[self._central_fragment-1]
-		distances = self._getFragmentDistancesVector(other_fragment)
-		layers = self._getLayersFromDistances(distances)
-		return layers
-
 	def _getFragmentDistancesVector(self, other_fragment):
 		return array([self._getFragmentDistanceToFragment(fragment, other_fragment) for fragment in self._fragmentation.getFragments()])
 
