@@ -38,6 +38,10 @@ def main(argv=None):
 	if argv is None:
 		argv = sys.argv[1:]
 
+	# load defaults so we can use them below
+	from config import FragItConfig
+	cfg = FragItConfig()
+
 	parser = OptionParser(usage=strings.usage,
 				description=strings.description,
 				version=strings.version_str)
@@ -52,29 +56,29 @@ def main(argv=None):
         configuration.add_option("--make-config", dest="makeconfigfile", type=str, default="", metavar="filename",
 					help="Specify a filename to use as a configuration file. Use command line options to modify defaults. It is possible to use this command without specifying an input file to generate a clean configuration file.")
 
-	general.add_option("-m", "--maxfragsize", dest="maxFragmentSize", type=int, default=50,metavar="integer",
+	general.add_option("-m", "--maxfragsize", dest="maxFragmentSize", type=int, default=cfg.getMaximumFragmentSize(),metavar="integer",
 				help="The maximum fragment size allowed [default: %default]")
-	general.add_option("-g", "--groupcount", dest="groupcount", type=int, default=1,metavar="integer",
+	general.add_option("-g", "--groupcount", dest="groupcount", type=int, default=cfg.getFragmentGroupCount(),metavar="integer",
 				help="Specify number of consecutive fragments to combine into a single fragment [default: %default]")
 	general.add_option("--disable-protection", dest="disable_protection", action="store_true", default=False,
 				help="Specify this flag to disable the use protection patterns.")
 	general.add_option("--merge-glycine", action="store_true", dest="merge_glycine", default=False,
 				help="Merge a glycine to the neighbor fragment when fragmenting proteins.")
-	output.add_option("--output-format", dest="format", type=str, default="GAMESS",
+	output.add_option("--output-format", dest="format", type=str, default=cfg.getWriter(),
 				help="Output format [%default]")
 	output.add_option("--output-boundaries", dest="boundaries", type=str, default="",metavar="list of floats",
 				help="Specifies boundaries for multiple layers. Must be used with --central-fragment option")
-	output.add_option("--output-central-fragment", dest="central_fragment", type=int, default=0, metavar="integer",
+	output.add_option("--output-central-fragment", dest="central_fragment", type=int, default=cfg.getCentralFragmentID(), metavar="integer",
 				help="Specifies the fragment to use as the central one. Used in combination with --output-boundaries to make layered inputs")
-	output.add_option("--output-active-distance", dest="active_atoms_distance", type=float, default=0.0, metavar="float",
+	output.add_option("--output-active-distance", dest="active_atoms_distance", type=float, default=cfg.getActiveAtomsDistance(), metavar="float",
 				help="Atoms within this distance from --output-central-fragment will be active. Use with --output-buffer-distance to add buffer region between active and frozen parts. [default: %default]")
-	output.add_option("--output-buffer-distance", dest="maximum_buffer_distance", type=float, default=3.0, metavar="float",
+	output.add_option("--output-buffer-distance", dest="maximum_buffer_distance", type=float, default=cfg.getBufferDistance(), metavar="float",
 				help="Maximum distance in angstrom from active fragments from which to include nearby fragments as buffers. This option adds and extends to --output-boundaries. [default: %default]")
-	output.add_option("--output-freeze-backbone", dest="freeze_backbone", action="store_true", default=False,
+	output.add_option("--output-freeze-backbone", dest="freeze_backbone", action="store_true", default=cfg.getFreezeBackbone(),
 				help="Option to freeze the backbone of the active region.")
-	output.add_option("--output-jmol-script", dest="output_jmol_script", action="store_true", default=False,
+	output.add_option("--output-jmol-script", dest="output_jmol_script", action="store_true", default=cfg.getWriteJmolScript(),
 				help="Write a complimentary jmol script for visualization.")
-	output.add_option("--output-pymol-script", dest="output_pymol_script", action="store_true", default=False,
+	output.add_option("--output-pymol-script", dest="output_pymol_script", action="store_true", default=cfg.getWritePymolScript(),
 				help="Write a complimentary pymol script for visualization.")
 
 	parser.add_option_group(configuration)
@@ -83,8 +87,6 @@ def main(argv=None):
 	(options, args) = parser.parse_args(argv)
 
 	if len(args) == 0 and len(options.makeconfigfile) > 0:
-		from config import FragItConfig
-		cfg = FragItConfig()
 		cfg.writeConfigurationToFile(options.makeconfigfile)
 		sys.exit()
 

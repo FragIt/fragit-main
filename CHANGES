@@ -1,5 +1,12 @@
-FragIt v1.0.1 Release Notes
+FragIt v1.0.2 Release Notes
 ===========================
+
+Updates since v1.0.1
+--------------------
+
+ * Most of the options in the command line
+   version of FragIt now uses the underlying
+   FragItConfig object for defaults.
 
 Updates since v0.9
 ------------------
@@ -14,9 +21,9 @@ Updates since v0.9
 
  * Add fragmentation of DNA
 
- * Add code and patterns to squash glycine to
+ * Add code and patterns to merge glycine to
    neighbor fragments. Other fragments can
-   also be squashed via the new squashpatterns
+   also be merged via the new mergepatterns
    group in the configuration files
 
  * Add possibility to generate configuration

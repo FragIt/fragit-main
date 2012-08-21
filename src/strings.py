@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 ***********************************************************************/
 """
 
-version = ("1","0","1")
+version = ("1","0","2")
 version_str = ".".join(version)
 
 description = """FragIt fragments molecules for fragment based methods. The output of FragIt is an input file which can be run in a suitable quantum chemistry program"""

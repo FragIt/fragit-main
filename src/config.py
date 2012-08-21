@@ -161,7 +161,7 @@ class FragItConfig(object):
     if not is_string(value): raise TypeError
     self.values['fragmentation']['writer'] = value
 
-  def getWriter(self,value):
+  def getWriter(self):
     return self.values['fragmentation']['writer']
 
   def getBreakPatterns(self):
