@@ -1,6 +1,6 @@
 """
 **********************************************************************
-tests/test_StandardWriter.py - test cases for Gamess Writer
+tests/test_StandardWriter.py - test cases for Standard Writer
 
 Copyright (C) 2012 Casper Steinmann
 
