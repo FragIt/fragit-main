@@ -24,94 +24,122 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 """
 import os
 import sys
+sys.path.append('../src')
 import unittest
 from gamess import Gamess
 
-from util import fileToMol
+from util import fileToMol, ReadStringListFromFile
 from fragmentation import Fragmentation
 
 class TestGamessOutputModule(unittest.TestCase):
 
     def setUp(self):
-      self.molecule = fileToMol("1UAO.pdb")
+      self.molecule = fileToMol("watercluster4.xyz")
       self.fragmentation = Fragmentation(self.molecule)
-      self.gamess = Gamess(Fragmentation)
+      self.fixtures = 'gamess-fmo-fixtures'
 
-    #
-    # STATIC string tests. 
-    #
+    def delete_file(self,filename):
+        try:
+                f = open(filename)
+        except IOError:
+                return
+        finally:
+                f.close()
+                os.remove(filename)
 
-    def test_SYSTEMgroup(self):
-      STRING=" $SYSTEM MWORDS=125 $END"
-      self.assertEqual(self.gamess.SYSTEMgroup(), STRING)
+    def test_water_1(self):
+      filename = "temp.inp"
+      otherfile = self.fixtures + "/water_1.fixture"
+      gamess = Gamess(self.fragmentation)
+      gamess.setup()
+      gamess.writeFile(filename)
+      generated = ReadStringListFromFile(filename)
+      fixture = ReadStringListFromFile(otherfile)
 
-    def test_GDDIgroup(self):
-      STRING=" $GDDI NGROUP=1 $END"
-      self.assertEqual(self.gamess.GDDIgroup(), STRING)
+      self.assertEqual(len(generated), len(fixture))
+      for i in range(len(fixture)):
+        self.assertEqual(generated[i], fixture[i])
 
-    def test_SCFgroup(self):
-      STRING=" $SCF CONV=1E-7 DIRSCF=.T. NPUNCH=0 DIIS=.F. SOSCF=.T. $END"
-      self.assertEqual(self.gamess.SCFgroup(), STRING)
+      self.delete_file(filename)
 
-    def test_BASISgroup(self):
-      STRING=" $BASIS GBASIS=N21 NGAUSS=3 $END"
-      self.assertEqual(self.gamess.BASISgroup(), STRING)
-
-    def test_CONTRLgroup(self):
-      STRING = " $CONTRL NPRINT=-5 ISPHER=1 LOCAL=BOYS\n         RUNTYP=ENERGY\n $END"
-      self.assertEqual(self.gamess.CONTRLgroup(), STRING)
-
-    #
-    # integration tests
-    #
-    def test_DATAgroup(self):
+    def test_water_2(self):
+      filename = "temp.inp"
+      otherfile = self.fixtures + "/water_2.fixture"
       self.fragmentation.beginFragmentation()
       self.fragmentation.doFragmentation()
       self.fragmentation.finishFragmentation()
-      self.gamess = Gamess(self.fragmentation)
-      self.gamess.setup()
-      STRING=" $DATA\n\nc1\nH-1 1\nC-1 6\nN-1 7\nO-1 8\n $END"
-      self.assertEqual(self.gamess.DATAgroup(), STRING)
+      gamess = Gamess(self.fragmentation)
+      gamess.setup()
+      gamess.writeFile(filename)
+      generated = ReadStringListFromFile(filename)
+      fixture = ReadStringListFromFile(otherfile)
 
-    #
-    # heavy integration tests. Possible to skip these
-    #
+      self.assertEqual(len(generated), len(fixture))
+      for i in range(len(fixture)):
+        self.assertEqual(generated[i], fixture[i])
 
-    @unittest.skipUnless('-full' in sys.argv,'Skipping time-consuming integration tests')
-    def test_IntegrationFMOPRPgroupSingleLayer(self):
+      self.delete_file(filename)
+
+    def test_water_3(self):
+      filename = "temp.inp"
+      otherfile = self.fixtures + "/water_3.fixture"
       self.fragmentation.beginFragmentation()
       self.fragmentation.doFragmentation()
       self.fragmentation.finishFragmentation()
-      self.gamess = Gamess(self.fragmentation)
-      self.gamess.setup()
-      STRING=" $FMOPRP NPRINT=9 NGUESS=6 $END"
-      self.assertEqual(self.gamess.FMOPRPgroup(), STRING)
+      gamess = Gamess(self.fragmentation)
+      gamess.setCentralFragmentID(1)
+      gamess.setup()
+      gamess.writeFile(filename)
+      generated = ReadStringListFromFile(filename)
+      fixture = ReadStringListFromFile(otherfile)
 
-    @unittest.skipUnless('-full' in sys.argv,'Skipping time-consuming integration tests')
-    def test_IntegrationFMOPRPgroupMultipleLayer(self):
+      self.assertEqual(len(generated), len(fixture))
+      for i in range(len(fixture)):
+        self.assertEqual(generated[i], fixture[i])
+
+      self.delete_file(filename)
+
+    def test_water_4(self):
+      filename = "temp.inp"
+      otherfile = self.fixtures + "/water_4.fixture"
       self.fragmentation.beginFragmentation()
       self.fragmentation.doFragmentation()
       self.fragmentation.finishFragmentation()
-      self.gamess = Gamess(self.fragmentation)
-      self.gamess.setCentralFragmentID(1)
-      self.gamess.setBoundariesFromString("1.0")
-      self.gamess.setup()
-      STRING=" $FMOPRP NPRINT=9 NGUESS=6 $END"
-      self.assertEqual(self.gamess.FMOPRPgroup(), STRING)
+      gamess = Gamess(self.fragmentation)
+      gamess.setCentralFragmentID(1)
+      gamess.setBoundariesFromString("1.0")
+      gamess.setup()
+      gamess.writeFile(filename)
+      generated = ReadStringListFromFile(filename)
+      fixture = ReadStringListFromFile(otherfile)
 
-    @unittest.skipUnless('-full' in sys.argv,'Skipping time-consuming integration tests')
-    def test_IntegrationFMOPRPgroupMultipleLayerFDOptimization(self):
+      self.assertEqual(len(generated), len(fixture))
+      for i in range(len(fixture)):
+        self.assertEqual(generated[i], fixture[i])
+
+      self.delete_file(filename)
+
+    def test_water_5(self):
+      filename = "temp.inp"
+      otherfile = self.fixtures + "/water_5.fixture"
       self.fragmentation.beginFragmentation()
       self.fragmentation.doFragmentation()
       self.fragmentation.finishFragmentation()
-      self.gamess = Gamess(self.fragmentation)
-      self.gamess.setCentralFragmentID(1)
-      self.gamess.setBoundariesFromString("1.0")
-      self.gamess.setActiveAtomsDistance("2.0")
-      self.gamess.setBufferMaxDistance("2.0")
-      self.gamess.setup()
-      STRING=" $FMOPRP NPRINT=9 NGUESS=134 $END"
-      self.assertEqual(self.gamess.FMOPRPgroup(), STRING)
+      gamess = Gamess(self.fragmentation)
+      gamess.setCentralFragmentID(1)
+      gamess.setBoundariesFromString("1.0")
+      gamess.setActiveAtomsDistance(1.0)
+      gamess.setBufferMaxDistance(1.0)
+      gamess.setup()
+      gamess.writeFile(filename)
+      generated = ReadStringListFromFile(filename)
+      fixture = ReadStringListFromFile(otherfile)
+
+      self.assertEqual(len(generated), len(fixture))
+      for i in range(len(fixture)):
+        self.assertEqual(generated[i], fixture[i])
+
+      self.delete_file(filename)
 
 def suite():
   s = unittest.TestSuite()

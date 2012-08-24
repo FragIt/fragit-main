@@ -196,13 +196,16 @@ class Gamess(Standard):
 		return nguess
 
 	def CONTRLgroup(self):
-		base = " $CONTRL NPRINT=-5 ISPHER=1 LOCAL=BOYS\n         RUNTYP=%s\n $END"
+		localize = " LOCAL=BOYS"
+		if len(self._fragmentation.getExplicitlyBreakAtomPairs()) == 0:
+			localize = ""
+		base = " $CONTRL NPRINT=-5 ISPHER=1%s\n         RUNTYP=%s\n $END"
 		statpt = " $STATPT OPTTOL=5.0e-4 NSTEP=2000\n%s\n $END"
 		if(len(self._active_fragments) == 0 and self._active_atoms_distance <= 0.0):
-			return base % "ENERGY"
+			return base % (localize, "ENERGY")
 		else:
 			active_string = self._getActiveAtomsString(self._active_atoms)
-			base_final = base % "OPTIMIZE"
+			base_final = base % (localize, "OPTIMIZE")
 			statpt_final = statpt % active_string
 			final = "%s\n%s" % (base_final, statpt_final)
 			return final
