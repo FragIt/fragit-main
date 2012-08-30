@@ -1,6 +1,6 @@
 """
 **********************************************************************
-tests/test_GamessOutput.py - test cases for Gamess Writer
+tests/test_GamessFMOOutput.py - test cases for GamessFMO Writer
 
 Copyright (C) 2012 Casper Steinmann
 
@@ -26,12 +26,12 @@ import os
 import sys
 sys.path.append('../src')
 import unittest
-from gamess import Gamess
+from gamessfmo import GamessFMO
 
 from util import fileToMol, ReadStringListFromFile
 from fragmentation import Fragmentation
 
-class TestGamessOutputModule(unittest.TestCase):
+class TestGamessFMOOutputModule(unittest.TestCase):
 
     def setUp(self):
       self.molecule = fileToMol("watercluster4.xyz")
@@ -50,9 +50,9 @@ class TestGamessOutputModule(unittest.TestCase):
     def test_water_1(self):
       filename = "temp.inp"
       otherfile = self.fixtures + "/water_1.fixture"
-      gamess = Gamess(self.fragmentation)
-      gamess.setup()
-      gamess.writeFile(filename)
+      gamessfmo = GamessFMO(self.fragmentation)
+      gamessfmo.setup()
+      gamessfmo.writeFile(filename)
       generated = ReadStringListFromFile(filename)
       fixture = ReadStringListFromFile(otherfile)
 
@@ -68,9 +68,9 @@ class TestGamessOutputModule(unittest.TestCase):
       self.fragmentation.beginFragmentation()
       self.fragmentation.doFragmentation()
       self.fragmentation.finishFragmentation()
-      gamess = Gamess(self.fragmentation)
-      gamess.setup()
-      gamess.writeFile(filename)
+      gamessfmo = GamessFMO(self.fragmentation)
+      gamessfmo.setup()
+      gamessfmo.writeFile(filename)
       generated = ReadStringListFromFile(filename)
       fixture = ReadStringListFromFile(otherfile)
 
@@ -86,10 +86,10 @@ class TestGamessOutputModule(unittest.TestCase):
       self.fragmentation.beginFragmentation()
       self.fragmentation.doFragmentation()
       self.fragmentation.finishFragmentation()
-      gamess = Gamess(self.fragmentation)
-      gamess.setCentralFragmentID(1)
-      gamess.setup()
-      gamess.writeFile(filename)
+      gamessfmo = GamessFMO(self.fragmentation)
+      gamessfmo.setCentralFragmentID(1)
+      gamessfmo.setup()
+      gamessfmo.writeFile(filename)
       generated = ReadStringListFromFile(filename)
       fixture = ReadStringListFromFile(otherfile)
 
@@ -105,11 +105,11 @@ class TestGamessOutputModule(unittest.TestCase):
       self.fragmentation.beginFragmentation()
       self.fragmentation.doFragmentation()
       self.fragmentation.finishFragmentation()
-      gamess = Gamess(self.fragmentation)
-      gamess.setCentralFragmentID(1)
-      gamess.setBoundariesFromString("1.0")
-      gamess.setup()
-      gamess.writeFile(filename)
+      gamessfmo = GamessFMO(self.fragmentation)
+      gamessfmo.setCentralFragmentID(1)
+      gamessfmo.setBoundariesFromString("1.0")
+      gamessfmo.setup()
+      gamessfmo.writeFile(filename)
       generated = ReadStringListFromFile(filename)
       fixture = ReadStringListFromFile(otherfile)
 
@@ -125,13 +125,13 @@ class TestGamessOutputModule(unittest.TestCase):
       self.fragmentation.beginFragmentation()
       self.fragmentation.doFragmentation()
       self.fragmentation.finishFragmentation()
-      gamess = Gamess(self.fragmentation)
-      gamess.setCentralFragmentID(1)
-      gamess.setBoundariesFromString("1.0")
-      gamess.setActiveAtomsDistance(1.0)
-      gamess.setBufferMaxDistance(1.0)
-      gamess.setup()
-      gamess.writeFile(filename)
+      gamessfmo = GamessFMO(self.fragmentation)
+      gamessfmo.setCentralFragmentID(1)
+      gamessfmo.setBoundariesFromString("1.0")
+      gamessfmo.setActiveAtomsDistance(1.0)
+      gamessfmo.setBufferMaxDistance(1.0)
+      gamessfmo.setup()
+      gamessfmo.writeFile(filename)
       generated = ReadStringListFromFile(filename)
       fixture = ReadStringListFromFile(otherfile)
 
@@ -143,7 +143,7 @@ class TestGamessOutputModule(unittest.TestCase):
 
 def suite():
   s = unittest.TestSuite()
-  s.addTest(unittest.makeSuite(TestGamessOutputModule))
+  s.addTest(unittest.makeSuite(TestGamessFMOOutputModule))
   return s
 
 if __name__ == '__main__':

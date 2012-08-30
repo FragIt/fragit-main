@@ -31,7 +31,7 @@ from util import file_extension,is_list,listTo2D,join2D,is_int
 from util import listToRanges,listOfRangesToString,Uniqify,ravel2D
 from util import deepLength
 
-class Gamess(Standard):
+class GamessFMO(Standard):
 	def __init__(self, fragmentation):
 		Standard.__init__(self,fragmentation)
 

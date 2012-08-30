@@ -4,7 +4,7 @@ import test_util
 import test_fragmentation
 import test_outputformats
 import test_standardwriter
-import test_gamessoutput
+import test_gamessfmooutput
 
 if __name__ == '__main__':
   suite = unittest.TestSuite()
@@ -12,5 +12,5 @@ if __name__ == '__main__':
   suite.addTest(test_fragmentation.suite())
   suite.addTest(test_outputformats.suite())
   suite.addTest(test_standardwriter.suite())
-  suite.addTest(test_gamessoutput.suite())
+  suite.addTest(test_gamessfmooutput.suite())
   unittest.TextTestRunner().run(suite)

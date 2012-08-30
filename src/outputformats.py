@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 ***********************************************************************/
 """
 
-import gamess
+import gamessfmo
 
 def get_writer_and_extension(theformat):
 	formats = supported_output_formats()
@@ -35,12 +35,12 @@ def get_writer_and_extension(theformat):
 ## Returns ALL supported output formats
 def supported_output_formats():
 	formats = dict()
-	formats['GAMESS'] = gamess.Gamess
+	formats['GAMESS-FMO'] = gamessfmo.GamessFMO
 	return formats
 
 ## Returns ALL supported output formats
 def supported_output_fileexts():
 	formats = dict()
-	formats['GAMESS'] = ".inp"
+	formats['GAMESS-FMO'] = ".inp"
 	return formats
 
