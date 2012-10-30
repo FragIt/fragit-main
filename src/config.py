@@ -56,7 +56,7 @@ class FragItData(dict):
 
     self['fragmentation'] = dict()
     self['fragmentation']['maxfragsize']=50
-    self['fragmentation']['writer']="GAMESS"
+    self['fragmentation']['writer']="GAMESS-FMO"
     self['fragmentation']['groupcount']=1
 
     self['output'] = dict()

@@ -23,11 +23,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 02110-1301, USA.
 ***********************************************************************/
 """
+import os
 import unittest
 import openbabel
 
 from fragmentation import Fragmentation
-from util import is_dictionary, lenOfLists
+from util import is_dictionary, lenOfLists, fileToMol
 
 class TestFragmentationModule(unittest.TestCase):
 
@@ -35,38 +36,24 @@ class TestFragmentationModule(unittest.TestCase):
         self.filename_pdb = "1UAO.pdb"
 
         # for testing, use OpenBabel functionality directly
-        self.molecule = openbabel.OBMol()
-        self.conversion = openbabel.OBConversion()
-        self.conversion.SetInFormat("pdb")
-        self.conversion.ReadFile(self.molecule, self.filename_pdb)
-
+        self.molecule = fileToMol(self.filename_pdb)
         self.fragmentation = Fragmentation(self.molecule)
 
     def tearDown(self):
         pass
 
+    def delete_file(self,filename):
+        try:
+                f = open(filename)
+        except IOError:
+                return
+        finally:
+                f.close()
+                os.remove(filename)
+
     def test_FragmentationDefaultParameters(self):
         frg = self.fragmentation
         self.assertEqual(frg.mol != None, True)
-        #self.assertEqual(frg.protected_atoms, list())
-        #self.assertEqual(frg.explicit_protected_atoms, list())
-        #self.assertEqual(frg.explicit_frag_pairs, list())
-        #self.assertEqual(frg.smartBreakPatterns, {"peptide": "[$(CN)][$(C(=O)NCC(=O))]"})
-        #self.assertEqual(frg.smartProtectPatterns, ["[$([NH2]),$([NH3]),$([NH][CH2][CH2]),$([NH2][CH2]C)]CC(=O)[$(NCC=O)]"])
-        #self.assertEqual(frg.fragmentGrouping, 1)
-        #self.assertEqual(frg.minFragSize, None)
-        #self.assertEqual(frg.maxFragSize, 50)
-        #self.assertEqual(frg.boundaries, [])
-        #self.assertEqual(frg.centralpoint, None)
-        #self.assertEqual(frg.centralfragment, None)
-        #self.assertEqual(frg.active_fragments, [])
-        #self.assertEqual(frg.residue_names, None)
-        #self.assertEqual(frg.atom_pairs, [])
-        #self.assertEqual(frg.getFragments(), [])
-        #self.assertEqual(frg.rejoined_atoms, [])
-        #self.assertEqual(frg.formalCharges, [])
-        #self.assertEqual(frg.total_charge, 0)
-        #self.assertEqual(frg.fragmentCharge, [])
 
     def test_FragmentationSetActiveFragments(self):
         self.fragmentation.setActiveFragments([1, 2, 3])
@@ -86,13 +73,9 @@ class TestFragmentationModule(unittest.TestCase):
     def test_FragmentationAddProtectedAtomsAfterProtect(self):
         self.fragmentation.setProtectedAtoms()
         self.fragmentation.addExplicitlyProtectedAtoms([44, 55, 67])
-        #self.assertEqual(self.fragmentation.explicit_protected_atoms, [44, 55, 67])
         self.assertEqual(self.fragmentation.getExplicitlyProtectedAtoms(), [1, 2, 3, 4, 10, 44, 55, 67])
 
     def test_FragmentationAddBrokenBond(self):
-        #self.assertEqual(self.fragmentation.getExplicitlyBreakAtomPairs(), [])
-        #self.fragmentation.addBrokenBond((1, 4))
-        #self.assertEqual(self.fragmentation.getExplicitlyBreakAtomPairs(), [(1, 4)])
 	pass
 
     def test_FragmentationIsBondProtected(self):
@@ -227,6 +210,16 @@ class TestFragmentationModule(unittest.TestCase):
         self.fragmentation.doFragmentGrouping()
         self.fragmentation.nameFragments()
         self.assertEqual(self.fragmentation.getFragmentNames(), ["AMINO", "AMINO", "AMINO", "AMINO", "AMINO"])
+
+    def test_writereadconfiguration_basic(self):
+        filename = "temp.cfg"
+        self.fragmentation.writeConfigurationToFile(filename)
+        otherfrag = Fragmentation(self.molecule)
+        otherfrag.readConfigurationFromFile(filename)
+        for key in otherfrag.values.keys():
+          for key2 in otherfrag.values[key].keys():
+            self.assertEqual(self.fragmentation.values[key][key2], otherfrag.values[key][key2])
+        self.delete_file(filename)
 
 def suite():
     s = unittest.TestSuite()

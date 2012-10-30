@@ -30,7 +30,6 @@ import logging
 import openbabel
 
 from util import *
-from gamess import *
 from config import FragItConfig
 
 

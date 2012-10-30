@@ -1,5 +1,11 @@
-FragIt v1.0.2 Release Notes
+FragIt v1.0.3 Release Notes
 ===========================
+
+Updates since v1.0.2
+--------------------
+
+ * Renamed GAMESS writer GAMESS-FMO due
+   to ambiguity.
 
 Updates since v1.0.1
 --------------------

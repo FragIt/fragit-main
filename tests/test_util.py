@@ -221,6 +221,7 @@ class TestUtilModule(unittest.TestCase):
         self.assertRaises(TypeError, util.joinIntList, "", self.fone)
         self.assertRaises(TypeError, util.joinIntList, "", self.btrue)
         self.assertRaises(TypeError, util.joinIntList, "", self.ssimple)
+        self.assertRaises(TypeError, util.joinIntList, "", [1.0,2.3])
         test_array1 = [1,2,3]
         self.assertEqual(util.joinIntList("",test_array1),"123")
         self.assertEqual(util.joinIntList(",",test_array1),"1,2,3")

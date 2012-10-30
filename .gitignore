@@ -3,3 +3,11 @@
 *.inp
 *.swp
 *.coverage
+src/*.py[co]
+
+# ignore folders used for building and distribution
+build
+dist
+
+# ignore htmlcov folder in tests
+tests/htmlcov

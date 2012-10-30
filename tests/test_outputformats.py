@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 """
 import os
 import unittest
-from gamess import Gamess
+from gamessfmo import GamessFMO
 import outputformats
 
 class TestOutputFormatsModule(unittest.TestCase):
@@ -34,14 +34,14 @@ class TestOutputFormatsModule(unittest.TestCase):
 
     def test_getwriterandextension(self):
         self.assertRaises(ValueError, outputformats.get_writer_and_extension, "bogus")
-        self.assertEqual(outputformats.get_writer_and_extension("GAMESS"), (Gamess,".inp"))
+        self.assertEqual(outputformats.get_writer_and_extension("GAMESS-FMO"), (GamessFMO,".inp"))
 
 
     def test_supported_output_formats(self):
-        self.assertEqual( outputformats.supported_output_formats(), {'GAMESS':Gamess} )
+        self.assertEqual( outputformats.supported_output_formats(), {'GAMESS-FMO':GamessFMO} )
 
     def test_supported_output_fileexts(self):
-        self.assertEqual( outputformats.supported_output_fileexts(), {'GAMESS':'.inp'} )
+        self.assertEqual( outputformats.supported_output_fileexts(), {'GAMESS-FMO':'.inp'} )
 
 def suite():
   s = unittest.TestSuite()
