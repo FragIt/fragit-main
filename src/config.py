@@ -45,6 +45,7 @@ class FragItData(dict):
     self.data_types['centralfragment']=int
     self.data_types['pairs']=str
     self.data_types['atomids']=str
+    self.data_types['chargemodel']=str
 
     # items here are complex values that need
     # specific parsing later on
@@ -58,6 +59,7 @@ class FragItData(dict):
     self['fragmentation']['maxfragsize']=50
     self['fragmentation']['writer']="GAMESS-FMO"
     self['fragmentation']['groupcount']=1
+    self['fragmentation']['chargemodel']="MMFF94"
 
     self['output'] = dict()
     self['output']['boundaries']=""
@@ -122,9 +124,9 @@ class FragItConfig(object):
           raise KeyError("Option '%s' in '%s' is not recognized." % (key,section))
 
         format = self.values.getType(key,section)
-	value = format(self.cfg.get(section,key))
-	if format == type(True):
-		value = (self.cfg.get(section,key)).lower() == "true"
+        value = format(self.cfg.get(section,key))
+        if format == type(True):
+          value = (self.cfg.get(section,key)).lower() == "true"
         self.values[section][key] = value
 
   def writeConfigurationToFile(self,file):
@@ -148,6 +150,13 @@ class FragItConfig(object):
 
   def getMinimumFragmentSize(self):
     return self.values['fragmentation']['minfragsize']
+
+  def getChargeModel(self):
+    return self.values['fragmentation']['chargemodel']
+
+  def setChargeModel(self, value):
+    #if(value.upper()) not in ["MMFF94", "GASTEIGER"]: raise ValueError("Only 'MMFF94' and 'GASTEIGER' charge-models supported.")
+    self.values['fragmentation']['chargemodel'] = value.upper()
 
   def setFragmentGroupCount(self, value):
     if not is_int(value): raise TypeError
