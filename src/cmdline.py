@@ -64,6 +64,8 @@ def main(argv=None):
                 help="Specify this flag to disable the use protection patterns.")
     general.add_option("--merge-glycine", action="store_true", dest="merge_glycine", default=False,
                 help="Merge a glycine to the neighbor fragment when fragmenting proteins.")
+    general.add_option("--charge-model", dest="charge_model", default=cfg.getChargeModel(),
+                      help="Charge model to use [%default]")
     output.add_option("--output-format", dest="format", type=str, default=cfg.getWriter(),
                 help="Output format [%default]")
     output.add_option("--output-boundaries", dest="boundaries", type=str, default="",metavar="list of floats",
@@ -105,6 +107,7 @@ def main(argv=None):
         fragmentation.readConfigurationFromFile(options.useconfigfile)
         (writer, output_extension) = get_writer_and_extension(fragmentation.getOutputFormat())
     else:
+        fragmentation.setChargeModel(options.charge_model)
         fragmentation.setMaximumFragmentSize(options.maxFragmentSize)
         if options.groupcount > 1: fragmentation.setFragmentGroupCount(options.groupcount)
 

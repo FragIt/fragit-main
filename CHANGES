@@ -1,5 +1,11 @@
-FragIt v1.0.3 Release Notes
+FragIt v1.0.4 Release Notes
 ===========================
+
+Updates since v1.0.3
+
+ * specify charge models via the command
+   line interface (--charge-model=) or
+   configuration files.
 
 Updates since v1.0.2
 --------------------
