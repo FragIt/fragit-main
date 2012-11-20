@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 02110-1301, USA.
 ***********************************************************************/
 """
+import sys
 
 from util import *
 from ConfigParser import RawConfigParser
@@ -111,6 +112,11 @@ class FragItConfig(object):
         self.cfg.set(section,key,value)
 
   def readConfigurationFromFile(self, filename):
+    try:
+        with open(filename,'r') as f: pass
+    except IOError:
+        print "The configuration file '%s' does not exist. Aborting." % filename
+        sys.exit()
     self.cfg.read(filename)
 
     # code to parse data from sections into values
