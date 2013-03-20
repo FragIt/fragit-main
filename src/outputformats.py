@@ -37,7 +37,7 @@ def get_writer_and_extension(theformat):
 def supported_output_formats():
 	formats = dict()
 	formats['GAMESS-FMO'] = gamessfmo.GamessFMO
-	formats['MOLCAS-MFCC'] = molcasmfcc.Molcas.MFCC
+	formats['MOLCAS-MFCC'] = molcasmfcc.MolcasMFCC
 	return formats
 
 ## Returns ALL supported output formats

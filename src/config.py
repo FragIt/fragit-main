@@ -3,7 +3,7 @@
 config.py
 
 Copyright (C) 2010-2011 Mikael W. Ibsen
-Some portions Copyright (C) 2011-2012 Casper Steinmann
+Some portions Copyright (C) 2011-2013 Casper Steinmann
 
 This file is part of the FragIt project.
 
@@ -55,6 +55,8 @@ class FragItData(dict):
     self.data_types['nterminal']=str
     self.data_types['pairs']=str
     self.data_types['atomids']=str
+    self.data_types['lcap']=str
+    self.data_types['rcap']=str
 
     self['fragmentation'] = dict()
     self['fragmentation']['maxfragsize']=50
@@ -87,6 +89,10 @@ class FragItData(dict):
 
     self['explicitprotectatoms'] = dict()
     self['explicitprotectatoms']['atomids']="" # list of integers
+
+    self['mfcc'] = dict()
+    self['mfcc']['lcap'] = "" # string, no default capping to the left
+    self['mfcc']['rcap'] = "" # string, no default capping to the right
 
   def getType(self, option, section):
     if "pattern" in section: return str
@@ -291,6 +297,12 @@ class FragItConfig(object):
 
   def getActiveAtomsDistance(self):
     return self.values['output']['active']
+
+  def getMFCCLeftCap(self):
+    return self.values['mfcc']['lcap']
+
+  def getMFCCRightCap(self):
+    return self.values['mfcc']['lcap']
 
 if __name__ == '__main__':
   cfg = FragItConfig()

@@ -3,7 +3,7 @@
 fragmentation.py
 
 Copyright (C) 2010-2011 Mikael W. Ibsen
-Some portions Copyright (C) 2011-2012 Casper Steinmann
+Some portions Copyright (C) 2011-2013 Casper Steinmann
 
 This file is part of the FragIt project.
 
@@ -52,6 +52,7 @@ class Fragmentation(FragItConfig):
         self.identifyBackboneAtoms()
         self.identifyMergeableAtoms()
         self.identifyResidues()
+        self.identifyCaps()
         self.determineFormalCharges()
         self.setProtectedAtoms()
 
@@ -356,3 +357,20 @@ class Fragmentation(FragItConfig):
 
     def getBackboneAtoms(self):
         return self._backbone_atoms
+
+    def identifyCaps(self):
+        if self.getOutputFormat() == 'MOLCAS-MFCC':
+            lcappattern = self.getMFCCLeftCap()
+            rcappattern = self.getMFCCRightCap()
+            if len(lcappattern) == 0 or len(rcappattern) == 0:
+                raise ValueError("No capping patterns were specified. Aborting.")
+
+            self.pat.Init(lcappattern)
+            self.pat.Match(self.mol)
+            lcap = Uniqify(self._listMatches(self.pat.GetUMapList()))
+            self.pat.Init(rcappattern)
+            self.pat.Match(self.mol)
+            rcap = Uniqify(self._listMatches(self.pat.GetUMapList()))
+
+            print lcap
+            print rcap
