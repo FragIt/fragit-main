@@ -30,7 +30,7 @@ import os
 import util
 
 # filenames for templates
-filenames = {'pymol':'pml',
+filenames = {'pymol':'pymol',
              'jmol' :'jmol'}
 
 class Template(object):
