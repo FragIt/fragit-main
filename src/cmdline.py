@@ -2,7 +2,7 @@
 **********************************************************************
 cmdline.py
 
-Copyright (C) 2011-2012 Casper Steinmann
+Copyright (C) 2011-2013 Casper Steinmann
 
 This file is part of the FragIt project.
 
@@ -109,6 +109,7 @@ def main(argv=None):
     else:
         fragmentation.setChargeModel(options.charge_model)
         fragmentation.setMaximumFragmentSize(options.maxFragmentSize)
+        fragmentation.setOutputFormat(options.format)
         if options.groupcount > 1: fragmentation.setFragmentGroupCount(options.groupcount)
 
         (writer, output_extension) = get_writer_and_extension(options.format)

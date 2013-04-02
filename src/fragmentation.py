@@ -3,7 +3,7 @@
 fragmentation.py
 
 Copyright (C) 2010-2011 Mikael W. Ibsen
-Some portions Copyright (C) 2011-2012 Casper Steinmann
+Some portions Copyright (C) 2011-2013 Casper Steinmann
 
 This file is part of the FragIt project.
 
@@ -168,6 +168,7 @@ class Fragmentation(FragItConfig):
 
     def breakBonds(self):
         self._BreakPatternBonds()
+        self.identifyCaps()
         self._DeleteOBMolBonds()
 
     def _DeleteOBMolBonds(self):
@@ -356,3 +357,49 @@ class Fragmentation(FragItConfig):
 
     def getBackboneAtoms(self):
         return self._backbone_atoms
+
+    def identifyCaps(self):
+        """Identifies caps to fragments.
+           NB! we use fussy-matching which will require some
+               thought
+        """
+        self._mfcc_order = 0
+        if self.getOutputFormat() == 'XYZ-MFCC':
+            self._mfcc_order = self.getMFCCOrder()
+            if self._mfcc_order <= 0:
+                raise ValueError("You must specify the order of capping.")
+            self.build_caps()
+
+    def build_caps(self):
+        self._caps = []
+        for pair in self.getExplicitlyBreakAtomPairs():
+            self._caps.append( self.build_cap(pair) )
+
+    def build_cap(self, pair):
+        cap_atm = [self.mol.GetAtom(id) for id in pair]
+        cap_ids = [a.GetIdx() for a in cap_atm]
+        cap_typ = [a.GetAtomicNum() for a in cap_atm]
+        order = 0
+        while order < self._mfcc_order:
+          order += 1
+          cap_atm, cap_ids, cap_typ = self.extend_cap(cap_atm, cap_ids, cap_typ, order == self._mfcc_order)
+        return (cap_atm, cap_ids, cap_typ)
+
+    def extend_cap(self, atms, ids, typs, is_final_cap):
+        """Extends the current cap with neighboring atoms.
+           if this is_final_cap then atoms are hydrogens. they will
+           OPTIONALLY be translated later.
+        """
+        atms_out = atms[:]
+        ids_out  = ids[:]
+        typs_out = typs[:]
+        for atom in atms:
+            for atomext in openbabel.OBAtomAtomIter(atom):
+                if atomext in atms: continue
+                atms_out.append(atomext)
+                ids_out.append(atomext.GetIdx())
+                if is_final_cap:
+                  typs_out.append(1)
+                else:
+                  typs_out.append(atomext.GetAtomicNum())
+        return atms_out[:], ids_out[:], typs_out[:]

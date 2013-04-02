@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 import os
 import unittest
 from gamessfmo import GamessFMO
+from xyzmfcc import XYZMFCC
 import outputformats
 
 class TestOutputFormatsModule(unittest.TestCase):
@@ -38,10 +39,10 @@ class TestOutputFormatsModule(unittest.TestCase):
 
 
     def test_supported_output_formats(self):
-        self.assertEqual( outputformats.supported_output_formats(), {'GAMESS-FMO':GamessFMO} )
+        self.assertEqual( outputformats.supported_output_formats(), {'GAMESS-FMO':GamessFMO, 'XYZ-MFCC': XYZMFCC} )
 
     def test_supported_output_fileexts(self):
-        self.assertEqual( outputformats.supported_output_fileexts(), {'GAMESS-FMO':'.inp'} )
+        self.assertEqual( outputformats.supported_output_fileexts(), {'GAMESS-FMO':'.inp', 'XYZ-MFCC': '.xyz'} )
 
 def suite():
   s = unittest.TestSuite()

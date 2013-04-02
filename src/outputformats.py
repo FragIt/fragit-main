@@ -2,7 +2,7 @@
 **********************************************************************
 outputformats.py
 
-Copyright (C) 2011-2012 Casper Steinmann
+Copyright (C) 2011-2013 Casper Steinmann
 
 This file is part of the FragIt project.
 
@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 """
 
 import gamessfmo
+import xyzmfcc
 
 def get_writer_and_extension(theformat):
 	formats = supported_output_formats()
@@ -36,11 +37,13 @@ def get_writer_and_extension(theformat):
 def supported_output_formats():
 	formats = dict()
 	formats['GAMESS-FMO'] = gamessfmo.GamessFMO
+	formats['XYZ-MFCC'] = xyzmfcc.XYZMFCC
 	return formats
 
 ## Returns ALL supported output formats
 def supported_output_fileexts():
 	formats = dict()
 	formats['GAMESS-FMO'] = ".inp"
+	formats['XYZ-MFCC'] = ".xyz"
 	return formats
 
