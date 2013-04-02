@@ -52,7 +52,6 @@ class Fragmentation(FragItConfig):
         self.identifyBackboneAtoms()
         self.identifyMergeableAtoms()
         self.identifyResidues()
-        self.identifyCaps()
         self.determineFormalCharges()
         self.setProtectedAtoms()
 
@@ -169,6 +168,7 @@ class Fragmentation(FragItConfig):
 
     def breakBonds(self):
         self._BreakPatternBonds()
+        self.identifyCaps()
         self._DeleteOBMolBonds()
 
     def _DeleteOBMolBonds(self):
@@ -359,18 +359,47 @@ class Fragmentation(FragItConfig):
         return self._backbone_atoms
 
     def identifyCaps(self):
-        if self.getOutputFormat() == 'MOLCAS-MFCC':
-            lcappattern = self.getMFCCLeftCap()
-            rcappattern = self.getMFCCRightCap()
-            if len(lcappattern) == 0 or len(rcappattern) == 0:
-                raise ValueError("No capping patterns were specified. Aborting.")
+        """Identifies caps to fragments.
+           NB! we use fussy-matching which will require some
+               thought
+        """
+        self._mfcc_order = 0
+        if self.getOutputFormat() == 'XYZ-MFCC':
+            self._mfcc_order = self.getMFCCOrder()
+            if self._mfcc_order <= 0:
+                raise ValueError("You must specify the order of capping.")
+            self.build_caps()
 
-            self.pat.Init(lcappattern)
-            self.pat.Match(self.mol)
-            lcap = Uniqify(self._listMatches(self.pat.GetUMapList()))
-            self.pat.Init(rcappattern)
-            self.pat.Match(self.mol)
-            rcap = Uniqify(self._listMatches(self.pat.GetUMapList()))
+    def build_caps(self):
+        self._caps = []
+        for pair in self.getExplicitlyBreakAtomPairs():
+            self._caps.append( self.build_cap(pair) )
 
-            print lcap
-            print rcap
+    def build_cap(self, pair):
+        cap_atm = [self.mol.GetAtom(id) for id in pair]
+        cap_ids = [a.GetIdx() for a in cap_atm]
+        cap_typ = [a.GetAtomicNum() for a in cap_atm]
+        order = 0
+        while order < self._mfcc_order:
+          order += 1
+          cap_atm, cap_ids, cap_typ = self.extend_cap(cap_atm, cap_ids, cap_typ, order == self._mfcc_order)
+        return (cap_atm, cap_ids, cap_typ)
+
+    def extend_cap(self, atms, ids, typs, is_final_cap):
+        """Extends the current cap with neighboring atoms.
+           if this is_final_cap then atoms are hydrogens. they will
+           OPTIONALLY be translated later.
+        """
+        atms_out = atms[:]
+        ids_out  = ids[:]
+        typs_out = typs[:]
+        for atom in atms:
+            for atomext in openbabel.OBAtomAtomIter(atom):
+                if atomext in atms: continue
+                atms_out.append(atomext)
+                ids_out.append(atomext.GetIdx())
+                if is_final_cap:
+                  typs_out.append(1)
+                else:
+                  typs_out.append(atomext.GetAtomicNum())
+        return atms_out[:], ids_out[:], typs_out[:]

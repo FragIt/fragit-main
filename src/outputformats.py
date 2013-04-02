@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 """
 
 import gamessfmo
-import molcasmfcc
+import xyzmfcc
 
 def get_writer_and_extension(theformat):
 	formats = supported_output_formats()
@@ -37,13 +37,13 @@ def get_writer_and_extension(theformat):
 def supported_output_formats():
 	formats = dict()
 	formats['GAMESS-FMO'] = gamessfmo.GamessFMO
-	formats['MOLCAS-MFCC'] = molcasmfcc.MolcasMFCC
+	formats['XYZ-MFCC'] = xyzmfcc.XYZMFCC
 	return formats
 
 ## Returns ALL supported output formats
 def supported_output_fileexts():
 	formats = dict()
 	formats['GAMESS-FMO'] = ".inp"
-	formats['MOLCAS-MFCC'] = ".inp"
+	formats['XYZ-MFCC'] = ".xyz"
 	return formats
 

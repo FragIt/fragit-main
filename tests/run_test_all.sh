@@ -6,14 +6,19 @@ then
   PARAM=$1
 fi
 
+if [ -e htmlcov ]
+then
+  rm -rf htmlcov
+fi
+
 PATH_TO_SRC=../src
 OLD_PYTHONPATH=$PYTHONPATH
 
 export PYTHONPATH=$PYTHONPATH:$PATH_TO_SRC
 
-coverage run --include=../src/*.py test_all.py $PARAM
+python-coverage run --include=../src/*.py test_all.py $PARAM
 
-coverage html
+python-coverage html
 
 export PYTHONPATH=$OLD_PYTHONPATH
 rm *.pyc
