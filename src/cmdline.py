@@ -66,6 +66,8 @@ def main(argv=None):
                 help="Merge a glycine to the neighbor fragment when fragmenting proteins.")
     general.add_option("--charge-model", dest="charge_model", default=cfg.getChargeModel(),
                       help="Charge model to use [%default]")
+    general.add_option("--combine-fragments", dest="combinefragments", type=str, default="",metavar="list of integers",
+                       help="Combines several fragments into one.")
     output.add_option("--output-format", dest="format", type=str, default=cfg.getWriter(),
                 help="Output format [%default]")
     output.add_option("--output-boundaries", dest="boundaries", type=str, default="",metavar="list of floats",
@@ -120,6 +122,7 @@ def main(argv=None):
 
 
     # do the fragmentation procedure
+    fragmentation.setCombineFragments(options.combinefragments)
     if options.disable_protection:
         fragmentation.clearProtectPatterns()
     if options.merge_glycine:
@@ -127,6 +130,7 @@ def main(argv=None):
     fragmentation.beginFragmentation()
     fragmentation.doFragmentation()
     fragmentation.doFragmentMerging()
+    fragmentation.doFragmentCombination()
     if fragmentation.getFragmentGroupCount() > 1:
         fragmentation.doFragmentGrouping()
     fragmentation.finishFragmentation()

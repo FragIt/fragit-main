@@ -56,6 +56,7 @@ class FragItData(dict):
     self.data_types['nterminal']=str
     self.data_types['pairs']=str
     self.data_types['atomids']=str
+    self.data_types['combinefragments'] = str
     self.data_types['lcap']=str
     self.data_types['rcap']=str
 
@@ -64,6 +65,7 @@ class FragItData(dict):
     self['fragmentation']['writer']="GAMESS-FMO"
     self['fragmentation']['groupcount']=1
     self['fragmentation']['chargemodel']="MMFF94"
+    self['fragmentation']['combinefragments'] = "" # list of integers
 
     self['output'] = dict()
     self['output']['boundaries']=""
@@ -203,6 +205,18 @@ class FragItConfig(object):
 
   def clearProtectPatterns(self):
     self.values['protectpatterns'] = dict()
+
+  def getCombineFragments(self):
+    values = self.values['fragmentation']['combinefragments']
+    if len(values) > 0:
+      list_of_ids = values.split(",")
+      return map(int, list_of_ids)
+    return []
+
+  def setCombineFragments(self, value):
+    if not is_string(value): raise TypeError
+    if len(value) == 0: return
+    self.values['fragmentation']['combinefragments'] = value
 
   def getExplicitlyProtectedAtoms(self):
     values = self.values['explicitprotectatoms']['atomids']
