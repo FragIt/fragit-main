@@ -76,6 +76,17 @@ class Fragmentation(FragItConfig):
         self._fragments = fragments[:]
         self._CleanMergedBonds()
 
+    def doFragmentCombination(self):
+        fragments_to_combine = self.getCombineFragments()
+        if len(fragments_to_combine) == 0: return
+        fragments_to_combine.reverse()
+        fragments = self.getFragments()
+        combined_fragment = ravel2D([fragments.pop(id-1) for id in fragments_to_combine])
+        combined_fragment.sort()
+        fragments.append(combined_fragment)
+        self._fragments = fragments[:]
+        self._CleanMergedBonds()
+
     def getFragmentsToMerge(self):
         fragments = self.getFragments()
         fragments_to_merge = []
