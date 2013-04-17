@@ -117,7 +117,7 @@ class XYZMFCC(Standard):
        .xyz files.
     """
     ff,ext = getFilenameAndExtension(filename)
-    filename_template = "%s_%s_%03i.%s"
+    filename_template = "%s_%s_%03i%s"
     # first we dump all fragments
     for ifg in range(len(self._fragmentation.getFragments())):
       (atms, ids, types) = self._build_single_fragment(self._fragmentation.getFragments(), ifg, self._fragmentation._caps)
