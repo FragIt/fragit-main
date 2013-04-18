@@ -36,11 +36,21 @@ class XYZMFCC(Standard):
     Standard.__init__(self,fragmentation)
 
   def setup(self):
-    #self._setupLayeredInformation()
-    #self._setupActiveFragmentsInformation()
+    self._setupLayeredInformation()
+    self._setupActiveFragmentsInformation()
     #self._validateMultiLayerInformation()
     if self._do_pymol: self._dump_pymol()
     if self._do_jmol: self._dump_jmol()
+
+  def _setupLayeredInformation(self):
+    self._fragment_layers = self._getFragmentLayersFromFragment()
+
+  def _getFragmentLayersFromFragment(self):
+    fragments = self._fragmentation.getFragments()
+    return array([1 for i in fragments])
+
+  def _setupActiveFragmentsInformation(self):
+    self._active_atoms = []
 
   def _dump_pymol(self):
     from pymol import PymolTemplate
@@ -56,10 +66,10 @@ class XYZMFCC(Standard):
 
   def _setTemplateData(self, template):
     template.setFragmentsData(self._fragmentation.getFragments())
-    #template.setBufferData(self._fragment_layers)
-    #template.setActiveData(self._active_atoms)
-    #template.setBackboneData(self._fragmentation.getBackboneAtoms())
-    #template.setPairData(self._fragmentation.getExplicitlyBreakAtomPairs())
+    template.setBufferData(self._fragment_layers)
+    template.setActiveData(self._active_atoms)
+    template.setBackboneData(self._fragmentation.getBackboneAtoms())
+    template.setPairData(self._fragmentation.getExplicitlyBreakAtomPairs())
 
   def _writeTemplateFile(self, template):
     template.override()
