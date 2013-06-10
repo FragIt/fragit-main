@@ -45,14 +45,61 @@ class Fragmentation(FragItConfig):
         self._fragment_charges = []
         self._fragments = []
         self._backbone_atoms = []
-        self._atoms = [mol.GetAtom(i) for i in range(1,mol.NumAtoms()+1)]
         self._mergeable_atoms = []
+        self._atoms = []
+        self._fixAtomsAndCharges()
+
+    def _removeMetalAtoms(self):
+        _metalAtoms = []
+
+        removing = True
+        while removing:
+            added = 0
+            for i in range(1, self.mol.NumAtoms()+1):
+                atom = self.mol.GetAtom(i)
+                if atom.GetAtomicNum() in [1,6,7,8,16]:
+                    if atom not in self._atoms: self._atoms.append(atom)
+                    added += 1
+                else:
+                    #print " Temporarily removing atom: {}, Z={}".format(i,atom.GetAtomicNum())
+                    new_atom = openbabel.OBAtom()
+                    new_atom.Duplicate(atom)
+                    _metalAtoms.append(new_atom)
+                    self.mol.DeleteAtom(atom)
+                    break
+                if added == self.mol.NumAtoms():
+                    removing = False
+                    break
+
+        return _metalAtoms
+
+    def _fixAtomsAndCharges(self):
+        """Removes unwanted atoms to make the charge calculation
+           work. Be sure to re-insert the atoms once it is done
+        """
+        _metalAtoms = self._removeMetalAtoms()
+        # now lets do the charges (without the metals)
+        model = self.getChargeModel()
+        charge_model = openbabel.OBChargeModel.FindType(model)
+        if charge_model is None: raise ValueError("The charge model '%s' is not valid" % model)
+        self.formalCharges = [0.0 for i in range(self.mol.NumAtoms())]
+        if charge_model.ComputeCharges(self.mol):
+            self.formalCharges = list(charge_model.GetPartialCharges())
+        else:
+            print "charges are not available."
+
+        # add back the metals, use the formal charges
+        for atom in _metalAtoms:
+            if not self.mol.AddAtom(atom):
+                raise Exception("An error occured with the metals")
+            else:
+                self._atoms.append(atom)
+                self.formalCharges.append(atom.GetFormalCharge())
 
     def beginFragmentation(self):
         self.identifyBackboneAtoms()
         self.identifyMergeableAtoms()
         self.identifyResidues()
-        self.determineFormalCharges()
         self.setProtectedAtoms()
 
     def identifyMergeableAtoms(self):
@@ -140,16 +187,6 @@ class Fragmentation(FragItConfig):
         for match in matches:
             results.extend(match)
         return results
-
-    def determineFormalCharges(self):
-        model = self.getChargeModel()
-        charge_model = openbabel.OBChargeModel.FindType(model)
-        if charge_model is None: raise ValueError("The charge model '%s' is not valid" % model)
-        self.formalCharges = tuple([0.0 for i in range(self.mol.NumAtoms())])
-        if charge_model.ComputeCharges(self.mol):
-            self.formalCharges = charge_model.GetPartialCharges()
-        else:
-            print "charges are not available."
 
     def identifyResidues(self):
         if (len(self._residue_names) > 0):
