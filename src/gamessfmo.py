@@ -190,9 +190,9 @@ class GamessFMO(Standard):
 		return " $FMOPRP NPRINT=9 NGUESS=%i $END"
 
 	def _calculateOrbitalGuess(self):
-		nguess = 6 # project orbitals out of huckel guess
+		nguess = 2 # project orbitals out of huckel guess
 		if self._nlayers > 1 and len(self._active_atoms) != 0:
-			nguess = 134 # this is needed for multilayer formulation, but not FD
+			nguess += 128 # this is needed for multilayer formulation, but not FD
 		return nguess
 
 	def CONTRLgroup(self):
