@@ -64,7 +64,7 @@ class TestFragmentationModule(unittest.TestCase):
         self.assertEqual(self.fragmentation.getExplicitlyProtectedAtoms(), [1, 2, 3, 4, 10])
 
     def test_FragmentationDetermineFormalCharges(self):
-        self.fragmentation.determineFormalCharges()
+        #self.fragmentation.determineFormalCharges()
         self.assertAlmostEqual(sum(self.fragmentation.formalCharges), -2)
 
     def test_FragmentationGetProtectedAtoms(self):
@@ -153,7 +153,7 @@ class TestFragmentationModule(unittest.TestCase):
         self.assertEqual(self.fragmentation.getAtomsInSameFragment(12, 0), [12, 13, 31, 32] + range(35, 43))
 
     def test_FragmentationFragmentChargeAfterFragment(self):
-        self.fragmentation.determineFormalCharges()
+        #self.fragmentation.determineFormalCharges()
         self.fragmentation.breakBonds()
         self.fragmentation.determineFragments()
         self.fragmentation.determineFragmentCharges()
@@ -161,14 +161,14 @@ class TestFragmentationModule(unittest.TestCase):
 
     def test_FragmentationFragmentChargeAfterProtectAndFragment(self):
         self.fragmentation.setProtectedAtoms()
-        self.fragmentation.determineFormalCharges()
+        #self.fragmentation.determineFormalCharges()
         self.fragmentation.breakBonds()
         self.fragmentation.determineFragments()
         self.fragmentation.determineFragmentCharges()
         self.assertEqual(self.fragmentation.getFragmentCharges(), [1, -1, 0, -1, 0, 0, 0, 0, -1])
 
     def test_FragmentationFragmentChargeAfterFragmentAndGroup(self):
-        self.fragmentation.determineFormalCharges()
+        #self.fragmentation.determineFormalCharges()
         self.fragmentation.breakBonds()
         self.fragmentation.determineFragments()
         self.fragmentation.setFragmentGroupCount(2)
@@ -178,7 +178,7 @@ class TestFragmentationModule(unittest.TestCase):
 
     def test_FragmentationFragmentChargeAfterProtectFragmentAndGroup(self):
         self.fragmentation.setProtectedAtoms()
-        self.fragmentation.determineFormalCharges()
+        #self.fragmentation.determineFormalCharges()
         self.fragmentation.breakBonds()
         self.fragmentation.determineFragments()
         self.fragmentation.setFragmentGroupCount(2)
