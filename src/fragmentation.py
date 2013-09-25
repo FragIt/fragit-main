@@ -28,6 +28,7 @@ import sys
 import logging
 
 import openbabel
+import numpy
 
 from util import *
 from config import FragItConfig
@@ -78,10 +79,12 @@ class Fragmentation(FragItConfig):
            work. Be sure to re-insert the atoms once it is done
         """
         _metalAtoms = self._removeMetalAtoms()
+
         # now lets do the charges (without the metals)
         model = self.getChargeModel()
         charge_model = openbabel.OBChargeModel.FindType(model)
         if charge_model is None: raise ValueError("The charge model '%s' is not valid" % model)
+
         self.formalCharges = [0.0 for i in range(self.mol.NumAtoms())]
         if charge_model.ComputeCharges(self.mol):
             self.formalCharges = list(charge_model.GetPartialCharges())
@@ -424,16 +427,25 @@ class Fragmentation(FragItConfig):
             self._caps.append( self.build_cap(pair) )
 
     def build_cap(self, pair):
+        """ Builds a cap around a pair of fragmentation points.
+
+            a cap contains the following information:
+            OBAtoms
+            IDs of the OBAtoms
+            Type (or nuclear charge) of the atom
+            Neighbour ID of the atom - this is used to identify hydrogens that needs to be repositioned.
+        """
         cap_atm = [self.mol.GetAtom(id) for id in pair]
         cap_ids = [a.GetIdx() for a in cap_atm]
         cap_typ = [a.GetAtomicNum() for a in cap_atm]
+        cap_nbs = [-1 for a in cap_atm]
         order = 0
         while order < self._mfcc_order:
-          order += 1
-          cap_atm, cap_ids, cap_typ = self.extend_cap(cap_atm, cap_ids, cap_typ, order == self._mfcc_order)
-        return (cap_atm, cap_ids, cap_typ)
+            order += 1
+            cap_atm, cap_ids, cap_typ, cap_nbs = self.extend_cap(cap_atm, cap_ids, cap_typ, cap_nbs, order == self._mfcc_order)
+        return (cap_atm, cap_ids, cap_typ, cap_nbs)
 
-    def extend_cap(self, atms, ids, typs, is_final_cap):
+    def extend_cap(self, atms, ids, typs, nbs, is_final_cap):
         """Extends the current cap with neighboring atoms.
            if this is_final_cap then atoms are hydrogens. they will
            OPTIONALLY be translated later.
@@ -441,13 +453,95 @@ class Fragmentation(FragItConfig):
         atms_out = atms[:]
         ids_out  = ids[:]
         typs_out = typs[:]
+        nbs_out = nbs[:]
         for atom in atms:
             for atomext in openbabel.OBAtomAtomIter(atom):
                 if atomext in atms: continue
                 atms_out.append(atomext)
                 ids_out.append(atomext.GetIdx())
+                nbs_out.append(atom.GetIdx())
                 if is_final_cap:
-                  typs_out.append(1)
+                    typs_out.append(1)
                 else:
-                  typs_out.append(atomext.GetAtomicNum())
-        return atms_out[:], ids_out[:], typs_out[:]
+                    typs_out.append(atomext.GetAtomicNum())
+        return atms_out[:], ids_out[:], typs_out[:], nbs_out[:]
+
+    def pop_qm_fragment(self,qmlist):
+        """ Remove the qm fragments from the fragmentation. Adds hydrogens to both the
+            qm-fragment that is returned and to the neighbouring fragments if bonds were cut.
+        """
+        fragments_for_qm_no_hydrogens = []
+        retract = lambda L: [l-1 for l in L]
+        qmfrags = map(int, qmlist)
+        qmfrags = retract(qmfrags)
+        qmfrags.sort()
+        qmfrags.reverse()
+        for idx in qmfrags:
+            fragments_for_qm_no_hydrogens.insert(0,self._fragments.pop(idx))
+
+        # for simplicity, let us just squash the qm fragments into one big fragment
+        fragments_for_qm_no_hydrogens = ravel2D(fragments_for_qm_no_hydrogens)
+
+        breaks = self.getExplicitlyBreakAtomPairs()
+        if len(breaks) == 0: return fragments_for_qm_no_hydrogens
+
+        # below here: add hydrogens to qm-fragment and to the rest of the capped structure
+        fragment_for_qm = fragments_for_qm_no_hydrogens[:]
+
+        # first, fix the QM-fragment, removing any bond-breaks that reside
+        # inside (or bordering) the qm-fragment. if breaks are bordering,
+        # add appropriate hydrogen atoms.
+        lenqmfrags = len(fragments_for_qm_no_hydrogens)
+        remove_breaks = []
+        for ibreak, bbreak in enumerate(breaks):
+            lendiff = len(listDiff(fragments_for_qm_no_hydrogens, list(bbreak)))
+            difflen = lenqmfrags - lendiff
+
+            # the break is not present in the qm-region, leave it
+            if difflen == 0: continue
+            # mark the ibreak'th item for removal. no hydrogens to be added
+            if difflen == 2: remove_breaks.append(ibreak)
+            # the break is bordering the qm-region and the mm-region
+            if difflen == 1:
+
+                for iibreak in bbreak:
+                    # fix the qm-fragment first
+                    if iibreak in fragments_for_qm_no_hydrogens:
+                        new_atoms = self.satisfyValency(fragments_for_qm_no_hydrogens, iibreak, bbreak)
+                        if len(new_atoms) > 0: fragment_for_qm.extend(new_atoms)
+
+                    # then fix the fragments themselves
+                    # INFO/WARNING: this is a lists of lists thing. BE CAREFULL
+                    for ifragment, fragment in enumerate(self._fragments):
+                        if iibreak in fragment:
+                            new_atoms = self.satisfyValency(fragment, iibreak, bbreak)
+                            self._fragments[ifragment].extend(new_atoms)
+
+                # also mark the ibreak'th item for removal
+                remove_breaks.append(ibreak)
+
+        for ibreak in remove_breaks:
+            self.popExplicitlyBreakAtomPairs(breaks[ibreak])
+
+        return fragment_for_qm
+
+    def satisfyValency(self, fragment, iheavy, bbreak):
+        """ Satisfies the valency of atom number iheavy in the supplied fragment. Returns a new fragment with all atoms in the correct place.
+        """
+
+        # heavy is the heavy atom that wants a hydrogen
+        heavy = self.getOBAtom(iheavy)
+        ilight = 0
+        if bbreak.index(iheavy) == 0: ilight = 1
+        light = self.getOBAtom(bbreak[ilight])
+        ival = heavy.GetImplicitValence()
+        rval = heavy.GetValence()
+        new_atoms = []
+        if ival != rval:
+            if self.mol.AddHydrogens(heavy):
+                for nbatom in openbabel.OBAtomAtomIter(heavy):
+                    if nbatom.GetIdx() not in fragment:
+                        x,y,z = calculate_hydrogen_position(heavy, light)
+                        nbatom.SetVector(x,y,z)
+                        new_atoms.append(nbatom.GetIdx())
+        return new_atoms
