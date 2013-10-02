@@ -101,6 +101,7 @@ class XYZMFCC(Standard):
                 output_fragment.append(atom_id)
                 output_atoms.append(lc[0][id])
                 output_types.append(lc[2][id])
+                output_nbrs.append(lc[3][id])
 
         if rc is not None:
             for id,atom_id in enumerate(rc[1]):
@@ -108,20 +109,22 @@ class XYZMFCC(Standard):
                 output_fragment.append(atom_id)
                 output_atoms.append(rc[0][id])
                 output_types.append(rc[2][id])
+                output_nbrs.append(rc[3][id])
 
         return output_atoms, output_fragment, output_types, output_nbrs
 
-    def fragment_xyz(self, atms, ids, types):
+    def fragment_xyz(self, atms, ids, types, nbrs):
         """Generates the xyz file format based on the atoms, types,
            ids and neighbours of each fragment
         """
         n = len(atms)
         s = "%i\n%s\n" % (n,"")#intlistToString(ids))
-        for id, atom in enumerate(atms):
-            s += "%s %20.12f %20.12f %20.12f\n" % (self._elements.GetSymbol(types[id]),
-                                                   atom.GetX(),
-                                                   atom.GetY(),
-                                                   atom.GetZ())
+        for id, (type, atom) in enumerate(zip(types,atms)):
+            (x,y,z) = (atom.GetX(), atom.GetY(), atom.GetZ())
+            if atom.GetAtomicNum() != type:
+                print id, atom.GetAtomicNum(), type, nbrs[id]
+            s += "%s %20.12f %20.12f %20.12f\n" % (self._elements.GetSymbol(type),
+                                                   x, y, z)
         return s
 
     def writeFile(self, filename):
