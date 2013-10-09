@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 
 import gamessfmo
 import xyzmfcc
+import xyz
 
 def get_writer_and_extension(theformat):
 	formats = supported_output_formats()
