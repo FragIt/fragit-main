@@ -38,6 +38,7 @@ def supported_output_formats():
 	formats = dict()
 	formats['GAMESS-FMO'] = gamessfmo.GamessFMO
 	formats['XYZ-MFCC'] = xyzmfcc.XYZMFCC
+        formats['XYZ'] = xyz.XYZ
 	return formats
 
 ## Returns ALL supported output formats
@@ -45,5 +46,6 @@ def supported_output_fileexts():
 	formats = dict()
 	formats['GAMESS-FMO'] = ".inp"
 	formats['XYZ-MFCC'] = ".xyz"
+        formats['XYZ'] = ".xyz"
 	return formats
 
