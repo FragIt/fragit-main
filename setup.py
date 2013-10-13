@@ -3,7 +3,7 @@
 # a library to fragment molecules for use in fragment based methods
 # in quantum chemistry.
 #
-# Copyright (C) 2012, Casper Steinmann
+# Copyright (C) 2012-2013, Casper Steinmann
 #
 # FragIt is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -58,11 +58,11 @@ def setup_fragit():
 
   setup(name="fragit",
         version=version_str,
-        url = "http://github.com/cstein/quantumpy",
+        url = "https://github.com/FragIt/fragit-main",
         author = "Casper Steinmann",
-        author_email = "steinmann@chem.ku.dk",
+        author_email = "casper.steinmann@gmail.com",
         maintainer = "Casper Steinmann",
-        maintainer_email = "steinmann@chem.ku.dk",
+        maintainer_email = "casper.steinmann@gmail.com",
         license = "GPL2 or later",
         description = doclines[0],
         long_description = "\n".join(doclines[2:]),      
@@ -71,7 +71,7 @@ def setup_fragit():
         package_dir={'fragit': 'src'},
         packages=['fragit'],
         scripts=['scripts/fragit'],
-        data_files=[(fragit_prefix,['INSTALL','README','LICENSE', 'CHANGES']),
+        data_files=[(fragit_prefix,['INSTALL','README.md','LICENSE', 'CHANGES']),
                     (fragit_prefix,['src/pymol_template','src/jmol_template'])]
   )
 
