@@ -443,7 +443,7 @@ class Fragmentation(FragItConfig):
         while order < self._mfcc_order:
             order += 1
             cap_atm, cap_ids, cap_typ, cap_nbs = self.extend_cap(cap_atm, cap_ids, cap_typ, cap_nbs, order == self._mfcc_order)
-        return (cap_atm, cap_ids, cap_typ, cap_nbs)
+        return (cap_atm, cap_ids, cap_typ, 0, cap_nbs)
 
     def extend_cap(self, atms, ids, typs, nbs, is_final_cap):
         """Extends the current cap with neighboring atoms.
