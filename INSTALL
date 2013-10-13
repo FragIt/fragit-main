@@ -1,13 +1,1 @@
-=== Requirements ===
-Before you install FragIt, be sure you have the following software installed
-
-* Python 2.4 or newer.
-* OpenBabel 2.3.0 or newer with Python language bindings enabled.
-* Numpy 1.5 or newer.
-
-=== Installing FragIt ===
-
-Extract the FragIt tar file or zip file at an appropriate location, which we will call INSTALLDIR. Open a command prompt and change directory to INSTALLDIR. Next, run the following commands:
-
-	python setup.py build
-	python setup.py install (as root)
+Please see the README.md file for instructions.
