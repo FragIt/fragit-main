@@ -97,8 +97,11 @@ class XYZMFCC(Standard):
 
         return Cap(atoms, ids, nucz, neighbours)
 
+    def getCaps(self):
+        return self._mfcc.getCaps()
+
     def BuildCappedFragment(self, fragment):
-        return self._build_single_fragment(fragment, self._mfcc.getCaps())
+        return self._build_single_fragment(fragment, self.getCaps())
 
     def BuildFragment(self, fragment):
         return self._build_single_fragment(fragment, None)
@@ -140,7 +143,7 @@ class XYZMFCC(Standard):
                 f.write(ss)
 
         # these are the caps
-        for icap, cap in enumerate( self._mfcc.getCaps() ):
+        for icap, cap in enumerate( self.getCaps() ):
             ss = self._fragment_xyz( cap )
             with open( filename_template.format(ff, "cap", icap, ext), 'w' ) as f:
                 f.write(ss)
