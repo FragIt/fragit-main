@@ -109,6 +109,7 @@ class XYZMFCC(Standard):
         atoms = fragment.getAtoms()
         nuczs = fragment.getNuclearCharges()
         nbrls = fragment.getNeighbourList()
+
         n = len(atoms)
         s = "%i\n%s\n" % (n,"")
         for id, (atom, nucz, neighbour) in enumerate(zip(atoms,nuczs,nbrls)):
