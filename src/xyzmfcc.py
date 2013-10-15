@@ -32,7 +32,7 @@ from util import deepLength,listDiff,intlistToString
 from util import getFilenameAndExtension
 from util import shares_elements, calculate_hydrogen_position
 
-from mfcc import MFCC
+from mfcc import MFCC, Cap
 
 class XYZMFCC(Standard):
     def __init__(self, fragmentation):
@@ -83,31 +83,41 @@ class XYZMFCC(Standard):
         atoms = [self._fragmentation.getOBAtom(i) for i in fragment]
         nucz  = [a.GetAtomicNum() for a in atoms]
         neighbours = [-1 for a in atoms]
+        ids = [i for i in fragment]
 
         for icap,cap in enumerate(caps):
             if shares_elements( fragment, cap.getAtomIDs() ):
-                print icap
                 for id,atom,z,nbr in zip(cap.getAtomIDs(), cap.getAtoms(), cap.getNuclearCharges(), cap.getNeighbourList() ):
                     if id not in fragment:
                         atoms.append( atom )
                         nucz.append( z )
                         neighbours.append( nbr )
+                        ids.append( id )
 
-        return (atoms, nucz, neighbours)
+        return Cap(atoms, ids, nucz, neighbours)
 
-    def _fragment_xyz(self, atms, types, nbrs):
+    def BuildFragment(self, fragment):
+        return self._build_single_fragment(fragment, self._mfcc.getCaps())
+
+    def _fragment_xyz(self, fragment ):
         """Generates the xyz file format based on the atoms, types,
            ids and neighbours of each fragment
         """
-        n = len(atms)
+        # NB! the word fragment here is actually of type Cap. Just to be sure
+        # nobody is actually doing something utterly wrong, check that here.
+        if not type(fragment) == Cap: raise ValueError("_fragment_xyz expected an object of type Cap.")
+        atoms = fragment.getAtoms()
+        nuczs = fragment.getNuclearCharges()
+        nbrls = fragment.getNeighbourList()
+        n = len(atoms)
         s = "%i\n%s\n" % (n,"")
-        for id, (type, atom) in enumerate(zip(types,atms)):
+        for id, (atom, nucz, neighbour) in enumerate(zip(atoms,nuczs,nbrls)):
             (x,y,z) = (atom.GetX(), atom.GetY(), atom.GetZ())
-            if atom.GetAtomicNum() != type:
+            if atom.GetAtomicNum() != nucz:
                 # atom is the light atom and it is connected to the nbrs[id] atom
-                heavy_atom = self._fragmentation.getOBAtom( nbrs[id] )
+                heavy_atom = self._fragmentation.getOBAtom( neighbour )
                 (x,y,z) = calculate_hydrogen_position( heavy_atom, atom )
-            s += "%s %20.12f %20.12f %20.12f\n" % (self._elements.GetSymbol(type),
+            s += "%s %20.12f %20.12f %20.12f\n" % (self._elements.GetSymbol(nucz),
                                                    x, y, z)
         return s
 
@@ -119,13 +129,13 @@ class XYZMFCC(Standard):
 
         # these are the capped fragments
         for ifg,fragment in enumerate(self._fragmentation.getFragments()):
-            (atoms, nucz, neighbours) = self._build_single_fragment( fragment, self._mfcc.getCaps() )
-            ss = self._fragment_xyz(atoms, nucz, neighbours)
+            capped_fragment = self.BuildFragment( fragment )
+            ss = self._fragment_xyz( capped_fragment )
             with open( filename_template.format(ff, "fragment", ifg, ext), 'w' ) as f:
                 f.write(ss)
 
         # these are the caps
         for icap, cap in enumerate( self._mfcc.getCaps() ):
-            ss = self._fragment_xyz( cap.getAtoms(), cap.getNuclearCharges(), cap.getNeighbourList() )
+            ss = self._fragment_xyz( cap )
             with open( filename_template.format(ff, "cap", icap, ext), 'w' ) as f:
                 f.write(ss)
