@@ -30,10 +30,14 @@ from util import file_extension,is_list,listTo2D,join2D,is_int
 from util import listToRanges,listOfRangesToString,Uniqify,ravel2D
 from util import deepLength,listDiff,intlistToString
 from util import getFilenameAndExtension
+from util import shares_elements, calculate_hydrogen_position
+
+from mfcc import MFCC
 
 class XYZMFCC(Standard):
     def __init__(self, fragmentation):
         Standard.__init__(self,fragmentation)
+        self._mfcc = MFCC(fragmentation)
 
     def setup(self):
         self._setupLayeredInformation()
@@ -75,72 +79,53 @@ class XYZMFCC(Standard):
         template.override()
         template.write()
 
-    def _build_single_fragment(self,fragments,ifg,caps):
-        """
-                fragment: atom idx of the current fragment
-                pairs     : pairs of breaking points
-        """
-        output_fragment = fragments[ifg][:]
-        output_atoms = [self._fragmentation.mol.GetAtom(id) for id in output_fragment]
-        output_types = [atom.GetAtomicNum() for atom in output_atoms]
-        output_nbrs = [-1 for id in output_fragment]
+    def _build_single_fragment(self, fragment, caps):
+        atoms = [self._fragmentation.getOBAtom(i) for i in fragment]
+        nucz  = [a.GetAtomicNum() for a in atoms]
+        neighbours = [-1 for a in atoms]
 
-        lc = None
-        rc = None
-        if ifg > 0:
-            lc = caps[ifg-1]
-        if ifg < len(fragments)-1:
-            rc = caps[ifg]
+        for icap,cap in enumerate(caps):
+            if shares_elements( fragment, cap.getAtomIDs() ):
+                print icap
+                for id,atom,z,nbr in zip(cap.getAtomIDs(), cap.getAtoms(), cap.getNuclearCharges(), cap.getNeighbourList() ):
+                    if id not in fragment:
+                        atoms.append( atom )
+                        nucz.append( z )
+                        neighbours.append( nbr )
 
-        #if lc is not None: print "lc:", lc[1]
-        #if rc is not None: print "rc:", rc[1]
+        return (atoms, nucz, neighbours)
 
-        if lc is not None:
-            for id,atom_id in enumerate(lc[1]):
-                if atom_id in output_fragment: continue
-                output_fragment.append(atom_id)
-                output_atoms.append(lc[0][id])
-                output_types.append(lc[2][id])
-                output_nbrs.append(lc[3][id])
-
-        if rc is not None:
-            for id,atom_id in enumerate(rc[1]):
-                if atom_id in output_fragment: continue
-                output_fragment.append(atom_id)
-                output_atoms.append(rc[0][id])
-                output_types.append(rc[2][id])
-                output_nbrs.append(rc[3][id])
-
-        return output_atoms, output_fragment, output_types, output_nbrs
-
-    def fragment_xyz(self, atms, ids, types, nbrs):
+    def _fragment_xyz(self, atms, types, nbrs):
         """Generates the xyz file format based on the atoms, types,
            ids and neighbours of each fragment
         """
         n = len(atms)
-        s = "%i\n%s\n" % (n,"")#intlistToString(ids))
+        s = "%i\n%s\n" % (n,"")
         for id, (type, atom) in enumerate(zip(types,atms)):
             (x,y,z) = (atom.GetX(), atom.GetY(), atom.GetZ())
             if atom.GetAtomicNum() != type:
-                print id, atom.GetAtomicNum(), type, nbrs[id]
+                # atom is the light atom and it is connected to the nbrs[id] atom
+                heavy_atom = self._fragmentation.getOBAtom( nbrs[id] )
+                (x,y,z) = calculate_hydrogen_position( heavy_atom, atom )
             s += "%s %20.12f %20.12f %20.12f\n" % (self._elements.GetSymbol(type),
                                                    x, y, z)
         return s
 
     def writeFile(self, filename):
-        """Dumps all fragments to individual
-             .xyz files.
+        """Dumps all caps and capped fragments to individual files
         """
         ff,ext = getFilenameAndExtension(filename)
-        filename_template = "%s_%s_%03i%s"
-        # first we dump all capped fragments
-        for ifg in range(len(self._fragmentation.getFragments())):
-            (atms, ids, types, nbrs) = self._build_single_fragment(self._fragmentation.getFragments(), ifg, self._fragmentation._caps)
-            ss = self.fragment_xyz(atms, ids, types, nbrs)
-            with open(filename_template % (ff,"FRAGMENT",ifg+1,ext), "w") as f:
+        filename_template = "{0}_{1}_{2:03d}{3}"
+
+        # these are the capped fragments
+        for ifg,fragment in enumerate(self._fragmentation.getFragments()):
+            (atoms, nucz, neighbours) = self._build_single_fragment( fragment, self._mfcc.getCaps() )
+            ss = self._fragment_xyz(atoms, nucz, neighbours)
+            with open( filename_template.format(ff, "fragment", ifg, ext), 'w' ) as f:
                 f.write(ss)
 
-        for ifg,(atms, ids, types, nbrs) in enumerate(self._fragmentation._caps):
-            ss = self.fragment_xyz(atms, ids, types, nbrs)
-            with open(filename_template % (ff,"CAP",ifg+1,ext), "w") as f:
+        # these are the caps
+        for icap, cap in enumerate( self._mfcc.getCaps() ):
+            ss = self._fragment_xyz( cap.getAtoms(), cap.getNuclearCharges(), cap.getNeighbourList() )
+            with open( filename_template.format(ff, "cap", icap, ext), 'w' ) as f:
                 f.write(ss)

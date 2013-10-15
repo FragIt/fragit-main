@@ -390,3 +390,9 @@ def calculate_hydrogen_position(heavy, light):
 	n = numpy.linalg.norm(p2-p1)
 	return p1 + alpha/n * (p2 - p1)
 
+def shares_elements(a, b):
+    """Returns True if lists (sets) a and b shares elements. Otherwise false.
+    """
+    sa = set(a)
+    sb = set(b)
+    return len(sa & sb) > 0
