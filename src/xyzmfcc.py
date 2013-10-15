@@ -85,19 +85,23 @@ class XYZMFCC(Standard):
         neighbours = [-1 for a in atoms]
         ids = [i for i in fragment]
 
-        for icap,cap in enumerate(caps):
-            if shares_elements( fragment, cap.getAtomIDs() ):
-                for id,atom,z,nbr in zip(cap.getAtomIDs(), cap.getAtoms(), cap.getNuclearCharges(), cap.getNeighbourList() ):
-                    if id not in fragment:
-                        atoms.append( atom )
-                        nucz.append( z )
-                        neighbours.append( nbr )
-                        ids.append( id )
+        if caps is not None:
+            for icap,cap in enumerate(caps):
+                if shares_elements( fragment, cap.getAtomIDs() ):
+                    for id,atom,z,nbr in zip(cap.getAtomIDs(), cap.getAtoms(), cap.getNuclearCharges(), cap.getNeighbourList() ):
+                        if id not in fragment:
+                            atoms.append( atom )
+                            nucz.append( z )
+                            neighbours.append( nbr )
+                            ids.append( id )
 
         return Cap(atoms, ids, nucz, neighbours)
 
-    def BuildFragment(self, fragment):
+    def BuildCappedFragment(self, fragment):
         return self._build_single_fragment(fragment, self._mfcc.getCaps())
+
+    def BuildFragment(self, fragment):
+        return self._build_single_fragment(fragment, None)
 
     def _fragment_xyz(self, fragment ):
         """Generates the xyz file format based on the atoms, types,
@@ -130,7 +134,7 @@ class XYZMFCC(Standard):
 
         # these are the capped fragments
         for ifg,fragment in enumerate(self._fragmentation.getFragments()):
-            capped_fragment = self.BuildFragment( fragment )
+            capped_fragment = self.BuildCappedFragment( fragment )
             ss = self._fragment_xyz( capped_fragment )
             with open( filename_template.format(ff, "fragment", ifg, ext), 'w' ) as f:
                 f.write(ss)
