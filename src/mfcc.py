@@ -57,6 +57,9 @@ class Cap(object):
     def getAtomIDs(self):
         return self._ids
 
+    def setCharge(self, value):
+        self._charge = value
+
 class MFCC(object):
 
     def __init__(self, fragmentation):
@@ -101,8 +104,6 @@ class MFCC(object):
             cap_atm, cap_ids, cap_typ, cap_nbs = self._extend_cap(cap_atm, cap_ids, cap_typ, cap_nbs, order == self._mfcc_order)
 
         return Cap( cap_atm, cap_ids, cap_typ, cap_nbs)
-
-        #return (cap_atm, cap_ids, cap_typ, 0, cap_nbs)
 
     def _extend_cap(self, atms, ids, typs, nbs, is_final_cap):
         """Extends the current cap with neighboring atoms.
