@@ -1,5 +1,20 @@
-FragIt v1.0.4 Release Notes
+FragIt v1.1.2 Release Notes
 ===========================
+
+Updates since v1.0.4
+
+ * MFCC style fragmentation is beginning to be work
+   however, it will take some time before this matures
+
+ * Slight extension to the API to allow for better
+   interoperability with external software wishing
+   to use FragIt.
+
+ * Squash fragments
+
+ * Found a reliable workflow - including bug fixes
+   to treat metal ions. There are some constraints
+   still.
 
 Updates since v1.0.3
 

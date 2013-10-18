@@ -30,14 +30,10 @@ from util import file_extension,is_list,listTo2D,join2D,is_int
 from util import listToRanges,listOfRangesToString,Uniqify,ravel2D
 from util import deepLength,listDiff,intlistToString
 from util import getFilenameAndExtension
-from util import shares_elements, calculate_hydrogen_position
 
-from mfcc import MFCC, Cap
-
-class XYZMFCC(Standard):
+class XYZ(Standard):
     def __init__(self, fragmentation):
         Standard.__init__(self,fragmentation)
-        self._mfcc = MFCC(fragmentation)
 
     def setup(self):
         self._setupLayeredInformation()
@@ -79,71 +75,37 @@ class XYZMFCC(Standard):
         template.override()
         template.write()
 
-    def _build_single_fragment(self, fragment, caps):
-        atoms = [self._fragmentation.getOBAtom(i) for i in fragment]
-        nucz  = [a.GetAtomicNum() for a in atoms]
-        neighbours = [-1 for a in atoms]
-        ids = [i for i in fragment]
+    def _build_single_fragment(self,fragment):
+        """
+                fragment: atom idx of the current fragment
+                pairs     : pairs of breaking points
+        """
+        output_atoms = [self._fragmentation.mol.GetAtom(id) for id in fragment]
+        output_types = [atom.GetAtomicNum() for atom in output_atoms]
 
-        if caps is not None:
-            for icap,cap in enumerate(caps):
-                if shares_elements( fragment, cap.getAtomIDs() ):
-                    for id,atom,z,nbr in zip(cap.getAtomIDs(), cap.getAtoms(), cap.getNuclearCharges(), cap.getNeighbourList() ):
-                        if id not in fragment:
-                            atoms.append( atom )
-                            nucz.append( z )
-                            neighbours.append( nbr )
-                            ids.append( id )
+        return output_atoms, output_types
 
-        return Cap(atoms, ids, nucz, neighbours)
-
-    def getCaps(self):
-        return self._mfcc.getCaps()
-
-    def BuildCappedFragment(self, fragment):
-        return self._build_single_fragment(fragment, self.getCaps())
-
-    def BuildFragment(self, fragment):
-        return self._build_single_fragment(fragment, None)
-
-    def _fragment_xyz(self, fragment ):
+    def fragment_xyz(self, atms, types):
         """Generates the xyz file format based on the atoms, types,
            ids and neighbours of each fragment
         """
-        # NB! the word fragment here is actually of type Cap. Just to be sure
-        # nobody is actually doing something utterly wrong, check that here.
-        if not type(fragment) == Cap: raise ValueError("_fragment_xyz expected an object of type Cap.")
-        atoms = fragment.getAtoms()
-        nuczs = fragment.getNuclearCharges()
-        nbrls = fragment.getNeighbourList()
-
-        n = len(atoms)
+        n = len(atms)
         s = "%i\n%s\n" % (n,"")
-        for id, (atom, nucz, neighbour) in enumerate(zip(atoms,nuczs,nbrls)):
+        for id, (type, atom) in enumerate(zip(types,atms)):
             (x,y,z) = (atom.GetX(), atom.GetY(), atom.GetZ())
-            if atom.GetAtomicNum() != nucz:
-                # atom is the light atom and it is connected to the nbrs[id] atom
-                heavy_atom = self._fragmentation.getOBAtom( neighbour )
-                (x,y,z) = calculate_hydrogen_position( heavy_atom, atom )
-            s += "%s %20.12f %20.12f %20.12f\n" % (self._elements.GetSymbol(nucz),
+            s += "%s %20.12f %20.12f %20.12f\n" % (self._elements.GetSymbol(type),
                                                    x, y, z)
         return s
 
     def writeFile(self, filename):
-        """Dumps all caps and capped fragments to individual files
+        """Dumps all fragments to individual
+             .xyz files.
         """
         ff,ext = getFilenameAndExtension(filename)
-        filename_template = "{0}_{1}_{2:03d}{3}"
-
-        # these are the capped fragments
+        filename_template = "%s_%s_%03i%s"
+        # first we dump all capped fragments
         for ifg,fragment in enumerate(self._fragmentation.getFragments()):
-            capped_fragment = self.BuildCappedFragment( fragment )
-            ss = self._fragment_xyz( capped_fragment )
-            with open( filename_template.format(ff, "fragment", ifg, ext), 'w' ) as f:
-                f.write(ss)
-
-        # these are the caps
-        for icap, cap in enumerate( self.getCaps() ):
-            ss = self._fragment_xyz( cap )
-            with open( filename_template.format(ff, "cap", icap, ext), 'w' ) as f:
+            (atms, types) = self._build_single_fragment(fragment)
+            ss = self.fragment_xyz(atms, types)
+            with open(filename_template % (ff,"FRAGMENT",ifg+1,ext), "w") as f:
                 f.write(ss)
