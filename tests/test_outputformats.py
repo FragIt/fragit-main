@@ -26,6 +26,7 @@ import os
 import unittest
 from gamessfmo import GamessFMO
 from xyzmfcc import XYZMFCC
+from xyz import XYZ
 import outputformats
 
 class TestOutputFormatsModule(unittest.TestCase):
@@ -39,10 +40,10 @@ class TestOutputFormatsModule(unittest.TestCase):
 
 
     def test_supported_output_formats(self):
-        self.assertEqual( outputformats.supported_output_formats(), {'GAMESS-FMO':GamessFMO, 'XYZ-MFCC': XYZMFCC} )
+        self.assertEqual( outputformats.supported_output_formats(), {'GAMESS-FMO':GamessFMO, 'XYZ-MFCC': XYZMFCC, 'XYZ': XYZ} )
 
     def test_supported_output_fileexts(self):
-        self.assertEqual( outputformats.supported_output_fileexts(), {'GAMESS-FMO':'.inp', 'XYZ-MFCC': '.xyz'} )
+        self.assertEqual( outputformats.supported_output_fileexts(), {'GAMESS-FMO':'.inp', 'XYZ-MFCC': '.xyz', 'XYZ': '.xyz'} )
 
 def suite():
   s = unittest.TestSuite()
