@@ -30,6 +30,7 @@ import openbabel
 import numpy
 
 from util import calculate_hydrogen_position
+from util import ravel2D, listDiff
 #from config import FragItConfig
 
 #from fragmentation import Fragmentation
@@ -40,37 +41,40 @@ class QMMM(object):
 
     def __init__(self, fragmentation, qmlist):
         self._fragmentation = fragmentation
-        self_qmfrags = map(int, qmlist)
+        self._qmfrags = map(int, qmlist)
         retract = lambda L: [l-1 for l in L]
         self._qmfrags = retract(self._qmfrags)
         self._qmfrags.sort()
         self._qmfrags.reverse()
 
-    def pop_qm_fragment(self,qmlist):
+    def pop_qm_fragment(self):
         """ Remove the qm fragments from the fragmentation. Adds hydrogens to both the
             qm-fragment that is returned and to the neighbouring fragments if bonds were cut.
         """
 
         # at this point, fragments have been generated
+        fragments = self._fragmentation.getFragments()
 
         fragments_for_qm_no_hydrogens = []
         # instead of removing the qm-fragment, we rather adopt a quite novel approach
         # in which we signal to the user of the API that the fragment is not to be used
         # further by setting its original atom numbers to -1
-        for idx in self.qmfrags:
-            print idx
-            old_fragment = self._fragments.pop(idx) 
-            self._fragments.insert(idx, [-1 for i in old_fragment])
+        for idx in self._qmfrags:
+            #print("FRAGIT: removing fragment {0}".format(idx))
+            old_fragment = fragments.pop(idx) 
+            fragments.insert(idx, [-1 for i in old_fragment])
             fragments_for_qm_no_hydrogens.insert(0,old_fragment[:])
 
         # for simplicity, let us just squash the qm fragments into one big fragment
         fragments_for_qm_no_hydrogens = ravel2D(fragments_for_qm_no_hydrogens)
 
-        breaks = self.getExplicitlyBreakAtomPairs()
+        breaks = self._fragmentation.getExplicitlyBreakAtomPairs()
         if len(breaks) == 0: return fragments_for_qm_no_hydrogens
 
         # below here: add hydrogens to qm-fragment and to the rest of the capped structure
         fragment_for_qm = fragments_for_qm_no_hydrogens[:]
+
+        #print("FRAGIT: [qm] {0}".format(fragment_for_qm))
 
         # first, fix the QM-fragment, removing any bond-breaks that reside
         # inside (or bordering) the qm-fragment. if breaks are bordering,
@@ -96,17 +100,18 @@ class QMMM(object):
 
                     # then fix the fragments themselves
                     # INFO/WARNING: this is a lists of lists thing. BE CAREFULL
-                    for ifragment, fragment in enumerate(self._fragments):
+                    for ifragment, fragment in enumerate(fragments):
                         if iibreak in fragment:
                             new_atoms = self.satisfyValency(fragment, iibreak, bbreak)
-                            self._fragments[ifragment].extend(new_atoms)
+                            fragments[ifragment].extend(new_atoms)
 
                 # also mark the ibreak'th item for removal
                 remove_breaks.append(ibreak)
 
         for ibreak in remove_breaks:
-            self.popExplicitlyBreakAtomPairs(breaks[ibreak])
+            self._fragmentation.popExplicitlyBreakAtomPairs(breaks[ibreak])
 
+        #print("FRAGIT: [qm] {0}".format(fragment_for_qm))
         return fragment_for_qm
 
     def satisfyValency(self, fragment, iheavy, bbreak):
@@ -122,7 +127,7 @@ class QMMM(object):
         rval = heavy.GetValence()
         new_atoms = []
         if ival != rval:
-            if self.mol.AddHydrogens(heavy):
+            if self._fragmentation.mol.AddHydrogens(heavy):
                 for nbatom in openbabel.OBAtomAtomIter(heavy):
                     if nbatom.GetIdx() not in fragment:
                         x,y,z = calculate_hydrogen_position(heavy, light)
