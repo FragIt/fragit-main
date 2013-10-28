@@ -187,7 +187,6 @@ class TestUtilModule(unittest.TestCase):
         test_array1 = range(10)
         test_array2 = range(3,7)
         self.assertEqual( util.listDiff( test_array1, test_array2 ), [0,1,2,7,8,9] )
-        self.assertRaises( ValueError, util.listDiff, test_array2, test_array1 )
 
     def test_lenOfLists(self):
         test_array = [[1,2,3,4],[1,2,3,4],[5,4,3,2,1]]
