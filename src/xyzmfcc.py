@@ -145,11 +145,11 @@ class XYZMFCC(Standard):
         for ifg,fragment in enumerate(self._fragmentation.getFragments()):
             capped_fragment = self.BuildCappedFragment( fragment )
             ss = self._fragment_xyz( capped_fragment )
-            with open( filename_template.format(ff, "fragment", ifg, ext), 'w' ) as f:
+            with open( filename_template.format(ff, "fragment", ifg+1, ext), 'w' ) as f:
                 f.write(ss)
 
         # these are the caps
         for icap, cap in enumerate( self.getCaps() ):
             ss = self._fragment_xyz( cap )
-            with open( filename_template.format(ff, "cap", icap, ext), 'w' ) as f:
+            with open( filename_template.format(ff, "cap", icap+1, ext), 'w' ) as f:
                 f.write(ss)

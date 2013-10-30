@@ -110,5 +110,5 @@ class XYZ(Standard):
         for ifg,fragment in enumerate(self._fragmentation.getFragments()):
             (atms, types) = self._build_single_fragment(fragment)
             ss = self.fragment_xyz(atms, types)
-            with open(filename_template % (ff,"FRAGMENT",ifg+1,ext), "w") as f:
+            with open(filename_template % (ff,"fragment",ifg+1,ext), "w") as f:
                 f.write(ss)
