@@ -4,7 +4,7 @@
 __main__.py - FragIt command line executable
 
 Copyright (C) 2010-2011 Mikael W. Ibsen
-Some portions Copyright (C) 2011-2012 Casper Steinmann
+Some portions Copyright (C) 2011-2013 Casper Steinmann
 
 This file is part of the FragIt project.
 
@@ -24,5 +24,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 02110-1301, USA.
 ***********************************************************************/
 """
-from fragit.cmdline import main
+# let us first consider that the user has set up the
+# PYTHONPATH environment variables correctly
+try:
+    from fragit.cmdline import main
+except ImportError:
+    # if not, let us exit in a clean way
+    print("ERROR: Could not start FragIt.")
+    print("Please add the custom installation path to the PYTHONPATH environment variable.")
+    exit()
+
 main()
