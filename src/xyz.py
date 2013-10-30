@@ -31,6 +31,8 @@ from util import listToRanges,listOfRangesToString,Uniqify,ravel2D
 from util import deepLength,listDiff,intlistToString
 from util import getFilenameAndExtension
 
+from qmmm import FragmentDistances as FD
+
 class XYZ(Standard):
     def __init__(self, fragmentation):
         Standard.__init__(self,fragmentation)
@@ -103,6 +105,7 @@ class XYZ(Standard):
         """
         ff,ext = getFilenameAndExtension(filename)
         filename_template = "%s_%s_%03i%s"
+
         # first we dump all capped fragments
         for ifg,fragment in enumerate(self._fragmentation.getFragments()):
             (atms, types) = self._build_single_fragment(fragment)
