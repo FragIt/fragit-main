@@ -191,6 +191,27 @@ class FragmentDistances(object):
 
         return hb_fragments
 
+    def getCovalentlyBoundFragments(self, idx):
+        atomids = self._fragments[idx]
+        bonds = self._fragmentation.getExplicitlyBreakAtomPairs()
+
+        other_fragment_atomids = []
+        other_fragments = []
+
+        # let us find the nearby fragments that are covalently connected
+        for (l,r) in bonds:
+            if l in atomids:
+                other_fragment_atomids.append(r)
+            if r in atomids:
+                other_fragment_atomids.append(l)
+
+        # lets find the associated fragments
+        for ifg,atoms in enumerate(self._fragments):
+            if len(atoms) > len(listDiff(atoms, other_fragment_atomids)):
+                other_fragments.append(ifg)
+
+        return other_fragments
+
     def _isHydrogenBond(self, D, H, A):
         """ angle > 110 is according to:
             http://pac.iupac.org/publications/pac/pdf/2011/pdf/8308x1637.pdf

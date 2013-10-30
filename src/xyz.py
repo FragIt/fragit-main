@@ -106,11 +106,8 @@ class XYZ(Standard):
         ff,ext = getFilenameAndExtension(filename)
         filename_template = "%s_%s_%03i%s"
 
-        fd = FD(self._fragmentation)
-
         # first we dump all capped fragments
         for ifg,fragment in enumerate(self._fragmentation.getFragments()):
-            print fd.getHydrogenBoundFragments(ifg)
             (atms, types) = self._build_single_fragment(fragment)
             ss = self.fragment_xyz(atms, types)
             with open(filename_template % (ff,"FRAGMENT",ifg+1,ext), "w") as f:
