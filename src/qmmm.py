@@ -30,7 +30,7 @@ import openbabel
 import numpy
 
 from util import calculate_hydrogen_position
-from util import ravel2D, listDiff
+from util import ravel2D, listDiff, Uniqify
 #from config import FragItConfig
 
 #from fragmentation import Fragmentation
@@ -42,6 +42,7 @@ class QMMM(object):
     def __init__(self, fragmentation, qmlist):
         self._fragmentation = fragmentation
         self._qmfrags = map(int, qmlist)
+        self._fd = FragmentDistances(fragmentation)
         retract = lambda L: [l-1 for l in L]
         self._qmfrags = retract(self._qmfrags)
         self._qmfrags.sort()
@@ -58,7 +59,7 @@ class QMMM(object):
         # investigate which fragments should be included in the QM-region
         qmfrags = self._qmfrags[:]
         distance = self._fragmentation.getActiveAtomsDistance()
-        qmfrags = self._addQM(qmfrags, fragments, distance)
+        qmfrags = Uniqify(self._addQM(qmfrags))
         qmfrags.sort()
         qmfrags.reverse()
 
@@ -67,7 +68,6 @@ class QMMM(object):
         # in which we signal to the user of the API that the fragment is not to be used
         # further by setting its original atom numbers to -1
         for idx in qmfrags:
-            #print("FRAGIT: removing fragment {0}".format(idx))
             old_fragment = fragments.pop(idx) 
             fragments.insert(idx, [-1 for i in old_fragment])
             fragments_for_qm_no_hydrogens.insert(0,old_fragment[:])
@@ -142,8 +142,11 @@ class QMMM(object):
                         new_atoms.append(nbatom.GetIdx())
         return new_atoms
 
-    def _addQM(self, qmfragments, fragments, distance):
+    def _addQM(self, qmfragments):
         qmfrags = qmfragments[:]
+        for qmfragment in qmfragments:
+            qmfrags.extend( self._fd.getHydrogenBoundFragments(qmfragment) )
+            qmfrags.extend( self._fd.getCovalentlyBoundFragments(qmfragment) )
         return qmfrags
 
 class FragmentDistances(object):
