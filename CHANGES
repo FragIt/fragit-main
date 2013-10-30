@@ -1,5 +1,10 @@
-FragIt v1.1.2 Release Notes
+FragIt v1.2.1 Release Notes
 ===========================
+
+Updates since v1.2.0
+
+ * fixed naming scheme in xyz and xyz-mfcc writers
+   to be similar
 
 Updates since v1.0.4
 
