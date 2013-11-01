@@ -47,6 +47,7 @@ class QMMM(object):
         self._qmfrags = retract(self._qmfrags)
         self._qmfrags.sort()
         self._qmfrags.reverse()
+        self._qm_charges = fragmentation.getFragmentCharges()
 
     def pop_qm_fragment(self):
         """ Remove the qm fragments from the fragmentation. Adds hydrogens to both the
@@ -63,11 +64,15 @@ class QMMM(object):
         qmfrags.sort()
         qmfrags.reverse()
 
+        qm_region_charge = 0
+
         fragments_for_qm_no_hydrogens = []
+
         # instead of removing the qm-fragment, we rather adopt a quite novel approach
         # in which we signal to the user of the API that the fragment is not to be used
         # further by setting its original atom numbers to -1
         for idx in qmfrags:
+            qm_region_charge += self._qm_charges[idx]
             old_fragment = fragments.pop(idx) 
             fragments.insert(idx, [-1 for i in old_fragment])
             fragments_for_qm_no_hydrogens.insert(0,old_fragment[:])
@@ -119,7 +124,7 @@ class QMMM(object):
             self._fragmentation.popExplicitlyBreakAtomPairs(breaks[ibreak])
 
         #print("FRAGIT: [qm] {0}".format(fragment_for_qm))
-        return fragment_for_qm
+        return (fragment_for_qm, qm_region_charge)
 
     def satisfyValency(self, fragment, iheavy, bbreak):
         """ Satisfies the valency of atom number iheavy in the supplied fragment. Returns a new fragment with all atoms in the correct place.
