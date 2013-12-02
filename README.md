@@ -1,12 +1,12 @@
 # FragIt
 
-FragIt is a python based tool that allows you to quickly fragment ["any"](http://openbabel.org/docs/2.3.0/FileFormats/Overview.html) molecule and use the produced output file as an input file in quantum chemistry programs that supports such fragment based methods.
+FragIt is a python based tool that allows you to quickly fragment ["any"](http://openbabel.org/docs/2.3.0/FileFormats/Overview.html) molecule and use the produced output file(s) as an a starting point for input files in quantum chemistry programs that supports such fragment based methods.
 
-FragIt was made out of the need to quickly benchmark many different molecules while developing a new fragment based method and is now being released in the hope that it is useful for others.
+FragIt was made out of the need to quickly benchmark many different molecules while developing new fragment based methods and is now being released in the hope that it is useful for others in their research. You can read about FragIt in the [published paper](http://www.plosone.org/article/info%3Adoi%2F10.1371%2Fjournal.pone.0044480).
 
-Currently, the only supported method is the [fragment molecular orbital](http://en.wikipedia.org/wiki/Fragment_Molecular_Orbital) method in [GAMESS](http://www.msg.ameslab.gov/gamess/index.html), but new output writers can be added easily to support other methods and programs.
+Currently, FragIt supports the [fragment molecular orbital](http://en.wikipedia.org/wiki/Fragment_Molecular_Orbital) method in [GAMESS](http://www.msg.ameslab.gov/gamess/index.html). FragIt also comes with a standard purpose XYZ writer that dumps each fragment in a separate `.xyz` file. Finally, there is a new XYZ-MFCC writer to support molecular fragmentation with conjugate caps that will yield capped fragments and caps for MFCC. New output writers can be added easily to support other methods and programs.
 
-There is also an [online-version available](http://www.fragit.org/) which requires only a browser and Java.
+There is also an [online-version available](http://www.fragit.org/) which requires only a browser and Java but is limited in the number of fragments / residues that can be fragmented.
 
 ## Obtaining FragIt
 
