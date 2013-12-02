@@ -1,5 +1,16 @@
-FragIt v1.2.1 Release Notes
+FragIt v1.3.0 Release Notes
 ===========================
+
+Updates since v1.2.1
+
+ * stabilization of the API for 3rd party uses
+
+ * API has support for a QM-region in the XYZ-MFCC
+   writer. This QM-region can be expanded by including
+   covalently bound or hydrogen bound neighbours.
+
+   This support is slated to be included more generally
+   in a future fragit 1.4 release series.
 
 Updates since v1.2.0
 
