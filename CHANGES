@@ -12,6 +12,11 @@ Updates since v1.2.1
    This support is slated to be included more generally
    in a future fragit 1.4 release series.
 
+ * A visually more pleasing color scheme. We are no
+   longer living in an 8-bit world.
+
+ * FragIt now exists more cleanly if it cannot find itself.
+
 Updates since v1.2.0
 
  * fixed naming scheme in xyz and xyz-mfcc writers
