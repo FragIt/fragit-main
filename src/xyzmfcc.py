@@ -80,10 +80,16 @@ class XYZMFCC(Standard):
         template.write()
 
     def _build_single_fragment(self, fragment, caps):
-        atoms = [self._fragmentation.getOBAtom(i) for i in fragment]
-        nucz  = [a.GetAtomicNum() for a in atoms]
-        neighbours = [-1 for a in atoms]
-        ids = [i for i in fragment]
+        if -1 in fragment:
+            atoms = [None for i in fragment]
+            nucz = [0 for a in atoms]
+            neighbours = [-1 for a in atoms]
+            ids = [-1 for a in atoms]
+        else:
+            atoms = [self._fragmentation.getOBAtom(i) for i in fragment]
+            nucz  = [a.GetAtomicNum() for a in atoms]
+            neighbours = [-1 for a in atoms]
+            ids = [i for i in fragment]
 
         if caps is not None:
             for icap,cap in enumerate(caps):

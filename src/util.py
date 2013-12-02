@@ -139,14 +139,19 @@ def deepLength(input):
 	return count
 
 def listDiff(list1, list2):
-	if not is_list(list1) or not is_list(list2): raise TypeError
-	if len(list2) > len(list1): raise ValueError("The first argument should be the list with the most items.")
+	set1 = set(list1)
+	set2 = set(list2)
+        return list(set1 - set2)
 
-	difference_list = list()
-	for i in list1:
-		if i not in list2:
-			difference_list.append(i)
-	return difference_list
+#def listDiff(list1, list2):
+#	if not is_list(list1) or not is_list(list2): raise TypeError
+#	if len(list2) > len(list1): raise ValueError("The first argument should be the list with the most items.")
+#
+#	difference_list = list()
+#	for i in list1:
+#		if i not in list2:
+#			difference_list.append(i)
+#	return difference_list
 
 def lenOfLists(lol):
 	result = list()

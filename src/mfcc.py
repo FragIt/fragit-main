@@ -41,6 +41,8 @@ class Cap(object):
         self._nucz = nucz[:]
         self._nbrs = nbrs[:]
         self._charge = 0
+        self._recalculate = False
+        self._ignore = False
 
     def getAtoms(self):
         return self._atoms
@@ -59,6 +61,18 @@ class Cap(object):
 
     def setCharge(self, value):
         self._charge = value
+
+    def doRecalculation(self):
+        self._recalculate = True
+
+    def getRecalculationState(self):
+        return self._recalculate
+
+    def doIgnore(self, value):
+        self._ignore = value
+
+    def getIgnore(self):
+        return self._ignore
 
 class MFCC(object):
 
