@@ -3,7 +3,7 @@
 fragmentation.py
 
 Copyright (C) 2010-2011 Mikael W. Ibsen
-Some portions Copyright (C) 2011-2013 Casper Steinmann
+Some portions Copyright (C) 2011-2014 Casper Steinmann
 
 This file is part of the FragIt project.
 
