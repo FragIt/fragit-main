@@ -3,7 +3,7 @@
 fragmentation.py
 
 Copyright (C) 2010-2011 Mikael W. Ibsen
-Some portions Copyright (C) 2011-2013 Casper Steinmann
+Some portions Copyright (C) 2011-2014 Casper Steinmann
 
 This file is part of the FragIt project.
 
@@ -58,7 +58,7 @@ class Fragmentation(FragItConfig):
             added = 0
             for i in range(1, self.mol.NumAtoms()+1):
                 atom = self.mol.GetAtom(i)
-                if atom.GetAtomicNum() in [1,6,7,8,16]:
+                if atom.GetAtomicNum() in [1,6,7,8,15,16]:
                     if atom not in self._atoms: self._atoms.append(atom)
                     added += 1
                 else:
