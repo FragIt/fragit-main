@@ -289,7 +289,11 @@ class GamessFMO(Standard):
 		return "".join([self._formatSingleAtom(i+1,atom) for i,atom in enumerate(self._fragmentation.getAtoms())])
 
 	def _formatSingleAtom(self, index, atom):
-		return "%7i%7s%17f%13f%13f\n" % (index,
+                strindex = "%7i" % (index)
+                if self._fragmentation.hasAtomNames():
+                     names = self._fragmentation.getAtomNames()
+                     strindex = "%7s" % (names[index-1])
+		return "%7s%7s%17f%13f%13f\n" % (strindex,
 						self._elements.GetSymbol(atom.GetAtomicNum()),
 						atom.GetX(),
 						atom.GetY(),
