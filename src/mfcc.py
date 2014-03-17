@@ -35,8 +35,9 @@ import numpy
 #from fragmentation import Fragmentation
 
 class Cap(object):
-    def __init__(self, atoms, ids, nucz, nbrs):
+    def __init__(self, atoms, atomnames, ids, nucz, nbrs):
         self._atoms = atoms[:]
+        self._atom_names = atomnames[:]
         self._ids = ids[:]
         self._nucz = nucz[:]
         self._nbrs = nbrs[:]
@@ -59,6 +60,9 @@ class Cap(object):
     def getAtomIDs(self):
         return self._ids
 
+    def getAtomNames(self):
+        return self._atom_names
+
     def setCharge(self, value):
         self._charge = value
 
@@ -73,6 +77,9 @@ class Cap(object):
 
     def getIgnore(self):
         return self._ignore
+
+    def getAtomNames(self):
+        return self._atom_names
 
 class MFCC(object):
 
@@ -109,22 +116,27 @@ class MFCC(object):
             Neighbour ID of the atom - this is used to identify hydrogens that needs to be repositioned.
         """
         cap_atm = [self._fragmentation.getOBAtom(id) for id in pair]
+        cap_atmnam = ["" for id in pair]
+        if self._fragmentation.hasAtomNames():
+            cap_atmnam = [self._fragmentation._atom_names[id-1] for id in pair]
+
         cap_ids = [a.GetIdx() for a in cap_atm]
         cap_typ = [a.GetAtomicNum() for a in cap_atm]
         cap_nbs = [-1 for a in cap_atm]
         order = 0
         while order < self._mfcc_order:
             order += 1
-            cap_atm, cap_ids, cap_typ, cap_nbs = self._extend_cap(cap_atm, cap_ids, cap_typ, cap_nbs, order == self._mfcc_order)
+            cap_atm, cap_ids, cap_typ, cap_nbs, cap_atmnam = self._extend_cap(cap_atm, cap_ids, cap_typ, cap_nbs, cap_atmnam, order == self._mfcc_order)
 
-        return Cap( cap_atm, cap_ids, cap_typ, cap_nbs)
+        return Cap( cap_atm, cap_atmnam, cap_ids, cap_typ, cap_nbs)
 
-    def _extend_cap(self, atms, ids, typs, nbs, is_final_cap):
+    def _extend_cap(self, atms, ids, typs, nbs, nams, is_final_cap):
         """Extends the current cap with neighboring atoms.
            if this is_final_cap then atoms are hydrogens. they will
            OPTIONALLY be translated later.
         """
         atms_out = atms[:]
+        atm_namout = nams[:]
         ids_out  = ids[:]
         typs_out = typs[:]
         nbs_out = nbs[:]
@@ -134,8 +146,12 @@ class MFCC(object):
                 atms_out.append(atomext)
                 ids_out.append(atomext.GetIdx())
                 nbs_out.append(atom.GetIdx())
+                if self._fragmentation.hasAtomNames():
+                    atm_namout.append( self._fragmentation._atom_names[atom.GetIdx() -1] )
+                else:
+                    atm_namout.append( "" )
                 if is_final_cap:
                     typs_out.append(1)
                 else:
                     typs_out.append(atomext.GetAtomicNum())
-        return atms_out[:], ids_out[:], typs_out[:], nbs_out[:]
+        return atms_out[:], ids_out[:], typs_out[:], nbs_out[:], atm_namout[:]
