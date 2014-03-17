@@ -143,7 +143,7 @@ class FragItConfig(object):
 
         format = self.values.getType(key,section)
         value = format(self.cfg.get(section,key))
-        if format == type(True):
+        if format == type(True) and type(self.cfg.get(section,key)) == type(""):
           value = (self.cfg.get(section,key)).lower() == "true"
         self.values[section][key] = value
 
