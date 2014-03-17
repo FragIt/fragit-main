@@ -41,6 +41,7 @@ class Fragmentation(FragItConfig):
         self.mol     = mol
         self.obc     = openbabel.OBConversion()
         self.pat     = openbabel.OBSmartsPattern()
+        self._atom_names = []
         self._residue_names = []
         self._fragment_names = []
         self._fragment_charges = []
@@ -103,6 +104,7 @@ class Fragmentation(FragItConfig):
         self.identifyBackboneAtoms()
         self.identifyMergeableAtoms()
         self.identifyResidues()
+        if self.useAtomNames(): self.nameAtoms()
         self.setProtectedAtoms()
 
     def identifyMergeableAtoms(self):
@@ -407,3 +409,17 @@ class Fragmentation(FragItConfig):
 
     def getBackboneAtoms(self):
         return self._backbone_atoms
+
+    def nameAtoms(self):
+        # if there are no atom names available, for instance by loading an
+        # .xyz file, the following loops will no run and the _atom_names
+        # will stay empty. Users can query trough the hasAtomNames method
+        for residue in openbabel.OBResidueIter(self.mol):
+            for atom in openbabel.OBResidueAtomIter( residue ):
+                self._atom_names.append( residue.GetAtomID( atom ) )
+
+    def getAtomNames(self):
+        return self._atom_names
+
+    def hasAtomNames(self):
+        return len(self._atom_names) > 0

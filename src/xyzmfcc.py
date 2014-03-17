@@ -80,6 +80,7 @@ class XYZMFCC(Standard):
         template.write()
 
     def _build_single_fragment(self, fragment, caps):
+        atomnames = ["" for i in fragment]
         if -1 in fragment:
             atoms = [None for i in fragment]
             nucz = [0 for a in atoms]
@@ -87,6 +88,8 @@ class XYZMFCC(Standard):
             ids = [-1 for a in atoms]
         else:
             atoms = [self._fragmentation.getOBAtom(i) for i in fragment]
+            if self._fragmentation.hasAtomNames():
+                atomnames = [self._fragmentation._atom_names[i-1] for i in fragment]
             nucz  = [a.GetAtomicNum() for a in atoms]
             neighbours = [-1 for a in atoms]
             ids = [i for i in fragment]
@@ -94,14 +97,15 @@ class XYZMFCC(Standard):
         if caps is not None:
             for icap,cap in enumerate(caps):
                 if shares_elements( fragment, cap.getAtomIDs() ):
-                    for id,atom,z,nbr in zip(cap.getAtomIDs(), cap.getAtoms(), cap.getNuclearCharges(), cap.getNeighbourList() ):
+                    for id,atom,atomname,z,nbr in zip(cap.getAtomIDs(), cap.getAtoms(), cap.getAtomNames(), cap.getNuclearCharges(), cap.getNeighbourList() ):
                         if id not in fragment:
                             atoms.append( atom )
+                            atomnames.append( atomname )
                             nucz.append( z )
                             neighbours.append( nbr )
                             ids.append( id )
 
-        return Cap(atoms, ids, nucz, neighbours)
+        return Cap(atoms, atomnames, ids, nucz, neighbours)
 
     def getCaps(self):
         return self._mfcc.getCaps()

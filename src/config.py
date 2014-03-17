@@ -48,6 +48,7 @@ class FragItData(dict):
     self.data_types['atomids']=str
     self.data_types['chargemodel']=str
     self.data_types['order']=int
+    self.data_types['useatomnames']=bool
 
     # items here are complex values that need
     # specific parsing later on
@@ -75,6 +76,7 @@ class FragItData(dict):
     self['output']['writepymol']=False
     self['output']['writejmol']=False
     self['output']['centralfragment']=0
+    self['output']['useatomnames'] = False
 
     self['fragmentpatterns'] = dict()
     self['fragmentpatterns']['peptide']="[$(CN)][$(C(=O)NCC(=O))]"
@@ -141,7 +143,7 @@ class FragItConfig(object):
 
         format = self.values.getType(key,section)
         value = format(self.cfg.get(section,key))
-        if format == type(True):
+        if format == type(True) and type(self.cfg.get(section,key)) == type(""):
           value = (self.cfg.get(section,key)).lower() == "true"
         self.values[section][key] = value
 
@@ -313,6 +315,10 @@ class FragItConfig(object):
 
   def getActiveAtomsDistance(self):
     return self.values['output']['active']
+
+  def useAtomNames(self):
+    return self.values['output']['useatomnames']
+
 
 #  def getMFCCLeftCap(self):
 #    return self.values['mfcc']['lcap']

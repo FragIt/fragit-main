@@ -39,6 +39,6 @@ See the [wiki](https://www.github.com/FragIt/fragit-main/wiki) for more examples
 In order to run FragIt, you *need* the following installed on your system:
 
 * The FragIt source code, look above for information on how to obtain it
-* [Open Babel](http://www.openbabel.org) 2.3 or newer with [python language bindings](http://openbabel.org/docs/dev/Installation/install.html#compile-language-bindings) enabled.
+* [Open Babel](http://www.openbabel.org) 2.3 or newer with [python language bindings](http://openbabel.org/docs/dev/Installation/install.html#compile-language-bindings) enabled. Github user [andersx](https://github.com/andersx) [wrote a guide](http://combichem.blogspot.dk/2013/12/compiling-open-babel-with-python.html) to how that is accomplished.
 * [Numpy](http://numpy.scipy.org) 1.5 or newer.
 * [Python](http://www.python.org) version 2.4 or later (not 3.X)
