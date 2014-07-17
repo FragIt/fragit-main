@@ -111,7 +111,7 @@ def hex_to_rgb(value):
 
 def get_colors_for_fragments(list_of_fragments):
   color_names = ["color1", "color2", "color3", "color4", "color5", "color6", "color7", "color8", "color9", "color10"]
-  colors_hex = ["#006837", "#1A9850", "#66BD63", "#A6D96A", "#D9EF8B", "#F46D43", "#F46D43", "#F46D43", "#D73027", "#A50026"]
+  colors_hex = ["#006837", "#1A9850", "#66BD63", "#A6D96A", "#D9EF8B", "#F46D43", "#ED5D3C", "#E0422F", "#D73027", "#A50026"]
   for c,n in zip(colors_hex, color_names):
       (r,g,b) = hex_to_float(c)
       cmd.do("set_color %s, [%3.1f, %3.1f, %3.1f]" % (n,r,g,b))
