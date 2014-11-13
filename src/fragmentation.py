@@ -375,9 +375,7 @@ class Fragmentation(FragItConfig):
     def nameFragments(self):
         names = list()
         for fragment in self.getFragments():
-            name = self.tryNameFragment(fragment)
-            if (name == False):    names.append(None)
-            else:            names.append(name)
+            names.append( self.tryNameFragment(fragment) )
         self._fragment_names = names
         return names
 
@@ -385,21 +383,11 @@ class Fragmentation(FragItConfig):
         matched_atoms     = 0
         frag_name     = False
         residues = self.identifyResidues()
-        for residue in residues:
-            res_name = residue.keys()[0]
-            residue_atoms = residue[res_name]
-            for atom in residue_atoms:
-                if (not atom in atoms):
-                    full_res_match = False
-                    break
-                full_res_match = True
-            if (not full_res_match): continue
-            common_atoms = len(residue_atoms)
-            if (common_atoms > matched_atoms):
-                matched_atoms     = common_atoms
-                frag_name     = res_name
-
-        return frag_name
+        for residue in openbabel.OBResidueIter( self.mol ):
+            for atom in openbabel.OBResidueAtomIter( residue ):
+                if atom.GetIdx() in atoms:
+                    return residue.GetName()
+        return None
 
     def identifyBackboneAtoms(self):
         pattern = "N([*])C([H])C(=O)"
