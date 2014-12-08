@@ -388,7 +388,7 @@ def OBCheckMoleculeConsistency(molecule):
 def calculate_hydrogen_position(heavy, light):
 	""" Positions a hydrogen atom in the "correct" position between two points
 	"""
-	table = {6: 1.09, 7: 1.01, 8: 0.96, 16: 1.35}
+        table = {6: 1.09, 7: 1.01, 8: 0.96, 16: 1.35, 15: 1.42}
 	alpha = table[heavy.GetAtomicNum()]
 	p1 = numpy.array([heavy.GetX(), heavy.GetY(), heavy.GetZ()])
 	p2 = numpy.array([light.GetX(), light.GetY(), light.GetZ()])

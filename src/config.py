@@ -49,6 +49,11 @@ class FragItData(dict):
     self.data_types['chargemodel']=str
     self.data_types['order']=int
     self.data_types['useatomnames']=bool
+    self.data_types['includehbonddonors']=bool
+    self.data_types['includehbondacceptors']=bool
+    self.data_types['hbondangle']=float
+    self.data_types['hbonddistancemin']=float
+    self.data_types['hbonddistancemax']=float
 
     # items here are complex values that need
     # specific parsing later on
@@ -99,6 +104,16 @@ class FragItData(dict):
     #self['mfcc']['lcap'] = "" # string, no default capping to the left
     #self['mfcc']['rcap'] = "" # string, no default capping to the right
     self['mfcc']['order'] = 0
+
+    # options to control QM/MM refinement
+    self['qmmm'] = dict()
+    self['qmmm']['includehbonddonors'] = True
+    self['qmmm']['includehbondacceptors'] = True
+    # angle > 110 is according to:
+    # http://pac.iupac.org/publications/pac/pdf/2011/pdf/8308x1637.pdf
+    self['qmmm']['hbondangle'] = 110.0
+    self['qmmm']['hbonddistancemin'] = 2.5
+    self['qmmm']['hbonddistancemax'] = 3.9
 
   def getType(self, option, section):
     if "pattern" in section: return str
@@ -328,6 +343,22 @@ class FragItConfig(object):
 
   def getMFCCOrder(self):
     return self.values['mfcc']['order']
+
+  # options for QM/MM
+  def getHBondAngle(self):
+    return self.values['qmmm']['hbondangle']
+
+  def getHBondDistanceMin(self):
+    return self.values['qmmm']['hbonddistancemin']
+
+  def getHBondDistanceMax(self):
+    return self.values['qmmm']['hbonddistancemax']
+
+  def doQMMMHydrogenBondDonors(self):
+    return self.values['qmmm']['includehbonddonors']
+
+  def doQMMMHydrogenBondAcceptors(self):
+    return self.values['qmmm']['includehbondacceptors']
 
 if __name__ == '__main__':
   cfg = FragItConfig()

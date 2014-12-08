@@ -86,8 +86,6 @@ class QMMM(object):
         # below here: add hydrogens to qm-fragment and to the rest of the capped structure
         fragment_for_qm = fragments_for_qm_no_hydrogens[:]
 
-        #print("FRAGIT: [qm] {0}".format(fragment_for_qm))
-
         # first, fix the QM-fragment, removing any bond-breaks that reside
         # inside (or bordering) the qm-fragment. if breaks are bordering,
         # add appropriate hydrogen atoms.
@@ -166,10 +164,16 @@ class FragmentDistances(object):
         #print len(self._fragment_acceptors), len(self._fragments)
 
     def getHydrogenBoundFragments(self, idx):
+        """ Obtains all hydrogen bound fragments to the idx'th fragment
+        """
         hb_fragments = []
+        donors = []
+        acceptors = []
 
-        donors = self._fragment_donors[idx]
-        acceptors = self._fragment_acceptors[idx]
+        if self._fragmentation.doQMMMHydrogenBondDonors():
+            donors = self._fragment_donors[idx]
+        if self._fragmentation.doQMMMHydrogenBondAcceptors():
+            acceptors = self._fragment_acceptors[idx]
 
         # first we will find any donor (current fragment) -> acceptor (whole system) pairs
         isDonor = False
@@ -207,6 +211,7 @@ class FragmentDistances(object):
         other_fragments = []
 
         # let us find the nearby fragments that are covalently connected
+        # currently, this only works with nearest neighbours
         for (l,r) in bonds:
             if l in atomids:
                 other_fragment_atomids.append(r)
@@ -223,13 +228,16 @@ class FragmentDistances(object):
     def _isHydrogenBond(self, D, H, A):
         """ angle > 110 is according to:
             http://pac.iupac.org/publications/pac/pdf/2011/pdf/8308x1637.pdf
+
+            D:   donor
+            H:   hydrogen
+            A:   acceptor
         """
         RAH = A.GetDistance(H)
         RAD = A.GetDistance(D)
-        if RAH < 2.5 and RAD < 3.9:
+        if RAH < self._fragmentation.getHBondDistanceMin() and RAD < self._fragmentation.getHBondDistanceMax():
             ANG = D.GetAngle(H,A) # in degrees
-            if ANG > 110.0:
-                #print("[{0:4d}] |--- {3:4.2f} ---| {1} : {2}, Angle = {4:6.3f}".format(A.GetIdx(), H.GetIdx(), D.GetIdx(), RAH, ANG))
+            if ANG > self._fragmentation.getHBondAngle():
                 return True
         return False
 
