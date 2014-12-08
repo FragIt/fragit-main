@@ -59,7 +59,7 @@ class Fragmentation(FragItConfig):
             added = 0
             for i in range(1, self.mol.NumAtoms()+1):
                 atom = self.mol.GetAtom(i)
-                if atom.GetAtomicNum() in [1,6,7,8,15,16]:
+                if atom.GetAtomicNum() in [1,6,7,8,12,15,16]:
                     if atom not in self._atoms: self._atoms.append(atom)
                     added += 1
                 else:
