@@ -1,3 +1,11 @@
+FragIt v1.3.4 Release Notes
+===========================
+
+This is a bug-fix and minor improvements release.
+
+  * Adds option to not include covalent neighbours to QM fragments.
+    It is not always wanted to include covalently bound neighbours.
+
 FragIt v1.3.3 Release Notes
 ===========================
 
