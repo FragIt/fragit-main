@@ -210,6 +210,9 @@ class FragmentDistances(object):
         other_fragment_atomids = []
         other_fragments = []
 
+        if self._fragmentation.doQMMMIncludeCovalent():
+            return other_fragments
+
         # let us find the nearby fragments that are covalently connected
         # currently, this only works with nearest neighbours
         for (l,r) in bonds:
