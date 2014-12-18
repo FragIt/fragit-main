@@ -75,6 +75,5 @@ def setup_fragit():
                     (fragit_prefix,['src/pymol_template','src/jmol_template'])]
   )
 
-print dir()
 if __name__ == '__main__':
   setup_fragit()
