@@ -71,10 +71,9 @@ def setup_fragit():
         package_dir={'fragit': 'src'},
         packages=['fragit'],
         scripts=['scripts/fragit'],
-        data_files=[(fragit_prefix,['INSTALL','README.md','LICENSE', 'CHANGES']),
+        data_files=[(fragit_prefix,['INSTALL','README.md','LICENSE', 'CHANGES.md']),
                     (fragit_prefix,['src/pymol_template','src/jmol_template'])]
   )
 
-print dir()
 if __name__ == '__main__':
   setup_fragit()

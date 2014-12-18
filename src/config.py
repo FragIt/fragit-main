@@ -54,6 +54,7 @@ class FragItData(dict):
     self.data_types['hbondangle']=float
     self.data_types['hbonddistancemin']=float
     self.data_types['hbonddistancemax']=float
+    self.data_types['includecovalent']=bool
 
     # items here are complex values that need
     # specific parsing later on
@@ -114,6 +115,7 @@ class FragItData(dict):
     self['qmmm']['hbondangle'] = 110.0
     self['qmmm']['hbonddistancemin'] = 2.5
     self['qmmm']['hbonddistancemax'] = 3.9
+    self['qmmm']['includecovalent'] = True
 
   def getType(self, option, section):
     if "pattern" in section: return str
@@ -359,6 +361,9 @@ class FragItConfig(object):
 
   def doQMMMHydrogenBondAcceptors(self):
     return self.values['qmmm']['includehbondacceptors']
+
+  def doQMMMIncludeCovalent(self):
+    return self.values['qmmm']['includecovalent']
 
 if __name__ == '__main__':
   cfg = FragItConfig()

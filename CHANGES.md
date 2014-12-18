@@ -1,3 +1,39 @@
+FragIt v1.3.3 Release Notes
+===========================
+
+This is a bug-fix and minor improvements release.
+
+ * P-H hydrogen bond distance added. This is used when using
+   FragIt to cap DNA with the MFCC capping procedure.
+
+ * Adds magnesium ions to ignore metals list.
+
+ * Attempt to add residue names in a less fancy way. The old naming
+   scheme gave "none" too often. Now, attempt to use info from
+   PDB files if that exists
+
+ * Fixed color space for fragments.
+
+ * Expose QMMM features through config files. Options were added for
+   inclusion based upon hydrogen bonds.
+
+FragIt v1.3.2 Release Notes
+===========================
+
+This is a bug-fix and minor improvements release.
+
+ * Adds support for atomnames read from PDB files for instance.
+
+ * Boolean options are read as strings. There was a problem with
+   options not being parsed correctly.
+
+FragIt v1.3.1 Release Notes
+===========================
+
+This is a bug-fix and minor improvements release.
+
+ * Phosphorus atoms are not to be excluded as a metal atom. This concerns mostly DNA.
+
 FragIt v1.3.0 Release Notes
 ===========================
 
