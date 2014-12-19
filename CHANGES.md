@@ -1,3 +1,10 @@
+FragIt v1.3.5 Release Notes
+===========================
+
+This is a bug-fix and minor improvements release.
+
+  * Fixes error in the way QM/MM regions were extracted.
+
 FragIt v1.3.4 Release Notes
 ===========================
 
