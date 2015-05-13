@@ -9,3 +9,6 @@ test:
 
 test-full:
 	cd tests; $(MAKE) $(MFLAGS) test-full;
+
+tag:
+	@echo "git tag fragit-1.3.6 -m \"FragIt 1.3.6 Release\""
