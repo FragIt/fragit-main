@@ -81,7 +81,8 @@ class QMMM(object):
         fragments_for_qm_no_hydrogens = ravel2D(fragments_for_qm_no_hydrogens)
 
         breaks = self._fragmentation.getExplicitlyBreakAtomPairs()
-        if len(breaks) == 0: return fragments_for_qm_no_hydrogens
+        if len(breaks) == 0:
+            return (fragments_for_qm_no_hydrogens, qm_region_charge)
 
         # below here: add hydrogens to qm-fragment and to the rest of the capped structure
         fragment_for_qm = fragments_for_qm_no_hydrogens[:]
