@@ -1,3 +1,11 @@
+FragIt v1.3.6 Release Notes
+===========================
+
+This is a bug-fix and minor improvements release.
+
+  * Fixes error when a QM region not connected with covalent bonds
+    were extracted.
+
 FragIt v1.3.5 Release Notes
 ===========================
 
