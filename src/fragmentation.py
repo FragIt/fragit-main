@@ -36,8 +36,9 @@ from config import FragItConfig
 
 class Fragmentation(FragItConfig):
 
-    def __init__(self, mol):
-        FragItConfig.__init__(self)
+    def __init__(self, mol, **kwargs):
+        conffile = kwargs.get('conffile', None)
+        FragItConfig.__init__(self, filename=conffile)
         self.mol     = mol
         self.obc     = openbabel.OBConversion()
         self.pat     = openbabel.OBSmartsPattern()

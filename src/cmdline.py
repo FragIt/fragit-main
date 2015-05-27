@@ -101,12 +101,14 @@ def main(argv=None):
     infile = args[0]
 
     molecule = fileToMol(infile)
-    fragmentation = Fragmentation(molecule)
+    conffile = None
+    if len(options.useconfigfile) > 0:
+        conffile = options.useconfigfile
+    fragmentation = Fragmentation(molecule, conffile=conffile)
 
 
     # if there is a config file, read it and ignore other command line options
     if len(options.useconfigfile) > 0:
-        fragmentation.readConfigurationFromFile(options.useconfigfile)
         (writer, output_extension) = get_writer_and_extension(fragmentation.getOutputFormat())
     else:
         fragmentation.setChargeModel(options.charge_model)

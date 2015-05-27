@@ -1,3 +1,11 @@
+FragIt v1.4.0 Release Notes
+===========================
+
+Updates since v1.2.7
+
+  * FragIt now correctly reads the configuration file early
+    such that settings are used (instead of defaults).
+
 FragIt v1.3.7 Release Notes
 ===========================
 
