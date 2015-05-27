@@ -1,3 +1,11 @@
+FragIt v1.3.7 Release Notes
+===========================
+
+This is a bug-fix and minor improvements release.
+
+  * Fixes an error where naming of atoms were not strings but None.
+  * Better naming of atoms and a proper warning when naming fails.
+
 FragIt v1.3.6 Release Notes
 ===========================
 
