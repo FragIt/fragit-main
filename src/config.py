@@ -124,10 +124,17 @@ class FragItData(dict):
     return self.data_types[option]
 
 class FragItConfig(object):
-  def __init__(self, defaults=FragItData):
+  def __init__(self, defaults=FragItData, **kwargs):
+    filename = kwargs.get('filename', None)
+    verbose = kwargs.get('verbose', False)
     self.cfg = RawConfigParser()
     self.values = defaults()
     self._addSections()
+
+    if filename is not None:
+      if verbose:
+        print("reading from '{}'".format(filename))
+      self.readConfigurationFromFile(filename)
 
   def _addSections(self):
     """Updates the RawRawConfigParser with values from the data array
