@@ -89,7 +89,15 @@ class XYZMFCC(Standard):
         else:
             atoms = [self._fragmentation.getOBAtom(i) for i in fragment]
             if self._fragmentation.hasAtomNames():
-                atomnames = [self._fragmentation._atom_names[i-1] for i in fragment]
+                names = self._fragmentation.getAtomNames()
+                atomnames = []
+                for i in fragment:
+                    try:
+                        atomnames.append(names[i-1])
+                    except IndexError:
+                        print("Warning: FragIt coult not correctly name atom {0:d}.".format(i))
+                        print("         The problem could be with your PDB file.")
+                        atomnames.append("X")
             nucz  = [a.GetAtomicNum() for a in atoms]
             neighbours = [-1 for a in atoms]
             ids = [i for i in fragment]
