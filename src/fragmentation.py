@@ -387,7 +387,7 @@ class Fragmentation(FragItConfig):
             for atom in openbabel.OBResidueAtomIter( residue ):
                 if atom.GetIdx() in atoms:
                     return residue.GetName()
-        return None
+        return "None"
 
     def identifyBackboneAtoms(self):
         pattern = "N([*])C([H])C(=O)"
