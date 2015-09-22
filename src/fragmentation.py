@@ -3,7 +3,7 @@
 fragmentation.py
 
 Copyright (C) 2010-2011 Mikael W. Ibsen
-Some portions Copyright (C) 2011-2014 Casper Steinmann
+Some portions Copyright (C) 2011-2015 Casper Steinmann
 
 This file is part of the FragIt project.
 
@@ -51,6 +51,7 @@ class Fragmentation(FragItConfig):
         self._mergeable_atoms = []
         self._atoms = []
         self._fixAtomsAndCharges()
+	self._elements = openbabel.OBElementTable()
 
     def _removeMetalAtoms(self):
         _metalAtoms = []
@@ -396,10 +397,20 @@ class Fragmentation(FragItConfig):
         matched_atoms     = 0
         frag_name     = False
         residues = self.identifyResidues()
-        for residue in openbabel.OBResidueIter( self.mol ):
-            for atom in openbabel.OBResidueAtomIter( residue ):
-                if atom.GetIdx() in atoms:
-                    return residue.GetName()
+        charge_lbls = ["", "+", "-"]
+
+        if len(atoms) == 0:
+            raise ValueError("Cannot name empty fragments. Aborting.")
+        if len(atoms) == 1:
+            atom = self.mol.GetAtom(atoms[0])
+            charge_lbl = charge_lbls[atom.GetFormalCharge()]
+            element = self._elements.GetSymbol(atom.GetAtomicNum())
+            return "{0:s}{1:s}".format(element, charge_lbl)
+        else:
+            for residue in openbabel.OBResidueIter( self.mol ):
+                for atom in openbabel.OBResidueAtomIter( residue ):
+                    if atom.GetIdx() in atoms:
+                        return residue.GetName()
         return "None"
 
     def identifyBackboneAtoms(self):
