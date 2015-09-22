@@ -67,8 +67,18 @@ class Fragmentation(FragItConfig):
                     added += 1
                 else:
                     #print " Temporarily removing atom: {}, Z={}".format(i,atom.GetAtomicNum())
+                    # the atoms are most-likely counter ions, so we give them an
+                    # appropriate formal charge (of +/- 1)
+                    atomic_charge = 0 # default
+                    if atom.GetAtomicNum() in [11, 19]: # Na+ and K+:
+                        atomic_charge = 1
+                    elif atom.GetAtomicNum() in [9, 17]: # F- and Cl-
+                        atomic_charge = -1
+
                     new_atom = openbabel.OBAtom()
                     new_atom.Duplicate(atom)
+                    new_atom.SetFormalCharge(atomic_charge)
+
                     _metalAtoms.append(new_atom)
                     self.mol.DeleteAtom(atom)
                     break
