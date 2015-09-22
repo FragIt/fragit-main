@@ -95,7 +95,7 @@ class XYZMFCC(Standard):
                     try:
                         atomnames.append(names[i-1])
                     except IndexError:
-                        print("Warning: FragIt coult not correctly name atom {0:d}.".format(i))
+                        print("Warning: FragIt could not correctly name atom {0:d}.".format(i))
                         print("         The problem could be with your PDB file.")
                         atomnames.append("X")
             nucz  = [a.GetAtomicNum() for a in atoms]

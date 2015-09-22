@@ -2,7 +2,7 @@
 
 all:
 	python setup.py build
-	python setup.py install --prefix=/home/cstein/Programs/fragit-1.3
+	python setup.py install --prefix=/home/cstein/Programs/fragit-1.4
 
 test:
 	cd tests; $(MAKE) $(MFLAGS) test;
