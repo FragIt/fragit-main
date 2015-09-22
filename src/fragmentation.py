@@ -58,6 +58,8 @@ class Fragmentation(FragItConfig):
         removing = True
         while removing:
             added = 0
+            if self.mol.NumAtoms() == 0:
+                break
             for i in range(1, self.mol.NumAtoms()+1):
                 atom = self.mol.GetAtom(i)
                 if atom.GetAtomicNum() in [1,6,7,8,12,15,16]:
