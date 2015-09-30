@@ -401,6 +401,7 @@ class Fragmentation(FragItConfig):
 
         if len(atoms) == 0:
             raise ValueError("Cannot name empty fragments. Aborting.")
+
         if len(atoms) == 1:
             atom = self.mol.GetAtom(atoms[0])
             charge_lbl = charge_lbls[atom.GetFormalCharge()]
@@ -423,12 +424,32 @@ class Fragmentation(FragItConfig):
         return self._backbone_atoms
 
     def nameAtoms(self):
-        # if there are no atom names available, for instance by loading an
-        # .xyz file, the following loops will no run and the _atom_names
-        # will stay empty. Users can query trough the hasAtomNames method
+        """attempt to name atoms """
+        has_residues = False
+        residue_has_atoms = False
+
+        # first try to name atoms according to biological
+        # function, i.e. from a PDB file.
+
+        # OpenBabel has problems with some elements so we need to work around
+        # those here.
         for residue in openbabel.OBResidueIter(self.mol):
-            for atom in openbabel.OBResidueAtomIter( residue ):
-                self._atom_names.append( residue.GetAtomID( atom ) )
+            has_residues = True
+            if residue.GetNumAtoms() > 0:
+                residue_has_atoms = True
+                for atom in openbabel.OBResidueAtomIter( residue ):
+                    self._atom_names.append( residue.GetAtomID( atom ) )
+
+        if (has_residues and not residue_has_atoms) or not has_residues:
+                for atom in openbabel.OBMolAtomIter(self.mol):
+                    self._atom_names.append(atom.GetType())
+
+        #if not has_residues:
+        #    # here, OpenBabel was not able to figure out the residue
+        #    # information so name the atoms of the molecule as their
+        #    # element name. Nothing fancy. Beware that GEPs will not load
+        #    # correctly, so shoot a slight warning.
+        #    print("Warning: FragIt was not able to name the atoms.")
 
     def getAtomNames(self):
         return self._atom_names
