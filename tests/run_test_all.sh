@@ -16,9 +16,9 @@ OLD_PYTHONPATH=$PYTHONPATH
 
 export PYTHONPATH=$PYTHONPATH:$PATH_TO_SRC
 
-python-coverage run --include=../src/*.py test_all.py $PARAM
+coverage run --include=../src/*.py test_all.py $PARAM
 
-python-coverage html
+coverage html
 
 export PYTHONPATH=$OLD_PYTHONPATH
 rm *.pyc

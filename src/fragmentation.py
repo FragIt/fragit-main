@@ -427,6 +427,8 @@ class Fragmentation(FragItConfig):
         """attempt to name atoms """
         has_residues = False
         residue_has_atoms = False
+        print "number of atoms", self.mol.NumAtoms()
+        atoms_no_name = range(0, self.mol.NumAtoms())
 
         # first try to name atoms according to biological
         # function, i.e. from a PDB file.
@@ -438,11 +440,26 @@ class Fragmentation(FragItConfig):
             if residue.GetNumAtoms() > 0:
                 residue_has_atoms = True
                 for atom in openbabel.OBResidueAtomIter( residue ):
+                    atoms_no_name.remove(atom.GetId())
                     self._atom_names.append( residue.GetAtomID( atom ) )
+            else:
+                pass
 
-        if (has_residues and not residue_has_atoms) or not has_residues:
-                for atom in openbabel.OBMolAtomIter(self.mol):
-                    self._atom_names.append(atom.GetType())
+        # if there are items left in "atoms_no_name" try to name them
+        #print atoms_no_name
+        if len(atoms_no_name) > 0:
+            print("Info: FragIt will now try to name remaining {0:3d} atoms".format(len(atoms_no_name)))
+            for i, id in enumerate(atoms_no_name):
+                atom = self.mol.GetAtom(id+1)
+                #print id, atom, atom.GetType()
+                self._atom_names.append(atom.GetType())
+
+        #print self._atom_names
+
+        # nothing was 
+        #if (has_residues and not residue_has_atoms) or not has_residues:
+        #        for atom in openbabel.OBMolAtomIter(self.mol):
+        #            self._atom_names.append(atom.GetType())
 
         #if not has_residues:
         #    # here, OpenBabel was not able to figure out the residue

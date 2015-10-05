@@ -194,14 +194,14 @@ class TestFragmentationModule(unittest.TestCase):
         self.fragmentation.breakBonds()
         self.fragmentation.determineFragments()
         self.fragmentation.nameFragments()
-        self.assertEqual(self.fragmentation.getFragmentNames(), ["NH3+", "AMINO", "AMINO", "AMINO", "AMINO", "AMINO", "AMINO", "AMINO", "AMINO", "AMINO"])
+        self.assertEqual(self.fragmentation.getFragmentNames(), ['GLY', 'GLY', 'TYR', 'ASP', 'PRO', 'GLU', 'THR', 'GLY', 'THR', 'TRP'])
 
     def test_FragmentationNameFragmentsProtect(self):
         self.fragmentation.setProtectedAtoms()
         self.fragmentation.breakBonds()
         self.fragmentation.determineFragments()
         self.fragmentation.nameFragments()
-        self.assertEqual(self.fragmentation.getFragmentNames(), ["AMINO", "AMINO", "AMINO", "AMINO", "AMINO", "AMINO", "AMINO", "AMINO", "AMINO"])
+        self.assertEqual(self.fragmentation.getFragmentNames(), ['GLY', 'TYR', 'ASP', 'PRO', 'GLU', 'THR', 'GLY', 'THR', 'TRP'])
 
     def test_FragmentationNameFragmentsGroupByTwo(self):
         self.fragmentation.breakBonds()
@@ -209,7 +209,7 @@ class TestFragmentationModule(unittest.TestCase):
         self.fragmentation.determineFragments()
         self.fragmentation.doFragmentGrouping()
         self.fragmentation.nameFragments()
-        self.assertEqual(self.fragmentation.getFragmentNames(), ["AMINO", "AMINO", "AMINO", "AMINO", "AMINO"])
+        self.assertEqual(self.fragmentation.getFragmentNames(), ['GLY', 'TYR', 'PRO', 'THR', 'THR'])
 
     def test_writereadconfiguration_basic(self):
         filename = "temp.cfg"
