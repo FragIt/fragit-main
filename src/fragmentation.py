@@ -427,7 +427,6 @@ class Fragmentation(FragItConfig):
         """attempt to name atoms """
         has_residues = False
         residue_has_atoms = False
-        print "number of atoms", self.mol.NumAtoms()
         atoms_no_name = range(0, self.mol.NumAtoms())
 
         # first try to name atoms according to biological
