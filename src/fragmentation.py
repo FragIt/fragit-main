@@ -3,7 +3,7 @@
 fragmentation.py
 
 Copyright (C) 2010-2011 Mikael W. Ibsen
-Some portions Copyright (C) 2011-2014 Casper Steinmann
+Some portions Copyright (C) 2011-2015 Casper Steinmann
 
 This file is part of the FragIt project.
 
@@ -51,6 +51,7 @@ class Fragmentation(FragItConfig):
         self._mergeable_atoms = []
         self._atoms = []
         self._fixAtomsAndCharges()
+	self._elements = openbabel.OBElementTable()
 
     def _removeMetalAtoms(self):
         _metalAtoms = []
@@ -67,8 +68,18 @@ class Fragmentation(FragItConfig):
                     added += 1
                 else:
                     #print " Temporarily removing atom: {}, Z={}".format(i,atom.GetAtomicNum())
+                    # the atoms are most-likely counter ions, so we give them an
+                    # appropriate formal charge (of +/- 1)
+                    atomic_charge = 0 # default
+                    if atom.GetAtomicNum() in [11, 19]: # Na+ and K+:
+                        atomic_charge = 1
+                    elif atom.GetAtomicNum() in [9, 17]: # F- and Cl-
+                        atomic_charge = -1
+
                     new_atom = openbabel.OBAtom()
                     new_atom.Duplicate(atom)
+                    new_atom.SetFormalCharge(atomic_charge)
+
                     _metalAtoms.append(new_atom)
                     self.mol.DeleteAtom(atom)
                     break
@@ -386,10 +397,21 @@ class Fragmentation(FragItConfig):
         matched_atoms     = 0
         frag_name     = False
         residues = self.identifyResidues()
-        for residue in openbabel.OBResidueIter( self.mol ):
-            for atom in openbabel.OBResidueAtomIter( residue ):
-                if atom.GetIdx() in atoms:
-                    return residue.GetName()
+        charge_lbls = ["", "+", "-"]
+
+        if len(atoms) == 0:
+            raise ValueError("Cannot name empty fragments. Aborting.")
+
+        if len(atoms) == 1:
+            atom = self.mol.GetAtom(atoms[0])
+            charge_lbl = charge_lbls[atom.GetFormalCharge()]
+            element = self._elements.GetSymbol(atom.GetAtomicNum())
+            return "{0:s}{1:s}".format(element, charge_lbl)
+        else:
+            for residue in openbabel.OBResidueIter( self.mol ):
+                for atom in openbabel.OBResidueAtomIter( residue ):
+                    if atom.GetIdx() in atoms:
+                        return residue.GetName()
         return "None"
 
     def identifyBackboneAtoms(self):
@@ -402,12 +424,48 @@ class Fragmentation(FragItConfig):
         return self._backbone_atoms
 
     def nameAtoms(self):
-        # if there are no atom names available, for instance by loading an
-        # .xyz file, the following loops will no run and the _atom_names
-        # will stay empty. Users can query trough the hasAtomNames method
+        """attempt to name atoms """
+        has_residues = False
+        residue_has_atoms = False
+        atoms_no_name = range(0, self.mol.NumAtoms())
+
+        # first try to name atoms according to biological
+        # function, i.e. from a PDB file.
+
+        # OpenBabel has problems with some elements so we need to work around
+        # those here.
         for residue in openbabel.OBResidueIter(self.mol):
-            for atom in openbabel.OBResidueAtomIter( residue ):
-                self._atom_names.append( residue.GetAtomID( atom ) )
+            has_residues = True
+            if residue.GetNumAtoms() > 0:
+                residue_has_atoms = True
+                for atom in openbabel.OBResidueAtomIter( residue ):
+                    atoms_no_name.remove(atom.GetId())
+                    self._atom_names.append( residue.GetAtomID( atom ) )
+            else:
+                pass
+
+        # if there are items left in "atoms_no_name" try to name them
+        #print atoms_no_name
+        if len(atoms_no_name) > 0:
+            print("Info: FragIt will now try to name remaining {0:3d} atoms".format(len(atoms_no_name)))
+            for i, id in enumerate(atoms_no_name):
+                atom = self.mol.GetAtom(id+1)
+                #print id, atom, atom.GetType()
+                self._atom_names.append(atom.GetType())
+
+        #print self._atom_names
+
+        # nothing was 
+        #if (has_residues and not residue_has_atoms) or not has_residues:
+        #        for atom in openbabel.OBMolAtomIter(self.mol):
+        #            self._atom_names.append(atom.GetType())
+
+        #if not has_residues:
+        #    # here, OpenBabel was not able to figure out the residue
+        #    # information so name the atoms of the molecule as their
+        #    # element name. Nothing fancy. Beware that GEPs will not load
+        #    # correctly, so shoot a slight warning.
+        #    print("Warning: FragIt was not able to name the atoms.")
 
     def getAtomNames(self):
         return self._atom_names

@@ -1,3 +1,24 @@
+FragIt v1.4.2 Release Notes
+===========================
+
+This is a bug-fix and minor improvements release.
+
+Updates since  v1.4.1
+
+  * FragIt now attemps to set the formal charges of
+    metal and counter ions.
+  * Naming of atoms should be greatly improved
+
+FragIt v1.4.1 Release Notes
+===========================
+
+This is a bug-fix and minor improvements release.
+
+Updates since  v1.4.0
+
+  * Fixed a bug which could make FragIt enter an infinite
+    loop if the files used were only counter ions or metals
+
 FragIt v1.4.0 Release Notes
 ===========================
 
