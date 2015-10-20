@@ -5,7 +5,9 @@ This is a bug-fix and minor improvements release.
 
 Updates since  v1.4.2
 
-  * first item that has been fixed
+  * This is the second change this patch.
+  * Moved tests out of the 'src' directory and reconfigured
+    tests such that nosetests is now supported.
 
 FragIt v1.4.2 Release Notes
 ===========================
@@ -16,7 +18,7 @@ Updates since  v1.4.1
 
   * FragIt now attemps to set the formal charges of
     metal and counter ions.
-  * Naming of atoms should be greatly improved
+  * Naming of atoms should be greatly improved.
 
 FragIt v1.4.1 Release Notes
 ===========================
@@ -31,7 +33,7 @@ Updates since  v1.4.0
 FragIt v1.4.0 Release Notes
 ===========================
 
-Updates since v1.2.7
+Updates since v1.3.7
 
   * FragIt now correctly reads the configuration file early
     such that settings are used (instead of defaults).
@@ -122,10 +124,16 @@ Updates since v1.2.1
 
  * FragIt now exists more cleanly if it cannot find itself.
 
+FragIt v1.2.1 Release Notes
+===========================
+
 Updates since v1.2.0
 
  * fixed naming scheme in xyz and xyz-mfcc writers
    to be similar
+
+FragIt v1.2.0 Release Notes
+===========================
 
 Updates since v1.0.4
 
@@ -142,27 +150,34 @@ Updates since v1.0.4
    to treat metal ions. There are some constraints
    still.
 
+FragIt v1.0.4 Release Notes
+===========================
+
 Updates since v1.0.3
 
  * specify charge models via the command
    line interface (--charge-model=) or
    configuration files.
 
+FragIt v1.0.3 Release Notes
+===========================
+
 Updates since v1.0.2
---------------------
 
  * Renamed GAMESS writer GAMESS-FMO due
    to ambiguity.
 
+FragIt v1.0.2 Release Notes
+===========================
+
 Updates since v1.0.1
---------------------
 
  * Most of the options in the command line
    version of FragIt now uses the underlying
    FragItConfig object for defaults.
 
-Updates since v0.9
-------------------
+FragIt v1.0.0 Release Notes
+===========================
 
  * The code is now distributed as a library
 
@@ -184,10 +199,6 @@ Updates since v0.9
    same instance, file-specific fragmentation
    info has been removed from the configuration
    files.
-
-
-Fixes since v0.9
-------------------
 
  * Add fix so custom patterns work consistently
    in all cases.
