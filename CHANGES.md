@@ -5,7 +5,8 @@ This is a bug-fix and minor improvements release.
 
 Updates since  v1.4.2
 
-  * This is the second change this patch.
+  * This is the third change this patch.
+  * Interfaced with Travis CI for continous integration.
   * Moved tests out of the 'src' directory and reconfigured
     tests such that nosetests is now supported.
 
