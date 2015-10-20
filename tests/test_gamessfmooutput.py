@@ -24,19 +24,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 """
 import os
 import sys
-sys.path.append('../src')
+#sys.path.append('../src')
 import unittest
-from gamessfmo import GamessFMO
+from src.gamessfmo import GamessFMO
 
-from util import fileToMol, ReadStringListFromFile
-from fragmentation import Fragmentation
+from src.util import fileToMol, ReadStringListFromFile
+from src.fragmentation import Fragmentation
 
 class TestGamessFMOOutputModule(unittest.TestCase):
 
     def setUp(self):
-      self.molecule = fileToMol("watercluster4.xyz")
+      self.molecule = fileToMol("tests/watercluster4.xyz")
       self.fragmentation = Fragmentation(self.molecule)
-      self.fixtures = 'gamess-fmo-fixtures'
+      self.fixtures = 'tests/gamess-fmo-fixtures'
 
     def delete_file(self,filename):
         try:
