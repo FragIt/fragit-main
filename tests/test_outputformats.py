@@ -24,10 +24,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 """
 import os
 import unittest
-from gamessfmo import GamessFMO
-from xyzmfcc import XYZMFCC
-from xyz import XYZ
-import outputformats
+from src.gamessfmo import GamessFMO
+from src.xyzmfcc import XYZMFCC
+from src.xyz import XYZ
+from src.outputformats import *
 
 class TestOutputFormatsModule(unittest.TestCase):
 
@@ -35,15 +35,15 @@ class TestOutputFormatsModule(unittest.TestCase):
         pass
 
     def test_getwriterandextension(self):
-        self.assertRaises(ValueError, outputformats.get_writer_and_extension, "bogus")
-        self.assertEqual(outputformats.get_writer_and_extension("GAMESS-FMO"), (GamessFMO,".inp"))
+        self.assertRaises(ValueError, get_writer_and_extension, "bogus")
+        self.assertEqual(get_writer_and_extension("GAMESS-FMO"), (GamessFMO,".inp"))
 
 
     def test_supported_output_formats(self):
-        self.assertEqual( outputformats.supported_output_formats(), {'GAMESS-FMO':GamessFMO, 'XYZ-MFCC': XYZMFCC, 'XYZ': XYZ} )
+        self.assertEqual( supported_output_formats(), {'GAMESS-FMO':GamessFMO, 'XYZ-MFCC': XYZMFCC, 'XYZ': XYZ} )
 
     def test_supported_output_fileexts(self):
-        self.assertEqual( outputformats.supported_output_fileexts(), {'GAMESS-FMO':'.inp', 'XYZ-MFCC': '.xyz', 'XYZ': '.xyz'} )
+        self.assertEqual( supported_output_fileexts(), {'GAMESS-FMO':'.inp', 'XYZ-MFCC': '.xyz', 'XYZ': '.xyz'} )
 
 def suite():
   s = unittest.TestSuite()

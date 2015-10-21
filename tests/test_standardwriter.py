@@ -24,14 +24,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 """
 import os
 import unittest
-from writer import Standard
-from util import fileToMol
-from fragmentation import Fragmentation
+from src.writer import Standard
+from src.util import fileToMol
+from src.fragmentation import Fragmentation
 
 class TestStandardWriterModule(unittest.TestCase):
 
     def setUp(self):
-      self.molecule = fileToMol("1UAO.pdb")
+      self.molecule = fileToMol("tests/1UAO.pdb")
       self.fragmentation = Fragmentation(self.molecule)
       self.standardwriter = Standard(Fragmentation)
 

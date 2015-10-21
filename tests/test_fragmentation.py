@@ -27,13 +27,13 @@ import os
 import unittest
 import openbabel
 
-from fragmentation import Fragmentation
-from util import is_dictionary, lenOfLists, fileToMol
+from src.fragmentation import Fragmentation
+from src.util import is_dictionary, lenOfLists, fileToMol
 
 class TestFragmentationModule(unittest.TestCase):
 
     def setUp(self):
-        self.filename_pdb = "1UAO.pdb"
+        self.filename_pdb = "tests/1UAO.pdb"
 
         # for testing, use OpenBabel functionality directly
         self.molecule = fileToMol(self.filename_pdb)

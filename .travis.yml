@@ -1,0 +1,22 @@
+language: python
+python:
+  - "2.7"
+
+before_install:
+  - sudo apt-get update -qq
+
+install:
+ - sudo apt-get install -qq swig libeigen3-dev python-dev git-core
+ - git clone https://github.com/openbabel/openbabel.git
+ - cd openbabel
+ - mkdir build
+ - cd build
+ - cmake -DRUN_SWIG=ON -DPYTHON_BINDINGS=ON ..
+ - make -j 2
+ - sudo make install
+ - export PYTHONPATH=/usr/local/lib/python${TRAVIS_PYTHON_VERSION}/site-packages:${PYTHONPATH}
+
+before_script:
+  - cd ${TRAVIS_BUILD_DIR}
+
+script: nosetests

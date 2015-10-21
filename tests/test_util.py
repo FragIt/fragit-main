@@ -24,7 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 """
 import os
 import unittest
-import util
+
+import src.util as util
 
 class TestUtilModule(unittest.TestCase):
 

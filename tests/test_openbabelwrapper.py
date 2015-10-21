@@ -26,7 +26,7 @@ import os
 import unittest
 import openbabel
 
-import OpenBabelWrapper as OBW
+import src.openbabelwrapper as OBW
 
 def write_file(filename):
     f = open(filename,'w')
