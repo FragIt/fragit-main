@@ -1,5 +1,8 @@
 # FragIt
 
+[![GitHub release](https://img.shields.io/github/release/FragIt/fragit-main.svg?style=flat)](https://github.com/FragIt/fragit-main/releases)
+[![Build Status](https://travis-ci.org/FragIt/fragit-main.svg?branch=master)](https://travis-ci.org/FragIt/fragit-main)
+
 FragIt is a python based tool that allows you to quickly fragment ["any"](http://openbabel.org/docs/2.3.0/FileFormats/Overview.html) molecule and use the produced output file(s) as an a starting point for input files in quantum chemistry programs that supports such fragment based methods.
 
 FragIt was made out of the need to quickly benchmark many different molecules while developing new fragment based methods and is now being released in the hope that it is useful for others in their research. You can read about FragIt in the [published paper](http://www.plosone.org/article/info%3Adoi%2F10.1371%2Fjournal.pone.0044480).
