@@ -147,7 +147,8 @@ class MFCC(object):
                 ids_out.append(atomext.GetIdx())
                 nbs_out.append(atom.GetIdx())
                 if self._fragmentation.hasAtomNames():
-                    atm_namout.append( self._fragmentation._atom_names[atom.GetIdx() -1] )
+                    #print atom.GetIdx(), atomext.GetIdx(), self._fragmentation._atom_names
+                    atm_namout.append( self._fragmentation._atom_names[atomext.GetIdx() -1] )
                 else:
                     atm_namout.append( "" )
                 if is_final_cap:
