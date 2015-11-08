@@ -107,13 +107,18 @@ class QMMM(object):
                     # fix the qm-fragment first
                     if iibreak in fragments_for_qm_no_hydrogens:
                         new_atoms = self.satisfyValency(fragments_for_qm_no_hydrogens, iibreak, bbreak)
-                        if len(new_atoms) > 0: fragment_for_qm.extend(new_atoms)
+                        if len(new_atoms) > 0:
+                            print "Info: FragIt adds", len(new_atoms), "atom(s) to the QM fragment."
+                            self._fragmentation._atom_names.extend(['  H '] * len(new_atoms))
+                            fragment_for_qm.extend(new_atoms)
 
                     # then fix the fragments themselves
                     # INFO/WARNING: this is a lists of lists thing. BE CAREFULL
                     for ifragment, fragment in enumerate(fragments):
                         if iibreak in fragment:
                             new_atoms = self.satisfyValency(fragment, iibreak, bbreak)
+                            print "Info: FragIt adds", len(new_atoms), "atom(s) to MM fragment", ifragment+1
+                            self._fragmentation._atom_names.extend(['  H '] * len(new_atoms))
                             fragments[ifragment].extend(new_atoms)
 
                 # also mark the ibreak'th item for removal
@@ -126,7 +131,9 @@ class QMMM(object):
         return (fragment_for_qm, qm_region_charge)
 
     def satisfyValency(self, fragment, iheavy, bbreak):
-        """ Satisfies the valency of atom number iheavy in the supplied fragment. Returns a new fragment with all atoms in the correct place.
+        """ Satisfies the valency of the heavy atom iheavy in the supplied fragment.
+
+            Returns a new fragment with all atoms in the correct place.
         """
 
         # heavy is the heavy atom that wants a hydrogen

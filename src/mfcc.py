@@ -147,10 +147,14 @@ class MFCC(object):
                 ids_out.append(atomext.GetIdx())
                 nbs_out.append(atom.GetIdx())
                 if self._fragmentation.hasAtomNames():
-                    #print atom.GetIdx(), atomext.GetIdx(), self._fragmentation._atom_names
-                    atm_namout.append( self._fragmentation._atom_names[atomext.GetIdx() -1] )
+                    if not is_final_cap:
+                        atm_namout.append( self._fragmentation._atom_names[atomext.GetIdx() -1] )
+                    else:
+                        # we are sure that when it is a final cap, it is
+                        # a hydrogen.
+                        atm_namout.append( " H  " )
                 else:
-                    atm_namout.append( "" )
+                    atm_namout.append( "   " )
                 if is_final_cap:
                     typs_out.append(1)
                 else:
