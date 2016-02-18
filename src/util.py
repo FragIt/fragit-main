@@ -141,7 +141,7 @@ def deepLength(input):
 def listDiff(list1, list2):
     set1 = set(list1)
     set2 = set(list2)
-        return list(set1 - set2)
+    return list(set1 - set2)
 
 #def listDiff(list1, list2):
 #    if not is_list(list1) or not is_list(list2): raise TypeError
