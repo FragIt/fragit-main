@@ -1,3 +1,15 @@
+FragIt v1.4.4 Release Notes
+===========================
+
+This is a bug-fix and minor improvements release.
+
+Updates since  v1.4.3
+
+  * Include within a distance in QM/MM.
+  * Adds atom names for added hydrogens.
+  * Correct naming of atoms added to cap.
+  * Cleanup in the code. Removing legacy space / tabs etc.
+
 FragIt v1.4.3 Release Notes
 ===========================
 

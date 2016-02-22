@@ -31,6 +31,7 @@ import numpy
 
 from util import calculate_hydrogen_position
 from util import ravel2D, listDiff, Uniqify
+from util import getOBAtomVector
 #from config import FragItConfig
 
 #from fragmentation import Fragmentation
@@ -60,7 +61,7 @@ class QMMM(object):
         # investigate which fragments should be included in the QM-region
         qmfrags = self._qmfrags[:]
         distance = self._fragmentation.getActiveAtomsDistance()
-        qmfrags = Uniqify(self._addQM(qmfrags))
+        qmfrags = Uniqify(self._add_fragments_to_QM(qmfrags))
         qmfrags.sort()
         qmfrags.reverse()
 
@@ -107,13 +108,18 @@ class QMMM(object):
                     # fix the qm-fragment first
                     if iibreak in fragments_for_qm_no_hydrogens:
                         new_atoms = self.satisfyValency(fragments_for_qm_no_hydrogens, iibreak, bbreak)
-                        if len(new_atoms) > 0: fragment_for_qm.extend(new_atoms)
+                        if len(new_atoms) > 0:
+                            print "Info: FragIt adds", len(new_atoms), "atom(s) to the QM fragment."
+                            self._fragmentation._atom_names.extend(['  H '] * len(new_atoms))
+                            fragment_for_qm.extend(new_atoms)
 
                     # then fix the fragments themselves
                     # INFO/WARNING: this is a lists of lists thing. BE CAREFULL
                     for ifragment, fragment in enumerate(fragments):
                         if iibreak in fragment:
                             new_atoms = self.satisfyValency(fragment, iibreak, bbreak)
+                            print "Info: FragIt adds", len(new_atoms), "atom(s) to MM fragment", ifragment+1
+                            self._fragmentation._atom_names.extend(['  H '] * len(new_atoms))
                             fragments[ifragment].extend(new_atoms)
 
                 # also mark the ibreak'th item for removal
@@ -126,7 +132,9 @@ class QMMM(object):
         return (fragment_for_qm, qm_region_charge)
 
     def satisfyValency(self, fragment, iheavy, bbreak):
-        """ Satisfies the valency of atom number iheavy in the supplied fragment. Returns a new fragment with all atoms in the correct place.
+        """ Satisfies the valency of the heavy atom iheavy in the supplied fragment.
+
+            Returns a new fragment with all atoms in the correct place.
         """
 
         # heavy is the heavy atom that wants a hydrogen
@@ -146,12 +154,28 @@ class QMMM(object):
                         new_atoms.append(nbatom.GetIdx())
         return new_atoms
 
-    def _addQM(self, qmfragments):
+    def _add_fragments_to_QM(self, qmfragments):
+        """ Adds nearby fragments to the QM region if they fulfill
+            certain requirenments:
+
+                hydrogen binds to QM region
+                covalently bound to QM region
+
+            Arguments:
+            ----------
+            qmfragments : list of QM fragments
+
+            Returns:
+            --------
+            updated list of QM fragments with possible neighbours included.
+        """
         qmfrags = qmfragments[:]
         for qmfragment in qmfragments:
             qmfrags.extend( self._fd.getHydrogenBoundFragments(qmfragment) )
             qmfrags.extend( self._fd.getCovalentlyBoundFragments(qmfragment) )
+            qmfrags.extend( self._fd.getFragmentsWithinDistanceFrom(qmfragment) )
         return qmfrags
+
 
 class FragmentDistances(object):
     def __init__(self, fragmentation):
@@ -166,6 +190,14 @@ class FragmentDistances(object):
 
     def getHydrogenBoundFragments(self, idx):
         """ Obtains all hydrogen bound fragments to the idx'th fragment
+
+            Arguments:
+            ----------
+            idx : the fragment index to which hydrogen bonds are to be found
+
+            Returns:
+            --------
+            A list of fragments hydrogen bound to the idx'th fragment.
         """
         hb_fragments = []
         donors = []
@@ -176,6 +208,8 @@ class FragmentDistances(object):
         if self._fragmentation.doQMMMHydrogenBondAcceptors():
             acceptors = self._fragment_acceptors[idx]
 
+        if len(donors) > 0 or len(acceptors) > 0:
+            print "Info: FragIt will include all hydrogen bound molecules in the QM region."
         # first we will find any donor (current fragment) -> acceptor (whole system) pairs
         isDonor = False
         for ifg, _acceptors in enumerate(self._fragment_acceptors):
@@ -205,6 +239,16 @@ class FragmentDistances(object):
         return hb_fragments
 
     def getCovalentlyBoundFragments(self, idx):
+        """ Returns list of fragments that are covalently connected to the idx fragment
+
+            Arguments:
+            ----------
+            idx : the fragment index to use when looking for other covalently bound fragments
+
+            Returns:
+            --------
+            A list of fragments covalently bound to the idx'th fragment.
+        """
         atomids = self._fragments[idx]
         bonds = self._fragmentation.getExplicitlyBreakAtomPairs()
 
@@ -213,6 +257,8 @@ class FragmentDistances(object):
 
         if not self._fragmentation.doQMMMIncludeCovalent():
             return other_fragments
+
+        print "Info: FragIt will include all fragments covalently bound in the QM region."
 
         # let us find the nearby fragments that are covalently connected
         # currently, this only works with nearest neighbours
@@ -228,6 +274,7 @@ class FragmentDistances(object):
                 other_fragments.append(ifg)
 
         return other_fragments
+
 
     def _isHydrogenBond(self, D, H, A):
         """ angle > 110 is according to:
@@ -264,6 +311,7 @@ class FragmentDistances(object):
 
         return donors
 
+
     def _acceptors_from_fragment(self, idx):
         """ Searches a for a hydrogen-bond acceptor (aha a carboxyl oxygen). we consider only
             X --- O=C
@@ -276,5 +324,63 @@ class FragmentDistances(object):
                 acceptors.append(obatom)
         return acceptors
 
+
     def _is_doner(self, atom):
         return atom.IsNitrogen() or atom.IsOxygen()
+
+
+    def getFragmentsWithinDistanceFrom(self, idx):
+        """ Returns all fragments that have at least an atom with a distance R
+            of the fragment idx
+
+            Arguments:
+            ----------
+            idx : the fragment index to use when looking for nearby fragments
+
+            Returns:
+            --------
+            A list of fragments having at least an atom within a certain distance
+        """
+        other_fragments = []
+        if not self._fragmentation.doQMMMIncludeAllWithin():
+            return other_fragments
+
+        print "Info: FragIt will include all fragments within R = {0:5.2f} angstrom in the QM region.".format(self._fragmentation.getQMMMIncludeAllWithinDistance())
+
+        vectors = self._get_vectors_from_fragment(idx)
+
+        for i_frag, other_fragment in enumerate(self._fragments):
+            if i_frag == idx:
+                continue
+
+            other_vectors = self._get_vectors_from_fragment(i_frag)
+            R2 = self._get_min_distances2(vectors, other_vectors)
+            R = numpy.sqrt(R2)
+            if R < self._fragmentation.getQMMMIncludeAllWithinDistance():
+                print "Info: FragIt includes fragment {0:5d} (R = {1:6.2f}) in the QM region.".format(i_frag+1, R)
+                other_fragments.append(i_frag)
+
+        return other_fragments
+
+
+    def _get_vectors_from_fragment(self, idx):
+        this_atoms = self._fragments[idx]
+        this_vectors = []
+        for atom_index in this_atoms:
+            atom = self._fragmentation.getOBAtom(atom_index)
+            this_vectors.append(getOBAtomVector(atom))
+
+        return this_vectors
+
+    def _get_min_distances2(self, d1s, d2s):
+        """ Returns the minimum distance squared (hence the 2) between
+            two sets of coordinates d1s and d2s
+        """
+        d2s = numpy.array(d2s)
+        R_min = 1.0e30
+        for i, r1 in enumerate(d1s):
+            dr = d2s-r1
+            for r in dr:
+                R_min = min(R_min, r.dot(r))
+
+        return R_min
