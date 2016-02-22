@@ -15,7 +15,7 @@ install:
  - cd openbabel
  - mkdir build
  - cd build
- - cmake -DRUN_SWIG=ON -DPYTHON_BINDINGS=ON ..
+ - cmake -DCMAKE_CXX_FLAGS="-march=native -mno-avx" -DRUN_SWIG=ON -DPYTHON_BINDINGS=ON ..
  - make -j 2
  - sudo make install
  - export PYTHONPATH=/usr/local/lib/python${TRAVIS_PYTHON_VERSION}/site-packages:${PYTHONPATH}
