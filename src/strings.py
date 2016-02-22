@@ -2,7 +2,7 @@
 **********************************************************************
 strings.py
 
-Copyright (C) 2011-2015 Casper Steinmann
+Copyright (C) 2011-2016 Casper Steinmann
 
 This file is part of the FragIt project.
 
@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 ***********************************************************************/
 """
 
-version = ("1","4","3")
+version = ("1","4","4")
 version_str = ".".join(version)
 
 description = """FragIt fragments molecules for fragment based methods. The output of FragIt is an input file which can be run in a suitable quantum chemistry program"""

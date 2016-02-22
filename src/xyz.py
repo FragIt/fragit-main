@@ -1,8 +1,8 @@
 """
 **********************************************************************
-xyzmfcc.py
+xyz.py
 
-Copyright (C) 2013 Casper Steinmann
+Copyright (C) 2013-2016 Casper Steinmann
 
 This file is part of the FragIt project.
 
@@ -30,8 +30,6 @@ from util import file_extension,is_list,listTo2D,join2D,is_int
 from util import listToRanges,listOfRangesToString,Uniqify,ravel2D
 from util import deepLength,listDiff,intlistToString
 from util import getFilenameAndExtension
-
-from qmmm import FragmentDistances as FD
 
 class XYZ(Standard):
     def __init__(self, fragmentation):
