@@ -385,6 +385,9 @@ def OBCheckMoleculeConsistency(molecule):
     if molecule.NumAtoms() < 1:
         raise ValueError("Molecule has no atoms.")
 
+def getOBAtomVector(atom):
+    return numpy.array([atom.GetX(), atom.GetY(), atom.GetZ()])
+
 def calculate_hydrogen_position(heavy, light):
     """ Positions a hydrogen atom in the "correct" position between two points
     """
