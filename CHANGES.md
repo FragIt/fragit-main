@@ -1,3 +1,12 @@
+FragIt v1.4.5 Release Notes
+===========================
+
+This is a bug-fix and minor improvements release.
+
+Updates since  v1.4.4
+
+  * updates go here ...
+
 FragIt v1.4.4 Release Notes
 ===========================
 
