@@ -1,7 +1,6 @@
-#!/usr/bin/env python
 """
 **********************************************************************
-__main__.py - FragIt command line executable
+exceptions.py - FragIt specific exceptions
 
 Copyright (C) 2010-2011 Mikael W. Ibsen
 Some portions Copyright (C) 2011-2016 Casper Steinmann
@@ -24,19 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 02110-1301, USA.
 ***********************************************************************/
 """
-# let us first consider that the user has set up the
-# PYTHONPATH environment variables correctly
-from fragit.exceptions import OBNotFoundException
-try:
-    from fragit.cmdline import main
-except ImportError:
-    # if not, let us exit in a clean way
-    print("ERROR: Could not start FragIt.")
-    print("Please add the custom installation path to the PYTHONPATH environment variable.")
-    exit()
-except OBNotFoundException:
-    print("ERROR: OpenBabel could not be loaded.")
-    print("Please make sure OpenBabel has been installed with python bindings.")
-    exit()
 
-main()
+class OBNotFoundException(Exception):
+    """ Exception to flag that OpenBabel could not be found """
+    pass

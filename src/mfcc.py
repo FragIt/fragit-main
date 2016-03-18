@@ -2,7 +2,7 @@
 **********************************************************************
 mfcc.py
 
-Copyright (C) 2013 Casper Steinmann
+Copyright (C) 2013-2016 Casper Steinmann
 
 This file is part of the FragIt project.
 
@@ -26,7 +26,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 #import sys
 #import logging
 
-import openbabel
+try:
+    import openbabel
+except ImportError:
+    raise OBNotFoundException("OpenBabel not found. Please install OpenBabel to use FragIt.")
 import numpy
 
 #from util import *

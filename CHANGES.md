@@ -1,7 +1,7 @@
 FragIt v1.5.0 Release Notes
 ===========================
 
-This update brings small changes to defaults in keywords and
+This major update brings changes to defaults in keywords and
 a major overhaul to the information printed.
 
 The changes to the defaults is mostly to make sure that users
@@ -23,6 +23,9 @@ Updates since v1.4.4
   * A new option to enable printout (especially handy when using fragit
     as an API from other programs) in the OUTPUT group:
     - verbose = False
+
+  * FragIt can now correctly inform users if it fails because OpenBabel
+    is missing. Previously this was not the case. Issue X.
 
 FragIt v1.4.4 Release Notes
 ===========================
