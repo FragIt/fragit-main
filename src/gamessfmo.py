@@ -81,9 +81,9 @@ class GamessFMO(Standard):
         active_atoms = self._getActiveAtomsFromFragments()
         if self._active_atoms_distance > 0.0:
             active_atoms = self._getActiveAtomsFromDistance()
+            if self._verbose:
+                print("Info: FragIt [GAMESS-FMO] found {0:d} atoms which should be active".format(len(active_atoms)))
 
-        if self._verbose:
-            print("Info: FragIt [GAMESS-FMO] found %i atoms which should be active" % (len(active_atoms)))
         self._active_atoms = active_atoms[:]
         atoms = self._active_atoms[:]
         frags = self._fragmentation.getFragments()
@@ -92,8 +92,11 @@ class GamessFMO(Standard):
             self._active_frags = []
             return
 
+        # 1) If there are active atoms, we must find the associated fragments
+        # 2) The associated fragments are labelled active
+        # 3) The active fragmetns have their atoms made flexible
+        # we now have region A
         if len(self._active_atoms) > 0:
-            #print "extending region A to include all atoms of close fragments"
             active_frags = [] #self._active_fragments[:]
             active_frags.append(self._central_fragment -1) # central must also be active
             for atom in atoms:
@@ -102,6 +105,7 @@ class GamessFMO(Standard):
             active_frags = Uniqify(active_frags)
             active_frags = sorted(active_frags)
             self._active_fragments = active_frags[:]
+
             # promote active fragments to layer 2
             for active_fragment_id in active_frags:
                 self._fragment_layers[active_fragment_id] = 2
@@ -112,16 +116,16 @@ class GamessFMO(Standard):
                 atoms.extend(fragments[frag])
             atoms = Uniqify(atoms)
             atoms = sorted(atoms)
-            #print "active region is now %i atoms large (%i fragments)" % (len(atoms),len(active_frags))
-        #print atoms
+            if self._verbose:
+                print("Info: FragIt [GAMESS-FMO] active region is now %i atoms (%i fragments) " % (len(active_atoms), len(active_frags)))
+
+        # Optionally freeze backbone atoms in the active region
         if self._freeze_backbone:
-            #print "attempting to find and freeze backbone atoms in the active region"
             for item in self._fragmentation.getBackboneAtoms():
                 if item in atoms:
                     atoms.remove(item)
                     continue
-            #print "active region is now %i atoms large (%i fragments)" % (len(atoms),len(active_frags))
-        #print atoms
+
         atoms = Uniqify(atoms)
         atoms = sorted(atoms)
         self._active_atoms = atoms[:]
@@ -132,6 +136,12 @@ class GamessFMO(Standard):
                 return i
 
     def _validateMultiLayerInformation(self):
+        """ Validates multilayer (and FD) information and attemps
+            to fix any issues should be be present.
+
+            This method makes sure that the buffer region, b, around the active region A is
+            does not have close contacts between A and F.
+        """
         active_atoms = self._active_atoms[:]
         active_fragments = self._active_fragments[:]
         fragment_layers = self._fragment_layers[:]
@@ -141,22 +151,31 @@ class GamessFMO(Standard):
                 #print "removing atom %i" % atom
                 self._active_atoms.remove(atom)
 
-        # make sure that no active fragment is next to (physically)
-        # an inactive one
+        # Here we make sure that fragments in A are not physically close
+        # to fragments in F.
+        # We do this by extending B (which includes A) with a buffer region, b,
+        # with the buffer distance that a user wants.
+        # Technically we promote the fragments in b to layer 2
         if(len(active_atoms) > 0 and len(active_fragments) > 0):
             for active_fragment_index in active_fragments:
                 active_fragment = fragments[active_fragment_index]
                 distance_vector = self._getFragmentDistancesVector(active_fragment)
                 selection = where( (0.1 < distance_vector) & (distance_vector < self._buffer_maximum_distance))
                 self._fragment_layers[selection] = 2
-            frags = list()
-            for i,k in enumerate(self._fragment_layers):
-                if k == 2: frags.append(i)
-            atms = list()
-            for frag in frags:
-                atms.extend(fragments[frag])
-            #print "buffer region is %i atoms (%i fragments)" % (len(atms),len(frags))
-            self._active_atoms = active_atoms[:]
+
+            if self._verbose:
+                frags = list()
+                for i,k in enumerate(self._fragment_layers):
+                    if k == 2:
+                        frags.append(i)
+
+                atms = list()
+                for frag in frags:
+                    atms.extend(fragments[frag])
+
+                print("Info: FragIt [GAMESS-FMO] Region B is {0:d} atoms ({0:d} fragments)".format(len(atms), len(frags)))
+
+        self._active_atoms = active_atoms[:]
 
     def _isAtomInActiveLayer(self, atom):
         frags = self._fragmentation.getFragments()

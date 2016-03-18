@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 """
 import os
 
-from exceptions import OBNotFoundException
+from fragit_exceptions import OBNotFoundException
 try:
     import openbabel
 except ImportError:

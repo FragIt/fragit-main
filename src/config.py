@@ -346,8 +346,8 @@ class FragItConfig(object):
     def useAtomNames(self):
         return self.values['output']['useatomnames']
 
-  def getVerbose(self):
-    return self.values['output']['verbose']
+    def getVerbose(self):
+        return self.values['output']['verbose']
 
     def getMFCCOrder(self):
         return self.values['mfcc']['order']
