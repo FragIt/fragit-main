@@ -45,6 +45,7 @@ class Standard(object):
 		self._input_filename = None
 		self._do_jmol = False
 		self._do_pymol = False
+                self._verbose = self._fragmentation.getVerbose()
 
 	def writeFile(self):
 		raise NotImplementedError
