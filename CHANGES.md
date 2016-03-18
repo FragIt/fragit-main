@@ -25,7 +25,7 @@ Updates since v1.4.4
     - verbose = False
 
   * FragIt can now correctly inform users if it fails because OpenBabel
-    is missing. Previously this was not the case. Issue X.
+    is missing. Previously this was not the case. Issue 13.
 
 FragIt v1.4.4 Release Notes
 ===========================
