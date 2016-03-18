@@ -54,6 +54,7 @@ class Fragmentation(FragItConfig):
         self._atoms = []
         self._fixAtomsAndCharges()
 	self._elements = openbabel.OBElementTable()
+        self._verbose = self.getVerbose()
 
     def _removeMetalAtoms(self):
         _metalAtoms = []
@@ -253,6 +254,8 @@ class Fragmentation(FragItConfig):
         breakPatterns = self.getBreakPatterns()
         for bondType in breakPatterns.keys():
             pattern = breakPatterns[bondType]
+            if self._verbose:
+                print("bond: '{0:s}' with pattern '{1:s}'".format(bondType, pattern))
             if len(pattern) == 0: continue
             self.pat.Init(pattern)
             self.pat.Match( self.mol )
@@ -261,6 +264,8 @@ class Fragmentation(FragItConfig):
 
     def realBondBreaker(self, bondtype, bond_pair):
         if self.isBondProtected(bond_pair):
+            if self._verbose:
+                print("  bond pair: {} has protection: {}".format(bond_pair, self.isBondProtected(bond_pair)))
             return
         self.addExplicitlyBreakAtomPairs([bond_pair])
 
@@ -449,11 +454,14 @@ class Fragmentation(FragItConfig):
         # if there are items left in "atoms_no_name" try to name them
         #print atoms_no_name
         if len(atoms_no_name) > 0:
-            print("Info: FragIt will now try to name remaining {0:3d} atoms".format(len(atoms_no_name)))
+            if self._verbose:
+                print("Info: FragIt will now try to name remaining {0:3d} atoms".format(len(atoms_no_name)))
+
             for i, id in enumerate(atoms_no_name):
                 atom = self.mol.GetAtom(id+1)
-                #print id, atom, atom.GetType()
                 self._atom_names.append(atom.GetType())
+                if self._verbose:
+                    print("   atom {0:4d} is forced to have name '{1:s}'".format(id, atom.GetType()))
 
         #print self._atom_names
 
@@ -474,3 +482,9 @@ class Fragmentation(FragItConfig):
 
     def hasAtomNames(self):
         return len(self._atom_names) > 0
+
+    def printFragment(self, i_frag, atoms):
+        print("")
+        print("Fragment {0:4d} has {1:4d} atoms".format(i_frag+1, len(atoms)))
+        for iat, atom in enumerate(atoms):
+            print("{0:4d}{1:5d}".format(iat, atom))

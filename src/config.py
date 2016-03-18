@@ -56,6 +56,7 @@ class FragItData(dict):
         self.data_types['hbonddistancemax']=float
         self.data_types['includecovalent']=bool
         self.data_types['includeallwithin']=float
+        self.data_types['verbose']=bool
 
         # items here are complex values that need
         # specific parsing later on
@@ -74,6 +75,7 @@ class FragItData(dict):
         self['fragmentation']['combinefragments'] = "" # list of integers
 
         self['output'] = dict()
+        self['output']['verbose']=True
         self['output']['boundaries']=""
         self['output']['buffer']=0.0
         self['output']['active']=0.0
@@ -343,6 +345,9 @@ class FragItConfig(object):
 
     def useAtomNames(self):
         return self.values['output']['useatomnames']
+
+    def getVerbose(self):
+        return self.values['output']['verbose']
 
     def getMFCCOrder(self):
         return self.values['mfcc']['order']
