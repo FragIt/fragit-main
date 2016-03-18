@@ -1,11 +1,31 @@
-FragIt v1.4.5 Release Notes
+FragIt v1.5.0 Release Notes
 ===========================
 
-This is a bug-fix and minor improvements release.
+This major update brings changes to defaults in keywords and
+a major overhaul to the information printed.
 
-Updates since  v1.4.4
+The changes to the defaults is mostly to make sure that users
+of the API get something sensible back per default without having
+to make too many changes before they get started.
 
-  * updates go here ...
+Updates since v1.4.4
+
+  * Default values were changed for some parameters for the QM/MM
+    group. The new values are:
+    - includehbonddonors = False
+    - includehbondacceptors = False
+    - includecovalent = False
+
+  * Default values were changed for a single parameter for the OUTPUT
+    group. The new value is:
+    - useatomnames = True
+
+  * A new option to enable printout (especially handy when using fragit
+    as an API from other programs) in the OUTPUT group:
+    - verbose = False
+
+  * FragIt can now correctly inform users if it fails because OpenBabel
+    is missing. Previously this was not the case. Issue 13.
 
 FragIt v1.4.4 Release Notes
 ===========================

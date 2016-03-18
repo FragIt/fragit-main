@@ -66,8 +66,6 @@ class FragItData(dict):
         self.data_types['pairs']=str
         self.data_types['atomids']=str
         self.data_types['combinefragments'] = str
-        self.data_types['lcap']=str
-        self.data_types['rcap']=str
 
         self['fragmentation'] = dict()
         self['fragmentation']['maxfragsize']=50
@@ -85,7 +83,7 @@ class FragItData(dict):
         self['output']['writepymol']=False
         self['output']['writejmol']=False
         self['output']['centralfragment']=0
-        self['output']['useatomnames'] = False
+        self['output']['useatomnames'] = True
 
         self['fragmentpatterns'] = dict()
         self['fragmentpatterns']['peptide']="[$(CN)][$(C(=O)NCC(=O))]"
@@ -105,20 +103,18 @@ class FragItData(dict):
         self['explicitprotectatoms']['atomids']="" # list of integers
 
         self['mfcc'] = dict()
-        #self['mfcc']['lcap'] = "" # string, no default capping to the left
-        #self['mfcc']['rcap'] = "" # string, no default capping to the right
         self['mfcc']['order'] = 0
 
         # options to control QM/MM refinement
         self['qmmm'] = dict()
-        self['qmmm']['includehbonddonors'] = True
-        self['qmmm']['includehbondacceptors'] = True
+        self['qmmm']['includehbonddonors'] = False
+        self['qmmm']['includehbondacceptors'] = False
         # angle > 110 is according to:
         # http://pac.iupac.org/publications/pac/pdf/2011/pdf/8308x1637.pdf
         self['qmmm']['hbondangle'] = 110.0
         self['qmmm']['hbonddistancemin'] = 2.5
         self['qmmm']['hbonddistancemax'] = 3.9
-        self['qmmm']['includecovalent'] = True
+        self['qmmm']['includecovalent'] = False
         self['qmmm']['includeallwithin'] = 0.0
 
     def getType(self, option, section):
@@ -352,13 +348,6 @@ class FragItConfig(object):
 
   def getVerbose(self):
     return self.values['output']['verbose']
-
-
-#    def getMFCCLeftCap(self):
-#        return self.values['mfcc']['lcap']
-#
-#    def getMFCCRightCap(self):
-#        return self.values['mfcc']['rcap']
 
     def getMFCCOrder(self):
         return self.values['mfcc']['order']

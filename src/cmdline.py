@@ -2,7 +2,7 @@
 **********************************************************************
 cmdline.py
 
-Copyright (C) 2011-2013 Casper Steinmann
+Copyright (C) 2011-2016 Casper Steinmann
 
 This file is part of the FragIt project.
 
@@ -28,9 +28,7 @@ from optparse import OptionParser, OptionGroup
 
 from util import fileToMol, file_basename
 from fragmentation import Fragmentation
-
 from outputformats import get_writer_and_extension
-
 
 import strings
 
