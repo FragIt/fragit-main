@@ -255,17 +255,20 @@ class Fragmentation(FragItConfig):
         for bondType in breakPatterns.keys():
             pattern = breakPatterns[bondType]
             if self._verbose:
-                print("bond: '{0:s}' with pattern '{1:s}'".format(bondType, pattern))
+                print("Info: Fragit looks for '{0:s}' bonds with pattern '{1:s}'".format(bondType, pattern))
             if len(pattern) == 0: continue
             self.pat.Init(pattern)
             self.pat.Match( self.mol )
-            for p in self.pat.GetUMapList():
+            matches = self.pat.GetUMapList()
+            if self._verbose:
+                print("  found {0:d} matching bonds.".format(len())
+            for p in matches:
                 self.realBondBreaker(bondType, p)
 
     def realBondBreaker(self, bondtype, bond_pair):
         if self.isBondProtected(bond_pair):
             if self._verbose:
-                print("  bond pair: {} has protection: {}".format(bond_pair, self.isBondProtected(bond_pair)))
+                print("  bond pair: {} will not be broken.".format(bond_pair))
             return
         self.addExplicitlyBreakAtomPairs([bond_pair])
 
@@ -484,7 +487,7 @@ class Fragmentation(FragItConfig):
         return len(self._atom_names) > 0
 
     def printFragment(self, i_frag, atoms):
-        print("")
+        print("{0:d}".format(len(atoms)))
         print("Fragment {0:4d} has {1:4d} atoms".format(i_frag+1, len(atoms)))
         for iat, atom in enumerate(atoms):
             print("{0:4d}{1:5d}".format(iat, atom))
