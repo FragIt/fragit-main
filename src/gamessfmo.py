@@ -94,7 +94,7 @@ class GamessFMO(Standard):
 
         # 1) If there are active atoms, we must find the associated fragments
         # 2) The associated fragments are labelled active
-        # 3) The active fragmetns have their atoms made flexible
+        # 3) The active fragments have their atoms made flexible
         # we now have region A
         if len(self._active_atoms) > 0:
             active_frags = [] #self._active_fragments[:]
@@ -116,8 +116,8 @@ class GamessFMO(Standard):
                 atoms.extend(fragments[frag])
             atoms = Uniqify(atoms)
             atoms = sorted(atoms)
-            if self._verbose:
-                print("Info: FragIt [GAMESS-FMO] active region is now %i atoms (%i fragments) " % (len(active_atoms), len(active_frags)))
+            if self._verbose and len(atoms) != len(self._active_atoms):
+                print("Info: FragIt [GAMESS-FMO] active region is now {0:d} atoms ({1:d} fragments) ".format(len(active_atoms), len(active_frags)))
 
         # Optionally freeze backbone atoms in the active region
         if self._freeze_backbone:
@@ -173,7 +173,7 @@ class GamessFMO(Standard):
                 for frag in frags:
                     atms.extend(fragments[frag])
 
-                print("Info: FragIt [GAMESS-FMO] Region B is {0:d} atoms ({0:d} fragments)".format(len(atms), len(frags)))
+                print("Info: FragIt [GAMESS-FMO] Region B is {0:d} atoms ({1:d} fragments)".format(len(atms), len(frags)))
 
         self._active_atoms = active_atoms[:]
 
