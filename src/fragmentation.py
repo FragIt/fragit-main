@@ -261,7 +261,7 @@ class Fragmentation(FragItConfig):
             self.pat.Match( self.mol )
             matches = self.pat.GetUMapList()
             if self._verbose:
-                print("  found {0:d} matching bonds.".format(len(matches))
+                print("  found {0:d} matching bonds.".format(len(matches)))
             for p in matches:
                 self.realBondBreaker(bondType, p)
 
