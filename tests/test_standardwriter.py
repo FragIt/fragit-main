@@ -2,7 +2,7 @@
 **********************************************************************
 tests/test_StandardWriter.py - test cases for Standard Writer
 
-Copyright (C) 2012 Casper Steinmann
+Copyright (C) 2016 Casper Steinmann
 
 This file is part of the FragIt project.
 
@@ -33,7 +33,7 @@ class TestStandardWriterModule(unittest.TestCase):
     def setUp(self):
       self.molecule = fileToMol("tests/1UAO.pdb")
       self.fragmentation = Fragmentation(self.molecule)
-      self.standardwriter = Standard(Fragmentation)
+      self.standardwriter = Standard(self.fragmentation)
 
     def test_defaults(self):
       self.assertEqual(self.standardwriter._nlayers, 1)
