@@ -173,7 +173,7 @@ class GamessFMO(Standard):
                 for frag in frags:
                     atms.extend(fragments[frag])
 
-                print("Info: FragIt [GAMESS-FMO] Region B is {0:d} atoms ({1:d} fragments)".format(len(atms), len(frags)))
+                print("Info: FragIt [GAMESS-FMO] region B is {0:d} atoms ({1:d} fragments)".format(len(atms), len(frags)))
 
         self._active_atoms = active_atoms[:]
 

@@ -24,6 +24,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 ***********************************************************************/
 """
 
-class OBNotFoundException(Exception):
+class OBNotFoundException(ImportError):
     """ Exception to flag that OpenBabel could not be found """
     pass
