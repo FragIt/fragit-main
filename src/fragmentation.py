@@ -272,7 +272,7 @@ class Fragmentation(FragItConfig):
         for bondType in breakPatterns.keys():
             pattern = breakPatterns[bondType]
             if self._verbose:
-                print("Info: Fragit looks for '{0:s}' bonds with pattern '{1:s}'".format(bondType, pattern))
+                print("Info: Fragit [FRAGMENTATION] looks for '{0:s}' bonds with pattern '{1:s}'".format(bondType, pattern))
             if len(pattern) == 0: continue
             self.pat.Init(pattern)
             self.pat.Match( self.mol )
