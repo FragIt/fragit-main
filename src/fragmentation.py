@@ -102,7 +102,7 @@ class Fragmentation(FragItConfig):
         model = self.getChargeModel()
         charge_model = openbabel.OBChargeModel.FindType(model)
         if charge_model is None:
-            raise ValueError("Error: FragIt could not use the charge model '{0:s}'".format(model))
+            raise ValueError("Error: FragIt [FRAGMENTATION] could not use the charge model '{0:s}'".format(model))
 
         self.formalCharges = [0.0 for i in range(self.mol.NumAtoms())]
         if charge_model.ComputeCharges(self.mol):
@@ -113,7 +113,7 @@ class Fragmentation(FragItConfig):
         # add back the metals, use the formal charges
         for atom in _metalAtoms:
             if not self.mol.AddAtom(atom):
-                raise Exception("Error: FragIt encountered an error when reinserting the metals.")
+                raise Exception("Error: FragIt [FRAGMENTATION] encountered an error when reinserting the metals.")
             else:
                 self._atoms.append(atom)
                 self.formalCharges.append(atom.GetFormalCharge())
@@ -397,14 +397,14 @@ class Fragmentation(FragItConfig):
         try:
             charge = sum([self.formalCharges[atom_idx-1] for atom_idx in fragment])
         except IndexError:
-            print "Error: FragIt found that fragment %s has invalid charges." % (fragment)
+            print "Error: FragIt [FRAGMENTATION] found that fragment %s has invalid charges." % (fragment)
         return charge
 
     def validateTotalCharge(self):
         total_charge2 = sum(self.formalCharges)
         total_charge2 = int(round(total_charge2,0))
         if (self.total_charge != total_charge2):
-            s  = "Error: FragIt cannot determine the charges of fragments correctly.\n"
+            s  = "Error: FragIt [FRAGMENTATION] cannot determine the charges of fragments correctly.\n"
             s += "       This is likely a problem in your structure, fragmentation\n."
             s += "       patterns or OpenBabel. Or a combination of the above.\n"
             s += "       Total charge = {0:d}. Sum of fragment charges = {1:d}".format(self.total_charge, total_charge2)
@@ -480,7 +480,7 @@ class Fragmentation(FragItConfig):
         #print atoms_no_name
         if len(atoms_no_name) > 0:
             if self._verbose:
-                print("Info: FragIt will now try to name remaining {0:3d} atoms".format(len(atoms_no_name)))
+                print("Info: FragIt [FRAGMENTATION] will now try to name remaining {0:3d} atoms".format(len(atoms_no_name)))
 
             for i, id in enumerate(atoms_no_name):
                 atom = self.mol.GetAtom(id+1)
@@ -518,11 +518,11 @@ class Fragmentation(FragItConfig):
         if not self._verbose:
             return
 
-        print("Info: FragIt will break the following bonds defined in config file:")
+        print("Info: FragIt [FRAGMENTATION] will break the following bonds defined in config file:")
         for pair in self.getExplicitlyBreakAtomPairs():
             try:
                 if self.isValidExplicitBond(pair):
                     print("   bond between atoms {0:s}.".format(pair))
             except ValueError:
-                print("Error: FragIt found that the bond between atoms {0:s} is not valid.".format(pair))
+                print("Error: FragIt [FRAGMENTATION] found that the bond between atoms {0:s} is not valid.".format(pair))
                 raise
