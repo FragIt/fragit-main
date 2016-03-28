@@ -24,6 +24,8 @@ Updates since v1.4.4
     as an API from other programs) in the OUTPUT group:
     - verbose = False
 
+    when set to true, FragIt will print information on its doings.
+
   * FragIt can now correctly inform users if it fails because OpenBabel
     is missing. Previously this was not the case. Issue 13.
 
