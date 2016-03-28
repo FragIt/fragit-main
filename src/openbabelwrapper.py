@@ -2,7 +2,7 @@
 **********************************************************************
 openbabelwrapper.py
 
-Copyright (C) 2011-2012 Casper Steinmann
+Copyright (C) 2011-2016 Casper Steinmann
 
 This file is part of the FragIt project.
 
@@ -23,7 +23,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 ***********************************************************************/
 """
 
-import openbabel
+try:
+    import openbabel
+except ImportError:
+    raise OBNotFoundException("OpenBabel not found. Please install OpenBabel to use FragIt.")
 from util import file_extension
 
 class Molecule(object):

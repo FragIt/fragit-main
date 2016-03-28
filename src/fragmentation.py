@@ -3,7 +3,7 @@
 fragmentation.py
 
 Copyright (C) 2010-2011 Mikael W. Ibsen
-Some portions Copyright (C) 2011-2015 Casper Steinmann
+Some portions Copyright (C) 2011-2016 Casper Steinmann
 
 This file is part of the FragIt project.
 
@@ -25,9 +25,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 """
 import os
 import sys
-import logging
 
-import openbabel
+try:
+    import openbabel
+except ImportError:
+    raise OBNotFoundException("OpenBabel not found. Please install OpenBabel to use FragIt.")
 import numpy
 
 from util import *
@@ -52,6 +54,7 @@ class Fragmentation(FragItConfig):
         self._atoms = []
         self._fixAtomsAndCharges()
 	self._elements = openbabel.OBElementTable()
+        self._verbose = self.getVerbose()
 
     def _removeMetalAtoms(self):
         _metalAtoms = []
@@ -98,28 +101,37 @@ class Fragmentation(FragItConfig):
         # now lets do the charges (without the metals)
         model = self.getChargeModel()
         charge_model = openbabel.OBChargeModel.FindType(model)
-        if charge_model is None: raise ValueError("The charge model '%s' is not valid" % model)
+        if charge_model is None:
+            raise ValueError("Error: FragIt [FRAGMENTATION] could not use the charge model '{0:s}'".format(model))
 
         self.formalCharges = [0.0 for i in range(self.mol.NumAtoms())]
         if charge_model.ComputeCharges(self.mol):
             self.formalCharges = list(charge_model.GetPartialCharges())
         else:
-            print "charges are not available."
+            print("Info: Fragment charges are not available.")
 
         # add back the metals, use the formal charges
         for atom in _metalAtoms:
             if not self.mol.AddAtom(atom):
-                raise Exception("An error occured with the metals")
+                raise Exception("Error: FragIt [FRAGMENTATION] encountered an error when reinserting the metals.")
             else:
                 self._atoms.append(atom)
                 self.formalCharges.append(atom.GetFormalCharge())
 
     def beginFragmentation(self):
+        self.printPreFragmentationInformation()
         self.identifyBackboneAtoms()
         self.identifyMergeableAtoms()
         self.identifyResidues()
-        if self.useAtomNames(): self.nameAtoms()
+        if self.useAtomNames():
+            self.nameAtoms()
         self.setProtectedAtoms()
+
+    def identifyBackboneAtoms(self):
+        pattern = "N([*])C([H])C(=O)"
+        self.pat.Init(pattern)
+        self.pat.Match(self.mol)
+        self._backbone_atoms = Uniqify(self._listMatches(self.pat.GetUMapList()))
 
     def identifyMergeableAtoms(self):
         patterns = self.getMergePatterns()
@@ -163,6 +175,9 @@ class Fragmentation(FragItConfig):
         return fragments_to_merge
 
     def doFragmentation(self):
+        """ Performas the actual fragmentation based on the
+            actions performed in beginFragmentation
+        """
         self.breakBonds()
         self.determineFragments()
 
@@ -230,7 +245,8 @@ class Fragmentation(FragItConfig):
     def isBondProtected(self,bond_pair):
         protected_atoms = self.getExplicitlyProtectedAtoms()
         for bond_atom in bond_pair:
-            if bond_atom in protected_atoms: return True
+            if bond_atom in protected_atoms:
+                return True
         return False
 
     def breakBonds(self):
@@ -239,8 +255,12 @@ class Fragmentation(FragItConfig):
 
     def _DeleteOBMolBonds(self):
         for pair in self.getExplicitlyBreakAtomPairs():
-            if not self.isValidExplicitBond(pair): continue
-            if self.isBondProtected(pair): continue
+            if not self.isValidExplicitBond(pair):
+                continue
+
+            if self.isBondProtected(pair):
+                continue
+
             self._DeleteOBMolBond(pair)
 
     def _DeleteOBMolBond(self,pair):
@@ -251,23 +271,35 @@ class Fragmentation(FragItConfig):
         breakPatterns = self.getBreakPatterns()
         for bondType in breakPatterns.keys():
             pattern = breakPatterns[bondType]
+            if self._verbose:
+                print("Info: Fragit [FRAGMENTATION] looks for '{0:s}' bonds with pattern '{1:s}'".format(bondType, pattern))
             if len(pattern) == 0: continue
             self.pat.Init(pattern)
             self.pat.Match( self.mol )
-            for p in self.pat.GetUMapList():
+            matches = self.pat.GetUMapList()
+            if self._verbose:
+                print("  found {0:d} matching bonds.".format(len(matches)))
+            for p in matches:
                 self.realBondBreaker(bondType, p)
 
     def realBondBreaker(self, bondtype, bond_pair):
         if self.isBondProtected(bond_pair):
+            if self._verbose:
+                print("    bond pair: {} will not be broken.".format(bond_pair))
             return
         self.addExplicitlyBreakAtomPairs([bond_pair])
 
     def isValidExplicitBond(self, pair):
-        if pair[0] == pair[1]: raise ValueError("fragment pair must be two different atoms.")
-        if self.mol.GetBond(pair[0],pair[1]) == None: raise ValueError("fragment pair must be connected.")
+        if pair[0] == pair[1]:
+            raise ValueError("Error: Fragment pair '{0:s}' must be two different atoms.".format(pair))
+        if self.mol.GetBond(pair[0],pair[1]) is None:
+            raise ValueError("Error: Fragment pair '{0:s}' must be connected with a bond.".format(pair))
         return True
 
     def determineFragments(self):
+        """ Determines the individual fragments by gathering up atoms
+            that belong to each fragment.
+        """
         self.getUniqueFragments()
         self.findRemainingFragments()
         self.doSanityCheckOnFragments()
@@ -280,10 +312,18 @@ class Fragmentation(FragItConfig):
         result = uniqifyListOfLists(result)
         self._fragments = sorted(result)
 
+    def findRemainingFragments(self):
+        remainingAtoms = listDiff(range(1, self.mol.NumAtoms() + 1), ravel2D(self._fragments))
+        while len(remainingAtoms) > 0:
+            newfrag = self.getAtomsInSameFragment(remainingAtoms[0])
+            remainingAtoms = listDiff(remainingAtoms, newfrag)
+            self._fragments.append(newfrag)
+
     def doSanityCheckOnFragments(self):
+        """ Performs some level of sanity check on the generated fragments. """
         frag_sizes = lenOfLists(self._fragments)
         if (max(frag_sizes) > self.getMaximumFragmentSize()):
-            raise ValueError("Fragment size too big. Found %i, Max is %i" % (max(frag_sizes),self.getMaximumFragmentSize()))
+            raise ValueError("Error: Fragment size too big. Found %i, Max is %i" % (max(frag_sizes),self.getMaximumFragmentSize()))
 
     def _CleanMergedBonds(self):
         broken_bonds = self.getExplicitlyBreakAtomPairs()
@@ -357,14 +397,19 @@ class Fragmentation(FragItConfig):
         try:
             charge = sum([self.formalCharges[atom_idx-1] for atom_idx in fragment])
         except IndexError:
-            print "Fragment %s has invalid charges." % (fragment)
+            print "Error: FragIt [FRAGMENTATION] found that fragment %s has invalid charges." % (fragment)
         return charge
 
     def validateTotalCharge(self):
         total_charge2 = sum(self.formalCharges)
         total_charge2 = int(round(total_charge2,0))
         if (self.total_charge != total_charge2):
-            raise ValueError("Due to rounding of floats, the sum of fragment charges = %i is wrong. Total charge = %i" %(total_charge2, self.total_charge))
+            s  = "Error: FragIt [FRAGMENTATION] cannot determine the charges of fragments correctly.\n"
+            s += "       This is likely a problem in your structure, fragmentation\n."
+            s += "       patterns or OpenBabel. Or a combination of the above.\n"
+            s += "       Total charge = {0:d}. Sum of fragment charges = {1:d}".format(self.total_charge, total_charge2)
+            print(s)
+            raise ValueError("Error: Total charge = {0:d}. Sum of fragment charges = {1:d}".format(self.total_charge, total_charge2))
 
     def getAtomsInSameFragment(self, a1, a2 = 0):
         if not is_int(a1) or not is_int(a2): raise ValueError
@@ -373,13 +418,6 @@ class Fragmentation(FragItConfig):
         self.mol.FindChildren(tmp, a2, a1)
         fragment = sorted(toList(tmp) + [a1])
         return fragment
-
-    def findRemainingFragments(self):
-        remainingAtoms = listDiff(range(1, self.mol.NumAtoms() + 1), ravel2D(self._fragments))
-        while len(remainingAtoms) > 0:
-            newfrag = self.getAtomsInSameFragment(remainingAtoms[0])
-            remainingAtoms = listDiff(remainingAtoms, newfrag)
-            self._fragments.append(newfrag)
 
     def getOBAtom(self, atom_index):
         if not is_int(atom_index): raise ValueError
@@ -414,12 +452,6 @@ class Fragmentation(FragItConfig):
                         return residue.GetName()
         return "None"
 
-    def identifyBackboneAtoms(self):
-        pattern = "N([*])C([H])C(=O)"
-        self.pat.Init(pattern)
-        self.pat.Match(self.mol)
-        self._backbone_atoms = Uniqify(self._listMatches(self.pat.GetUMapList()))
-
     def getBackboneAtoms(self):
         return self._backbone_atoms
 
@@ -447,11 +479,14 @@ class Fragmentation(FragItConfig):
         # if there are items left in "atoms_no_name" try to name them
         #print atoms_no_name
         if len(atoms_no_name) > 0:
-            print("Info: FragIt will now try to name remaining {0:3d} atoms".format(len(atoms_no_name)))
+            if self._verbose:
+                print("Info: FragIt [FRAGMENTATION] will now try to name remaining {0:3d} atoms".format(len(atoms_no_name)))
+
             for i, id in enumerate(atoms_no_name):
                 atom = self.mol.GetAtom(id+1)
-                #print id, atom, atom.GetType()
                 self._atom_names.append(atom.GetType())
+                if self._verbose:
+                    print("   atom {0:4d} is forced to have name '{1:s}'".format(id, atom.GetType()))
 
         #print self._atom_names
 
@@ -472,3 +507,22 @@ class Fragmentation(FragItConfig):
 
     def hasAtomNames(self):
         return len(self._atom_names) > 0
+
+    def printFragment(self, i_frag, atoms):
+        print("{0:d}".format(len(atoms)))
+        print("Fragment {0:4d} has {1:4d} atoms".format(i_frag+1, len(atoms)))
+        for iat, atom in enumerate(atoms):
+            print("{0:4d}{1:5d}".format(iat, atom))
+
+    def printPreFragmentationInformation(self):
+        if not self._verbose:
+            return
+
+        print("Info: FragIt [FRAGMENTATION] will break the following bonds defined in config file:")
+        for pair in self.getExplicitlyBreakAtomPairs():
+            try:
+                if self.isValidExplicitBond(pair):
+                    print("   bond between atoms {0:s}.".format(pair))
+            except ValueError:
+                print("Error: FragIt [FRAGMENTATION] found that the bond between atoms {0:s} is not valid.".format(pair))
+                raise

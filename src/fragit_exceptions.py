@@ -1,8 +1,9 @@
 """
 **********************************************************************
-strings.py
+exceptions.py - FragIt specific exceptions
 
-Copyright (C) 2011-2016 Casper Steinmann
+Copyright (C) 2010-2011 Mikael W. Ibsen
+Some portions Copyright (C) 2011-2016 Casper Steinmann
 
 This file is part of the FragIt project.
 
@@ -23,9 +24,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 ***********************************************************************/
 """
 
-version = ("1","5","0")
-version_str = ".".join(version)
-
-description = """FragIt fragments molecules for fragment based methods. The output of FragIt is an input file which can be run in a suitable quantum chemistry program"""
-
-usage = "Usage: %prog <options> molecule"
+class OBNotFoundException(ImportError):
+    """ Exception to flag that OpenBabel could not be found """
+    pass

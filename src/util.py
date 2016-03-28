@@ -24,7 +24,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 ***********************************************************************/
 """
 import os
-import openbabel
+
+from fragit_exceptions import OBNotFoundException
+try:
+    import openbabel
+except ImportError:
+    raise OBNotFoundException("OpenBabel not found. Please install OpenBabel to use FragIt.")
+
 import numpy
 
 def isEqual(a, b):

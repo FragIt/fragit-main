@@ -4,7 +4,7 @@
 __main__.py - FragIt command line executable
 
 Copyright (C) 2010-2011 Mikael W. Ibsen
-Some portions Copyright (C) 2011-2013 Casper Steinmann
+Some portions Copyright (C) 2011-2016 Casper Steinmann
 
 This file is part of the FragIt project.
 
@@ -27,11 +27,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # let us first consider that the user has set up the
 # PYTHONPATH environment variables correctly
 try:
-    from fragit.cmdline import main
+    from fragit.fragit_exceptions import OBNotFoundException
 except ImportError:
     # if not, let us exit in a clean way
     print("ERROR: Could not start FragIt.")
     print("Please add the custom installation path to the PYTHONPATH environment variable.")
+    exit()
+
+try:
+    from fragit.cmdline import main
+except OBNotFoundException:
+    print("ERROR: OpenBabel could not be loaded.")
+    print("Please make sure OpenBabel has been installed with python bindings.")
     exit()
 
 main()
