@@ -189,8 +189,8 @@ class GamessFMO(Standard):
     def writeFile(self, filename):
         outStringTemplate = "%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n"
         outString = outStringTemplate % (    self.SYSTEMgroup(),self.GDDIgroup(),self.SCFgroup(),
-                            self.CONTRLgroup(),self.BASISgroup(),self.FMOgroup(),
-                            self.FMOPRPgroup(),self.FMOBNDgroup(),self.DATAgroup(),
+                            self.CONTRLgroup(),self.BASISgroup(),self.FMOPRPgroup(),
+                            self.FMOgroup(),self.FMOBNDgroup(),self.DATAgroup(),
                             self.FMOXYZgroup())
         WriteStringToFile(filename, outString)
 
