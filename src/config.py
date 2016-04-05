@@ -154,6 +154,9 @@ class FragItConfig(object):
                 self.values[section][key] = value
 
     def writeConfigurationToFile(self,file):
+        if is_string(file):
+            raise ValueError("Deprecated: File parameter currently only accepts a file handle, not filename.")
+
         self._addSections()
         self.cfg.write(file)
 
