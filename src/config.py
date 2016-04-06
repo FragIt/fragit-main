@@ -147,6 +147,11 @@ class FragItDataPE(FragItDataBase):
         self['mfcc']['order'] = 2
 
 
+# export all config settings so they can be
+# loaded at a later time.
+ConfigSettings = {'BARE': FragItDataBase, 'FMO': FragItDataFMO, 'PE': FragItDataPE}
+
+
 class FragItConfig(object):
     def __init__(self, defaults=FragItDataFMO, **kwargs):
         filename = kwargs.get('filename', None)
@@ -399,7 +404,3 @@ class FragItConfig(object):
     def getQMMMIncludeAllWithinDistance(self):
         return self.values['qmmm']['includeallwithin']
 
-if __name__ == '__main__':
-    cfg = FragItConfig()
-    cfg.readConfigurationFromFile("my1.conf")
-    cfg.writeConfigurationToFile("my2.conf")
