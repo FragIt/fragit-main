@@ -213,7 +213,9 @@ class TestFragmentationModule(unittest.TestCase):
 
     def test_writereadconfiguration_basic(self):
         filename = "temp.cfg"
-        self.fragmentation.writeConfigurationToFile(filename)
+        handle = open(filename, 'w')
+        self.fragmentation.writeConfigurationToFile(handle)
+        handle.close()
         otherfrag = Fragmentation(self.molecule)
         otherfrag.readConfigurationFromFile(filename)
         for key in otherfrag.values.keys():

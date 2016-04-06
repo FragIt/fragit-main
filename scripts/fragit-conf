@@ -1,0 +1,43 @@
+#!/usr/bin/env python
+"""
+**********************************************************************
+Copyright (C) 2016 Casper Steinmann
+***********************************************************************/
+"""
+import sys
+import argparse
+
+# let us first consider that the user has set up the
+# PYTHONPATH environment variables correctly
+try:
+    from fragit.fragit_exceptions import OBNotFoundException
+except ImportError:
+    # if not, let us exit in a clean way
+    print("ERROR: Could not start FragIt.")
+    print("Please add the custom installation path to the PYTHONPATH environment variable.")
+    exit()
+
+try:
+    from fragit.cmdline import main
+except OBNotFoundException:
+    print("ERROR: OpenBabel could not be loaded.")
+    print("Please make sure OpenBabel has been installed with python bindings.")
+    exit()
+
+
+if __name__ == '__main__':
+    from fragit import strings
+    from fragit.config import FragItConfig
+    cfg = FragItConfig()
+
+    parser = argparse.ArgumentParser(version=strings.version_str)
+    parser.add_argument("-o", type=str, metavar="FILENAME", default='', dest='output',
+                        help="Specify name of configuration file to generate.")
+    args = parser.parse_args()
+
+    handle = sys.stdout
+    if len(args.output) > 0:
+        handle = open(args.output, 'w')
+
+    cfg.writeConfigurationToFile(handle)
+    handle.close()

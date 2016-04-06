@@ -196,10 +196,11 @@ class FragItConfig(object):
                 self.values[section][key] = value
 
     def writeConfigurationToFile(self,file):
-        f = open(file,"w")
+        if is_string(file):
+            raise ValueError("Deprecated: File parameter currently only accepts a file handle, not filename.")
+
         self._addSections()
-        self.cfg.write(f)
-        f.close()
+        self.cfg.write(file)
 
     def setMaximumFragmentSize(self, value):
         if not is_int(value): raise TypeError
