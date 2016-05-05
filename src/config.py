@@ -124,6 +124,9 @@ class FragItDataFMO(FragItDataBase):
         # protection patterns are needed to remove small fragments
         self['protectpatterns']['nterminal']="[$([NH2]),$([NH3])]CC(=O)[$(NCC=O)]"
 
+        # don't use atom names when using FMO. This can cause
+        # annoying errors in GAMESS
+        self['output']['useatomnames'] = False
 
 class FragItDataPE(FragItDataBase):
     """ Initializes FragIt with options which are applicable to the
