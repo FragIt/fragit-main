@@ -1,40 +1,18 @@
 """
-**********************************************************************
-config.py
-
 Copyright (C) 2010-2011 Mikael W. Ibsen
-Some portions Copyright (C) 2011-2013 Casper Steinmann
-
-This file is part of the FragIt project.
-
-FragIt is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-FragIt is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301, USA.
-***********************************************************************/
+Some portions Copyright (C) 2011-2016 Casper Steinmann
 """
 import sys
 
 from util import *
 from ConfigParser import RawConfigParser
 
-class FragItData(dict):
+class FragItDataBase(dict):
     """default data for FragIt"""
     def __init__(self, *args):
         dict.__init__(self, args)
         self.data_types=dict()
         self.data_types['maxfragsize'] = int
-        #self.data_types['minfragsize'] = int
         self.data_types['writer'] = str
         self.data_types['groupcount']=int
         self.data_types['boundaries']=str
@@ -68,8 +46,8 @@ class FragItData(dict):
         self.data_types['combinefragments'] = str
 
         self['fragmentation'] = dict()
-        self['fragmentation']['maxfragsize']=50
-        self['fragmentation']['writer']="GAMESS-FMO"
+        self['fragmentation']['maxfragsize']=100
+        self['fragmentation']['writer']="XYZ"
         self['fragmentation']['groupcount']=1
         self['fragmentation']['chargemodel']="MMFF94"
         self['fragmentation']['combinefragments'] = "" # list of integers
@@ -85,13 +63,11 @@ class FragItData(dict):
         self['output']['centralfragment']=0
         self['output']['useatomnames'] = True
 
+        # Fragmentation patterns are set in the individual settings below
         self['fragmentpatterns'] = dict()
-        self['fragmentpatterns']['peptide']="[$(CN)][$(C(=O)NCC(=O))]"
-        self['fragmentpatterns']['a-d-pyranose']="[$(C1C(CO)OC(O)C(O)C1(O))][$(OC1C(O)C(O)CC(CO)O1)]"
-        self['fragmentpatterns']['dnabackbone'] = "[$(CCOP)][$(CC1OCCC1)]"
 
+        # Protection patterns are set in the individual settings below
         self['protectpatterns'] = dict()
-        self['protectpatterns']['nterminal']="[$([NH2]),$([NH3])]CC(=O)[$(NCC=O)]"
 
         self['mergepatterns'] = dict()
         self['mergepatterns']['glycine']="" # do not merge by default
@@ -126,8 +102,61 @@ class FragItData(dict):
 
         return self.data_types[option]
 
+class FragItDataFMO(FragItDataBase):
+    """ Initializes FragIt with options which are applicable to the
+        fragment molecular orbital (FMO) and related methods.
+        Some options set in FragItDataBase will be overwritten.
+    """
+    def __init__(self):
+        FragItDataBase.__init__(self)
+
+        self['fragmentation']['writer']="GAMESS-FMO"
+
+        # fragmentation patterns for FMO as discussed in the original PLoS ONE publication
+        # DOI: 10.1371/journal.pone.0044480
+        self['fragmentpatterns']['peptide']="[$(CN)][$(C(=O)NCC(=O))]"
+        self['fragmentpatterns']['a-d-pyranose']="[$(C1C(CO)OC(O)C(O)C1(O))][$(OC1C(O)C(O)CC(CO)O1)]"
+        self['fragmentpatterns']['dnabackbone'] = "[$(CCOP)][$(CC1OCCC1)]"
+
+        # fragmentation patterns for FMO as discussed in the original PLoS ONE publication
+        # DOI: 10.1371/journal.pone.0044480
+
+        # protection patterns are needed to remove small fragments
+        self['protectpatterns']['nterminal']="[$([NH2]),$([NH3])]CC(=O)[$(NCC=O)]"
+
+        # don't use atom names when using FMO. This can cause
+        # annoying errors in GAMESS
+        self['output']['useatomnames'] = False
+
+class FragItDataPE(FragItDataBase):
+    """ Initializes FragIt with options which are applicable to the
+        polarizable embedding (PE) approach. This is mostly tuned
+        for potential generation through the polarizable embedding
+        assistant script (PEAS).
+        Some options set in FragItDataBase will be overwritten.
+    """
+    def __init__(self):
+        FragItDataBase.__init__(self)
+
+        self['fragmentation']['writer']="XYZ-MFCC"
+
+        # DOI: xx
+        self['fragmentpatterns']['peptide']="[$([CX3](=[OX1])[NX3][CX4])][$([NX3][CX3][CX4])]"
+
+        # DOI: xx
+        self['fragmentpatterns']['dnabackbone'] = "[$(POCC)][$(OC1COCC1)]"
+
+        # utilize the MFCC principle. Standard is cap-order 2 (for peptides)
+        self['mfcc']['order'] = 2
+
+
+# export all config settings so they can be
+# loaded at a later time.
+ConfigSettings = {'BARE': FragItDataBase, 'FMO': FragItDataFMO, 'PE': FragItDataPE}
+
+
 class FragItConfig(object):
-    def __init__(self, defaults=FragItData, **kwargs):
+    def __init__(self, defaults=FragItDataFMO, **kwargs):
         filename = kwargs.get('filename', None)
         verbose = kwargs.get('verbose', False)
         self.cfg = RawConfigParser()
@@ -175,10 +204,11 @@ class FragItConfig(object):
                 self.values[section][key] = value
 
     def writeConfigurationToFile(self,file):
-        f = open(file,"w")
+        if is_string(file):
+            raise ValueError("Deprecated: File parameter currently only accepts a file handle, not filename.")
+
         self._addSections()
-        self.cfg.write(f)
-        f.close()
+        self.cfg.write(file)
 
     def setMaximumFragmentSize(self, value):
         if not is_int(value): raise TypeError
@@ -377,7 +407,3 @@ class FragItConfig(object):
     def getQMMMIncludeAllWithinDistance(self):
         return self.values['qmmm']['includeallwithin']
 
-if __name__ == '__main__':
-    cfg = FragItConfig()
-    cfg.readConfigurationFromFile("my1.conf")
-    cfg.writeConfigurationToFile("my2.conf")

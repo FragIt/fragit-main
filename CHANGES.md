@@ -1,3 +1,35 @@
+FragIt v1.6.0 Release Notes
+===========================
+
+This major update brings several changes to default keywords
+and to the command line interface for FragIt
+
+Updates since v1.5.0
+
+  * Removed --make-config option from FragIt commandline
+    tool. Instead, a fragit-conf tool is supplied which
+    allows for the generation of different types of
+    configuration files for many types of fragmentation jobs.
+
+  * Added fragit-conf tool to generate configuration files
+    for FragIt.
+    See fragit-conf -h for details.
+
+  * Added multiple default configurations for FragIt.
+    FragIt (through fragit-conf) now supports:
+    - fragment molecular orbital (FMO) specific fragmentation
+      patterns.
+    - polarizable embedding (PE) specific fragmentation
+      patterns. This is specifically made for use through
+      the polarizable embedding assistant script (PEAS).
+    The default configuration settings is still FMO.
+    See fragit-conf -h.
+
+  * Default values were changed for some parameters for the
+    fragmentation group. The new values are:
+    - maxfragsize = 100
+    - useatomnames = False  - ONLY FMO.
+
 FragIt v1.5.1 Release Notes
 ===========================
 
@@ -9,7 +41,6 @@ Updates since  v1.5.0
     keyword in FMO input file even if no bonds were
     broken. (#15)  -- Thanks to Anders S. Christensen
                       for reporting this issue.
-
 
 FragIt v1.5.0 Release Notes
 ===========================
