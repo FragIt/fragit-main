@@ -1,3 +1,16 @@
+FragIt v1.5.1 Release Notes
+===========================
+
+This is a bug-fix and minor improvements release.
+
+Updates since  v1.5.0
+
+  * Fixed issue with FMO writer which dumped errornous
+    keyword in FMO input file even if no bonds were
+    broken. (#15)  -- Thanks to Anders S. Christensen
+                      for reporting this issue.
+
+
 FragIt v1.5.0 Release Notes
 ===========================
 
