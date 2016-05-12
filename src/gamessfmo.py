@@ -325,7 +325,11 @@ class GamessFMO(Standard):
         return fmo
 
     def _getFMODefaults(self):
-        return "      %s\n      %s\n      %s" % ("NBODY=2","RAFO(1)=1,1,1","RESDIM=2.0 RCORSD=2.0")
+        s = "      %s\n" % ("NBODY=2")
+        if self._fragmentation._nbonds_broken > 0:
+            s += "      %s\n" % ("RAFO(1)=1,1,1")
+        s += "      %s" % ("RESDIM=2.0 RCORSD=2.0")
+        return s
 
     def _getFMONFrag(self):
         return "      NFRAG=%i" % len(self._fragmentation.getFragments())
