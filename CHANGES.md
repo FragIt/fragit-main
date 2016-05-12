@@ -28,6 +28,7 @@ Updates since v1.5.0
   * Default values were changed for some parameters for the
     fragmentation group. The new values are:
     - maxfragsize = 100
+    - useatomnames = False  - ONLY FMO.
 
 FragIt v1.5.0 Release Notes
 ===========================
