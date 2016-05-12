@@ -55,6 +55,7 @@ class Fragmentation(FragItConfig):
         self._fixAtomsAndCharges()
 	self._elements = openbabel.OBElementTable()
         self._verbose = self.getVerbose()
+        self._nbonds_broken = 0
 
     def _removeMetalAtoms(self):
         _metalAtoms = []
@@ -277,6 +278,7 @@ class Fragmentation(FragItConfig):
             self.pat.Init(pattern)
             self.pat.Match( self.mol )
             matches = self.pat.GetUMapList()
+            self._nbonds_broken += len(matches)
             if self._verbose:
                 print("  found {0:d} matching bonds.".format(len(matches)))
             for p in matches:

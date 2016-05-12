@@ -7,7 +7,6 @@
  $BASIS GBASIS=N21 NGAUSS=3 $END
  $FMO
       NBODY=2
-      RAFO(1)=1,1,1
       RESDIM=2.0 RCORSD=2.0
       NLAYER=1
       NFRAG=4
