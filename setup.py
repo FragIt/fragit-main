@@ -40,8 +40,6 @@ Topic :: Software Development :: Libraries :: Python Modules
 def setup_fragit():
   doclines = __doc__.split("\n")
 
-  fragit_prefix = 'lib/python%i.%i/site-packages/fragit' %(sys.version_info[0], sys.version_info[1])
-
   setup(name="fragit",
         version=version_str,
         url = "https://github.com/FragIt/fragit-main",
