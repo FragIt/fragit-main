@@ -3,22 +3,8 @@
 # a library to fragment molecules for use in fragment based methods
 # in quantum chemistry.
 #
-# Copyright (C) 2012-2013, Casper Steinmann
+# Copyright (C) 2012-2016, Casper Steinmann
 #
-# FragIt is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-#
-# FragIt is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-# 02110-1301, USA.
 #
 import sys
 from distutils.core import setup
@@ -54,8 +40,6 @@ Topic :: Software Development :: Libraries :: Python Modules
 def setup_fragit():
   doclines = __doc__.split("\n")
 
-  fragit_prefix = 'lib/python%i.%i/site-packages/fragit' %(sys.version_info[0], sys.version_info[1])
-
   setup(name="fragit",
         version=version_str,
         url = "https://github.com/FragIt/fragit-main",
@@ -70,9 +54,9 @@ def setup_fragit():
         platforms = ["Any."],
         package_dir={'fragit': 'src'},
         packages=['fragit'],
-        scripts=['scripts/fragit'],
-        data_files=[(fragit_prefix,['INSTALL','README.md','LICENSE', 'CHANGES.md']),
-                    (fragit_prefix,['src/pymol_template','src/jmol_template'])]
+        scripts=['scripts/fragit', 'scripts/fragit-conf'],
+        package_data = {'': ['pymol_template','jmol_template']}, # relative to 'packages' specified above
+        data_files=[('',['README.md','LICENSE', 'CHANGES.md'])]
   )
 
 if __name__ == '__main__':
