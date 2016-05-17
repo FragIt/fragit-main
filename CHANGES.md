@@ -4,7 +4,7 @@ FragIt v1.6.0 Release Notes
 This major update brings several changes to default keywords
 and to the command line interface for FragIt
 
-Updates since v1.5.0
+Updates since v1.5.1
 
   * Removed --make-config option from FragIt commandline
     tool. Instead, a fragit-conf tool is supplied which
@@ -29,6 +29,8 @@ Updates since v1.5.0
     fragmentation group. The new values are:
     - maxfragsize = 100
     - useatomnames = False  - ONLY FMO.
+
+  * The setup script is now more self-contained.
 
 FragIt v1.5.1 Release Notes
 ===========================
