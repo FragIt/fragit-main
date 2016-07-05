@@ -6,7 +6,7 @@ try:
     import openbabel
 except ImportError:
     raise OBNotFoundException("OpenBabel not found. Please install OpenBabel to use FragIt.")
-from util import file_extension
+from .util import file_extension
 
 class Molecule(object):
 

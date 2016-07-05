@@ -6,7 +6,7 @@ import sys
 import string
 import os
 
-import util
+from util import is_string
 
 # filenames for templates
 filenames = {'pymol':'pymol',
@@ -25,12 +25,12 @@ class Template(object):
         self.load_structure_string = None
 
     def _setTemplateType(self,value):
-        if not util.is_string(value): raise ValueError("Template type is a string value.")
-        if not filenames.has_key(value): raise ValueError("Template type '%s' is not valid." % value)
+        if not isinstance(value, str): raise ValueError("Template type is a string value.")
+        if value not in filenames: raise ValueError("Template type '%s' is not valid." % value)
         self.template_type = value
 
     def _setLoadStructureString(self,value):
-        if not util.is_string(value): raise ValueError("Load structure string is a string value.")
+        if not isinstance(value, str): raise ValueError("Load structure string is a string value.")
         self.load_structure_string = value + "\n"
 
     def setFragmentsData(self, value):

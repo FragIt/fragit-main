@@ -2,7 +2,7 @@
 Copyright (C) 2011-2012 Casper Steinmann
 """
 
-from template import Template
+from .template import Template
 
 class JmolTemplate(Template):
     def __init__(self,infile,outfile):

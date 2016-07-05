@@ -19,6 +19,8 @@ install:
  - make -j 2
  - sudo make install
  - export PYTHONPATH=/usr/local/lib/python${TRAVIS_PYTHON_VERSION}/site-packages:${PYTHONPATH}
+ - echo ${PYTHONPATH}
+ - echo ${TRAVIS_PYTHON_VERSION}
 
 before_script:
   - cd ${TRAVIS_BUILD_DIR}

@@ -4,7 +4,7 @@ Some portions Copyright (C) 2011-2016 Casper Steinmann
 """
 import os
 
-from fragit_exceptions import OBNotFoundException
+from .fragit_exceptions import OBNotFoundException
 try:
     import openbabel
 except ImportError:
@@ -16,8 +16,8 @@ def isEqual(a, b):
     return a == b and type(a) == type(b)
 
 def file_exists(filename):
-    if not is_string(filename):
-        raise TypeError
+    if not isinstance(filename, str):
+        raise TypeError("filename provided must be a string.")
     try:
         f = open(filename,'r')
     except IOError:
@@ -34,56 +34,29 @@ def file_basename(path_to_file):
     return filename
 
 def getFilenameAndExtension(path_to_file):
-    if not is_string(path_to_file):
+    if not isinstance(path_to_file, str):
         raise TypeError
     basename = os.path.split(path_to_file)[1]
     return os.path.splitext(basename)
 
-def TupleToStringTypeRepresentation(tuple_of_vars):
-    if not is_tuple( tuple_of_vars ):
-        raise TypeError
-    if (len(tuple_of_vars) == 0): return ""
+#def TupleToStringTypeRepresentation(tuple_of_vars):
+#    if not isinstance(tuple_of_vars, tuple):
+#        raise TypeError
+#    if (len(tuple_of_vars) == 0): return ""
+#
+#    tuple_string = toString(tuple_of_vars[0])
+#    for i in range(1, len(tuple_of_vars)):
+#        tuple_string += ", " + toString(tuple_of_vars[i])
+#        
+#    return tuple_string
 
-    tuple_string = toString(tuple_of_vars[0])
-    for i in range(1, len(tuple_of_vars)):
-        tuple_string += ", " + toString(tuple_of_vars[i])
-        
-    return tuple_string
-
-def toString(msg):
-    if is_int(msg)            :    msg = "Int: "             + str(msg)
-    if is_float(msg)        :    msg = 'Float: '            + str(msg)
-    if is_list(msg)            :    msg = 'List: '            + str(msg)
-    if msg == None            :    msg = 'None: '            + str(msg)
-    if not is_string(msg)    :    msg = str(type(msg)) + ': '    + str(msg)
-    return msg
-
-def is_string(input):
-    return type(input) == type('a')
-
-def is_bool(input):
-    return type(input) == type(True)
-
-def is_int(input):
-    return type(input) == type(1)
-
-def is_float(input):
-    return type(input) == type(1.0)
-
-def is_list(input):
-    return type(input) == type([])
-
-def is_tuple(input):
-    return type(input) == type((1,2))
-
-def is_dictionary(input):
-    return type(input) == type(dict())
 
 def toList(input):
     return [p for p in input]
 
+
 def maximum_value(list_of_values):
-    if not is_list( list_of_values ):
+    if not isinstance(list_of_values, list):
         raise TypeError
     if len(list_of_values) == 0: return 0
     max_value = max(list_of_values)
@@ -93,7 +66,12 @@ def maximum_value(list_of_values):
     return max_value
 
 def Uniqify(thelist):
-    if is_int(thelist) or is_float(thelist) or is_bool(thelist) or is_string(thelist):
+    invalid_types = [int, float, bool, str]
+    is_invalid = False
+    for invalid_type in invalid_types:
+        is_invalid = is_invalid or isinstance(thelist, invalid_type)
+
+    if is_invalid:
         raise TypeError
     unique_set = set(thelist)
     return list(unique_set)
@@ -190,7 +168,7 @@ def intlistToString(intlist):
     
     
 def intlistFromString(string):
-    if not is_string(string):
+    if not isinstance(string, str):
         raise TypeError
     if (string == ""): return []
     intlist = string.split(",")
@@ -202,7 +180,7 @@ def intlistFromString(string):
     return result
 
 def floatlistFromString(string):
-    if not is_string(string):
+    if not isinstance(string, str):
         raise TypeError
     if(string == ""): return []
     floatlist = string.split(",")
@@ -215,20 +193,20 @@ def floatlistFromString(string):
 
 
 def listOfDoubleIntTupleToString(diTuple, sep = ";"):
-    assert is_list(diTuple)
+    assert isinstance(diTuple, list)
 
     tmp = list()
 
     for (a1,a2) in diTuple:
-        assert is_int(a1)
-        assert is_int(a2)
+        assert isinstance(a1, int)
+        assert isinstance(a2, int)
         tmp.append( "(" + str(a1) + "," + str(a2) + ")")
 
     return ";".join(tmp)
 
 
 def listOfDoubleIntTupleFromString(string, sep = ";"):
-    if not is_string(string):
+    if not isinstance(string, str):
         raise TypeError
     result = list()
 
@@ -242,37 +220,38 @@ def listOfDoubleIntTupleFromString(string, sep = ";"):
     return result
 
 def isStringList( string_list ):
-    if not is_list( string_list ):
+    if not isinstance(string_list, list):
         raise TypeError
 
     for item in string_list:
-        if is_list( item ):
-            if not isStringList( item ):
+        if isinstance(item, list):
+            if not isStringList(item):
                 return False
-        elif not is_string( item ):
+        elif not isinstance(item, str):
             return False
 
     return True
 
 def isIntegerList(string_list):
-    if not is_list(string_list) and not is_tuple(string_list):
+    if not isinstance(string_list, list) and not isinstance(string_list, tuple):
         raise TypeError
 
     for item in string_list:
-        if is_list(item):
+        if isinstance(item, list):
             if not isIntegerList(item):
                 return False
-        elif not is_int(item):
+        elif not isinstance(item, int):
             return False
 
     return True
 
 def WriteStringToFile(filename, string):
-    if not is_string(string):
+    if not isinstance(filename, str):
         raise TypeError
-    f = open(filename, 'w')
-    f.write(string)
-    f.close()
+    if not isinstance(string, str):
+        raise TypeError
+    with open(filename, 'w') as f:
+        f.write(string)
 
 def WriteStringListToFile(filename,thelist):
     if not isStringList(thelist):
@@ -283,6 +262,8 @@ def WriteStringListToFile(filename,thelist):
     f.close()
 
 def ReadStringFromFile(filename):
+    if not isinstance(filename, str):
+        raise TypeError
     f = open(filename,'r')
     string = f.read()
     f.close()
@@ -295,10 +276,11 @@ def ReadStringListFromFile(filename):
 
 
 def tupleValuesInEitherList(the_tuple,list1,list2):
-    if not is_tuple(the_tuple): raise ValueError
-    lhs = the_tuple[0] in list1 and the_tuple[1] in list2
-    rhs = the_tuple[1] in list1 and the_tuple[0] in list2
-    return lhs or rhs
+    if not isinstance(the_tuple, tuple):
+        raise ValueError
+    in_lhs = the_tuple[0] in list1 and the_tuple[1] in list2
+    in_rhs = the_tuple[1] in list1 and the_tuple[0] in list2
+    return in_lhs or in_rhs
 
 def listToRanges(the_list):
     result = []
@@ -331,7 +313,7 @@ def listOfRangesToString(atomList, maxlength = 72, line_format = "%10s", item_fo
     result = ''
     line = line_format % ''
     for i in atomList:
-        if (is_int(i)):
+        if isinstance(i, int):
             tmp = item_format % i
         else:
             tmp = tuple_format % (i[0], ( '-' + str(i[1])))

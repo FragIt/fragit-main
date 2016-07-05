@@ -1,3 +1,21 @@
+FragIt v1.X.Y Release Notes
+===========================
+
+This is a bug-fix and minor improvements release.
+
+Updates since v1.6.0
+
+  * FragIt is now compatible with python 3.5 after
+    minor modifications to the source code mostly
+    regarding imports and print statements.
+
+  * Travis-CI builds are failing for python 3.5 for
+    some compilation/install of openbabel problem
+    so testing is done manually for now. This is
+    also why it is compatible but not entirely
+    supported for now.
+
+Updates since  v1.5.0
 FragIt v1.6.0 Release Notes
 ===========================
 

@@ -89,12 +89,12 @@ class TestOpenBabelWrapperModule(unittest.TestCase):
         self.assertEqual(self.obwmolecule.MatchPattern("C=C"), [(1,2)])
 
     def test_OBWMoleculeMatchPatternAdvanced(self):
-	self.assertEqual(self.obwmolecule.MatchPattern("[$(C=C)][$(CC)]"), [(1,3)])
+        self.assertEqual(self.obwmolecule.MatchPattern("[$(C=C)][$(CC)]"), [(1,3)])
 
 def suite():
-  s = unittest.TestSuite()
-  s.addTest(unittest.makeSuite(TestOpenBabelWrapperModule))
-  return s
+    s = unittest.TestSuite()
+    s.addTest(unittest.makeSuite(TestOpenBabelWrapperModule))
+    return s
 
 if __name__ == '__main__':
     unittest.main()
