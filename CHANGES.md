@@ -1,3 +1,14 @@
+FragIt v1.6.1 Release Notes
+===========================
+
+This is a bug-fix and minor improvements release.
+
+Updates since  v1.6.0
+
+  * Fixes a default value in the base configuration
+    for FMO input files such that atom names are
+    ignored
+
 FragIt v1.6.0 Release Notes
 ===========================
 
