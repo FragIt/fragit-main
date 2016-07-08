@@ -2,7 +2,7 @@
 Copyright (C) 2011-2016 Casper Steinmann
 """
 
-from template import Template
+from .template import Template
 
 class PymolTemplate(Template):
     def __init__(self,infile,outfile):

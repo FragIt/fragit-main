@@ -4,25 +4,27 @@ Copyright (C) 2011-2016 Casper Steinmann
 import sys
 import argparse
 
-from util import fileToMol, file_basename
-from fragmentation import Fragmentation
-from outputformats import get_writer_and_extension, supported_output_formats
+from .util import fileToMol, file_basename
+from .fragmentation import Fragmentation
+from .outputformats import get_writer_and_extension, supported_output_formats
+from .strings import version_str, doc_str
 
-import strings
 
 def main(argv=None):
     if argv is None:
         argv = sys.argv[1:]
 
     # load defaults so we can use them below
-    from config import FragItConfig
+    from .config import FragItConfig
     cfg = FragItConfig()
 
-    parser = argparse.ArgumentParser(version=strings.version_str,
-                                     description=strings.__doc__)
-                                     #usage=strings.usage)
+    #parser = argparse.ArgumentParser(version=version_str,
+    #                                 description=doc_str)
+    #                                 #usage=strings.usage)
+    parser = argparse.ArgumentParser(description=doc_str)
 
     parser.add_argument("-o", "--output", dest="outputfile", type=str, default="", metavar="FILENAME")
+    parser.add_argument("--version", action="version", version="%(prog)s {0:s}".format(version_str))
     parser.add_argument("input", type=str, metavar="INPUTFILE")
 
 
@@ -78,7 +80,7 @@ are capped (when nescessary) and concaps are created (when nescessary).
                 help="Write a complimentary pymol script for visualization.")
 
     args = parser.parse_args()
-    print args
+    print(args)
 
     infile = args.input
 

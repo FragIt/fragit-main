@@ -9,14 +9,14 @@ try:
     from fragit.fragit_exceptions import OBNotFoundException
 except ImportError:
     # if not, let us exit in a clean way
-    print("ERROR: Could not start FragIt.")
+    print("Error: Could not start FragIt.")
     print("Please add the custom installation path to the PYTHONPATH environment variable.")
     exit()
 
 try:
     from fragit.cmdline import main
 except OBNotFoundException:
-    print("ERROR: OpenBabel could not be loaded.")
+    print("Error: OpenBabel could not be loaded.")
     print("Please make sure OpenBabel has been installed with python bindings.")
     exit()
 

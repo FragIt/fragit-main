@@ -3,12 +3,12 @@ Copyright (C) 2010-2011 Mikael W. Ibsen
 Some portions Copyright (C) 2011-2016 Casper Steinmann
 """
 from numpy import sqrt, dot, where, array
-from writer import Standard
-from util import WriteStringToFile
 
-from util import file_extension,is_list,listTo2D,join2D,is_int
-from util import listToRanges,listOfRangesToString,Uniqify,ravel2D
-from util import deepLength
+from .writer import Standard
+from .util import WriteStringToFile
+from .util import file_extension,listTo2D,join2D
+from .util import listToRanges,listOfRangesToString,Uniqify,ravel2D
+from .util import deepLength
 
 class GamessFMO(Standard):
     def __init__(self, fragmentation):
@@ -252,7 +252,7 @@ class GamessFMO(Standard):
 
     def FMOBNDgroup(self):
         broken_bonds = self._fragmentation.getExplicitlyBreakAtomPairs()
-        if not is_list(broken_bonds):
+        if not isinstance(broken_bonds, list):
             raise TypeError
         if len(broken_bonds) == 0:
             return "\n"

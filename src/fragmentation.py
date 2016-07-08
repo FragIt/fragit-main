@@ -11,8 +11,8 @@ except ImportError:
     raise OBNotFoundException("OpenBabel not found. Please install OpenBabel to use FragIt.")
 import numpy
 
-from util import *
-from config import FragItConfig
+from .util import *
+from .config import FragItConfig
 
 
 class Fragmentation(FragItConfig):
@@ -32,7 +32,7 @@ class Fragmentation(FragItConfig):
         self._mergeable_atoms = []
         self._atoms = []
         self._fixAtomsAndCharges()
-	self._elements = openbabel.OBElementTable()
+        self._elements = openbabel.OBElementTable()
         self._verbose = self.getVerbose()
         self._nbonds_broken = 0
 
@@ -175,7 +175,7 @@ class Fragmentation(FragItConfig):
         return self._atoms
 
     def setActiveFragments(self, active_fragments):
-        if not is_list(active_fragments): raise TypeError
+        if not isinstance(active_fragments, list): raise TypeError
         self.active_fragments = active_fragments
 
     def setProtectedAtoms(self):
@@ -272,9 +272,9 @@ class Fragmentation(FragItConfig):
 
     def isValidExplicitBond(self, pair):
         if pair[0] == pair[1]:
-            raise ValueError("Error: Fragment pair '{0:s}' must be two different atoms.".format(pair))
+            raise ValueError("Error: Fragment pair '{0:s}' must be two different atoms.".format(str(pair)))
         if self.mol.GetBond(pair[0],pair[1]) is None:
-            raise ValueError("Error: Fragment pair '{0:s}' must be connected with a bond.".format(pair))
+            raise ValueError("Error: Fragment pair '{0:s}' must be connected with a bond.".format(str(pair)))
         return True
 
     def determineFragments(self):
@@ -342,7 +342,7 @@ class Fragmentation(FragItConfig):
                 tmp = []
                 grpcount = 0
             else:
-                if (len(tmp) <> 0):
+                if (len(tmp) != 0):
                     newfragments.append(sorted(tmp))
                 lastFragment     = fragment
                 grpcount     = 1
@@ -378,7 +378,7 @@ class Fragmentation(FragItConfig):
         try:
             charge = sum([self.formalCharges[atom_idx-1] for atom_idx in fragment])
         except IndexError:
-            print "Error: FragIt [FRAGMENTATION] found that fragment %s has invalid charges." % (fragment)
+            print("Error: FragIt [FRAGMENTATION] found that fragment %s has invalid charges." % (fragment))
         return charge
 
     def validateTotalCharge(self):
@@ -393,15 +393,17 @@ class Fragmentation(FragItConfig):
             raise ValueError("Error: Total charge = {0:d}. Sum of fragment charges = {1:d}".format(self.total_charge, total_charge2))
 
     def getAtomsInSameFragment(self, a1, a2 = 0):
-        if not is_int(a1) or not is_int(a2): raise ValueError
-        if a2 != 0: raise ValueError
+        if not isinstance(a1, int) or not isinstance(a2, int):
+            raise ValueError
+        if a2 != 0:
+            raise ValueError
         tmp = openbabel.vectorInt()
         self.mol.FindChildren(tmp, a2, a1)
         fragment = sorted(toList(tmp) + [a1])
         return fragment
 
     def getOBAtom(self, atom_index):
-        if not is_int(atom_index): raise ValueError
+        if not isinstance(atom_index, int): raise ValueError
         if atom_index < 1 or atom_index > self.mol.NumAtoms(): raise ValueError("Index '%i' out of range [%i,%i]" % (atom_index,1,self.mol.NumAtoms()))
         return self.mol.GetAtom(atom_index)
 

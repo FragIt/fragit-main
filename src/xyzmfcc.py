@@ -2,16 +2,16 @@
 Copyright (C) 2013-2016 Casper Steinmann
 """
 from numpy import sqrt, dot, where, array
-from writer import Standard
-from util import WriteStringToFile
 
-from util import file_extension,is_list,listTo2D,join2D,is_int
-from util import listToRanges,listOfRangesToString,Uniqify,ravel2D
-from util import deepLength,listDiff,intlistToString
-from util import getFilenameAndExtension
-from util import shares_elements, calculate_hydrogen_position
+from .mfcc import MFCC, Cap
+from .writer import Standard
+from .util import WriteStringToFile
+from .util import file_extension
+from .util import listToRanges,listOfRangesToString,Uniqify,ravel2D
+from .util import deepLength,listDiff,intlistToString
+from .util import getFilenameAndExtension
+from .util import shares_elements, calculate_hydrogen_position
 
-from mfcc import MFCC, Cap
 
 class XYZMFCC(Standard):
     def __init__(self, fragmentation):

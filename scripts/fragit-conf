@@ -2,6 +2,11 @@
 """
 Copyright (C) 2016 Casper Steinmann
 """
+
+__doc__ = """
+fragit-conf prepares default configuration files for FragIt for various formats.
+"""
+
 import sys
 import argparse
 
@@ -27,13 +32,14 @@ if __name__ == '__main__':
     from fragit import strings
     from fragit.config import FragItConfig, ConfigSettings
 
-    parser = argparse.ArgumentParser(version=strings.version_str)
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("-o", type=str, metavar="FILENAME", default='', dest='output',
                         help="Specify name of configuration file to generate.")
     parser.add_argument("-f", "--format", type=str, metavar="FORMAT", default='FMO', dest='format',
                         choices=['BARE', 'PE', 'FMO'],
                         help='''Specifies default setting to use. Valid
                               choices are: %(choices)s. [default: %(default)s]''')
+    parser.add_argument("--version", action="version", version="%(prog)s {0:s}".format(strings.version_str))
     args = parser.parse_args()
 
     default_values = ConfigSettings[args.format]

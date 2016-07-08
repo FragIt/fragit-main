@@ -86,7 +86,7 @@ class QMMM(object):
                     if iibreak in fragments_for_qm_no_hydrogens:
                         new_atoms = self.satisfyValency(fragments_for_qm_no_hydrogens, iibreak, bbreak)
                         if len(new_atoms) > 0:
-                            print "Info: FragIt adds", len(new_atoms), "atom(s) to the QM fragment."
+                            print("Info: FragIt adds", len(new_atoms), "atom(s) to the QM fragment.")
                             self._fragmentation._atom_names.extend(['  H '] * len(new_atoms))
                             fragment_for_qm.extend(new_atoms)
 
@@ -95,7 +95,7 @@ class QMMM(object):
                     for ifragment, fragment in enumerate(fragments):
                         if iibreak in fragment:
                             new_atoms = self.satisfyValency(fragment, iibreak, bbreak)
-                            print "Info: FragIt adds", len(new_atoms), "atom(s) to MM fragment", ifragment+1
+                            print("Info: FragIt adds", len(new_atoms), "atom(s) to MM fragment", ifragment+1)
                             self._fragmentation._atom_names.extend(['  H '] * len(new_atoms))
                             fragments[ifragment].extend(new_atoms)
 
@@ -186,7 +186,7 @@ class FragmentDistances(object):
             acceptors = self._fragment_acceptors[idx]
 
         if len(donors) > 0 or len(acceptors) > 0:
-            print "Info: FragIt will include all hydrogen bound molecules in the QM region."
+            print("Info: FragIt will include all hydrogen bound molecules in the QM region.")
         # first we will find any donor (current fragment) -> acceptor (whole system) pairs
         isDonor = False
         for ifg, _acceptors in enumerate(self._fragment_acceptors):
@@ -235,7 +235,7 @@ class FragmentDistances(object):
         if not self._fragmentation.doQMMMIncludeCovalent():
             return other_fragments
 
-        print "Info: FragIt will include all fragments covalently bound in the QM region."
+        print("Info: FragIt will include all fragments covalently bound in the QM region.")
 
         # let us find the nearby fragments that are covalently connected
         # currently, this only works with nearest neighbours
@@ -322,7 +322,7 @@ class FragmentDistances(object):
         if not self._fragmentation.doQMMMIncludeAllWithin():
             return other_fragments
 
-        print "Info: FragIt will include all fragments within R = {0:5.2f} angstrom in the QM region.".format(self._fragmentation.getQMMMIncludeAllWithinDistance())
+        print("Info: FragIt will include all fragments within R = {0:5.2f} angstrom in the QM region.".format(self._fragmentation.getQMMMIncludeAllWithinDistance()))
 
         vectors = self._get_vectors_from_fragment(idx)
 
@@ -334,7 +334,7 @@ class FragmentDistances(object):
             R2 = self._get_min_distances2(vectors, other_vectors)
             R = numpy.sqrt(R2)
             if R < self._fragmentation.getQMMMIncludeAllWithinDistance():
-                print "Info: FragIt includes fragment {0:5d} (R = {1:6.2f}) in the QM region.".format(i_frag+1, R)
+                print("Info: FragIt includes fragment {0:5d} (R = {1:6.2f}) in the QM region.".format(i_frag+1, R))
                 other_fragments.append(i_frag)
 
         return other_fragments

@@ -8,7 +8,7 @@ try:
 except ImportError:
     raise OBNotFoundException("OpenBabel not found. Please install OpenBabel to use FragIt.")
 
-from util import floatlistFromString, intlistFromString
+from .util import floatlistFromString, intlistFromString
 
 class Standard(object):
     def __init__(self, fragmentation):
