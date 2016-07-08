@@ -65,7 +65,7 @@ class FragItDataBase(dict):
         self['output']['writepymol']=False
         self['output']['writejmol']=False
         self['output']['centralfragment']=0
-        self['output']['useatomnames'] = True
+        self['output']['useatomnames'] = False
 
         # Fragmentation patterns are set in the individual settings below
         self['fragmentpatterns'] = dict()
