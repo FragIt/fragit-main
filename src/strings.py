@@ -2,7 +2,7 @@
 Copyright (C) 2011-2016 Casper Steinmann
 """
 
-version = ("1","6","0")
+version = ("1","6","1")
 version_str = ".".join(version)
 
 doc_str = """FragIt fragments molecules for fragment based methods using in quantum chemistry.
