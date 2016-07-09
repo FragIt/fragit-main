@@ -61,7 +61,7 @@ class FragItDataBase(dict):
         self['output']['writepymol']=False
         self['output']['writejmol']=False
         self['output']['centralfragment']=0
-        self['output']['useatomnames'] = True
+        self['output']['useatomnames'] = False
 
         # Fragmentation patterns are set in the individual settings below
         self['fragmentpatterns'] = dict()
@@ -124,10 +124,6 @@ class FragItDataFMO(FragItDataBase):
         # protection patterns are needed to remove small fragments
         self['protectpatterns']['nterminal']="[$([NH2]),$([NH3])]CC(=O)[$(NCC=O)]"
 
-        # don't use atom names when using FMO. This can cause
-        # annoying errors in GAMESS
-        self['output']['useatomnames'] = False
-
 class FragItDataPE(FragItDataBase):
     """ Initializes FragIt with options which are applicable to the
         polarizable embedding (PE) approach. This is mostly tuned
@@ -148,6 +144,9 @@ class FragItDataPE(FragItDataBase):
 
         # utilize the MFCC principle. Standard is cap-order 2 (for peptides)
         self['mfcc']['order'] = 2
+
+        # use atom names when using PE.
+        self['output']['useatomnames'] = True
 
 
 # export all config settings so they can be
