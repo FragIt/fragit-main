@@ -11,8 +11,8 @@ from .util import listToRanges,listOfRangesToString,Uniqify,ravel2D
 from .util import deepLength
 
 class GamessFMO(Standard):
-    def __init__(self, fragmentation):
-        Standard.__init__(self,fragmentation)
+    def __init__(self, fragmentation, directories):
+        Standard.__init__(self,fragmentation, directories)
 
         # initialize layered stuff
     def setup(self):
@@ -35,13 +35,13 @@ class GamessFMO(Standard):
 
     def _dump_pymol(self):
         from pymol import PymolTemplate
-        pt = PymolTemplate(self._input_filename, self._output_filename)
+        pt = PymolTemplate(self._directories, self._input_filename, self._output_filename)
         self._setTemplateData(pt)
         self._writeTemplateFile(pt)
 
     def _dump_jmol(self):
         from jmol import JmolTemplate
-        pt = JmolTemplate(self._input_filename, self._output_filename)
+        pt = JmolTemplate(self._directories, self._input_filename, self._output_filename)
         self._setTemplateData(pt)
         self._writeTemplateFile(pt)
 

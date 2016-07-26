@@ -10,10 +10,11 @@ from .outputformats import get_writer_and_extension, supported_output_formats
 from .strings import version_str, doc_str
 
 
-def main(argv=None):
+def main(directories, argv=None):
     if argv is None:
         argv = sys.argv[1:]
 
+    print directories
     # load defaults so we can use them below
     from .config import FragItConfig
     cfg = FragItConfig()
@@ -122,7 +123,7 @@ are capped (when nescessary) and concaps are created (when nescessary).
     fragmentation.finishFragmentation()
 
     # write to file
-    out = writer(fragmentation)
+    out = writer(fragmentation, directories)
 
     # set options from command line
     boundaries = args.boundaries

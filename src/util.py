@@ -3,6 +3,7 @@ Copyright (C) 2010-2011 Mikael W. Ibsen
 Some portions Copyright (C) 2011-2016 Casper Steinmann
 """
 import os
+import string
 
 from .fragit_exceptions import OBNotFoundException
 try:
@@ -371,3 +372,44 @@ def shares_elements(a, b):
     sa = set(a)
     sb = set(b)
     return len(sa & sb) > 0
+
+def directories(from_file):
+    """ Sets up directories needed internally in FragIt.
+        This pertains to especially the share directory
+        that holds the template files.
+
+        Arguments:
+        ----------
+        from_file -- the basename to use to extract the files
+
+        Returns:
+        --------
+        dictionary with paths. The following keys are available:
+        path -- the base path for the executable
+        bin -- the path for the binary
+        share -- the path of the share directory
+
+    """
+    abs_path = os.path.abspath(from_file)
+    bin_path = os.path.dirname(abs_path)
+    path = os.path.dirname(bin_path)
+    share_path = os.path.join(path, 'share')
+    return {'path': path, 'bin': bin_path, 'share': share_path}
+
+
+def substitute_file(from_file, to_file, substitutions):
+    """ Substitute contents in from_file with substitutions and
+        output to to_file using string.Template class
+
+        Arguments:
+        ----------
+        from_file -- template file to load
+        to_file -- substituted file
+        substitutions -- dictionary of substitutions.
+    """
+    with open(from_file, "r") as f_in:
+        source = string.Template(f_in.read())
+
+        with open(to_file, "w") as f_out:
+            outcome = source.safe_substitute(substitutions)
+            f_out.write(outcome)

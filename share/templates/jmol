@@ -1,4 +1,4 @@
-<<pdbfilename>>
+$LOADCOMMAND
 
 function ColorDefault() {
   select all
@@ -22,37 +22,37 @@ function ColorFragments(type) {
   }
 }
 function ColorByFragment() {
-<<fragments>>
+$FRAGMENTS
 select none
 }
 function ColorByBuffer() {
 select all
 color green
 select none
-<<buffer>>
+$BUFFER
 select none
 }
 function ColorByActive() {
 select all
 color green
 select none
-<<buffer>>
-<<active>>
+$BUFFER
+$ACTIVE
 select none
 }
 
 function ColorByBackbone() {
   ColorDefault()
-<<backbone>>
+$BACKBONE
 select none
 }
 
 function LabelFragments() {
-<<labels>>
+select none
 }
 
 function DrawBreakPoints() {
-<<breakpoints>>
+$BREAKPOINTS
 }
 
 function HideBreakPoints() {

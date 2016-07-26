@@ -15,10 +15,12 @@ except ImportError:
 
 try:
     from fragit.cmdline import main
+    from fragit.util import directories
 except OBNotFoundException:
     print("Error: OpenBabel could not be loaded.")
     print("Please make sure OpenBabel has been installed with python bindings.")
     exit()
 
 if __name__ == '__main__':
-    main()
+    dirs = directories(__file__)
+    main(dirs)

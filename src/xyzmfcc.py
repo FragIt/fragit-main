@@ -37,13 +37,13 @@ class XYZMFCC(Standard):
 
     def _dump_pymol(self):
         from pymol import PymolTemplate
-        pt = PymolTemplate(self._input_filename, self._output_filename)
+        pt = PymolTemplate(self._directories, self._input_filename, self._output_filename)
         self._setTemplateData(pt)
         self._writeTemplateFile(pt)
 
     def _dump_jmol(self):
         from jmol import JmolTemplate
-        pt = JmolTemplate(self._input_filename, self._output_filename)
+        pt = JmolTemplate(self._directories, self._input_filename, self._output_filename)
         self._setTemplateData(pt)
         self._writeTemplateFile(pt)
 

@@ -5,8 +5,8 @@ Copyright (C) 2011-2016 Casper Steinmann
 from .template import Template
 
 class PymolTemplate(Template):
-    def __init__(self,infile,outfile):
-        Template.__init__(self,infile,outfile)
+    def __init__(self,directories,infile,outfile):
+        Template.__init__(self,directories,infile,outfile)
         self._setTemplateType("pymol")
         self._setLoadStructureString("cmd.do(\"load %s\")")
 
