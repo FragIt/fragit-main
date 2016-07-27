@@ -1,30 +1,8 @@
 """
-**********************************************************************
-tests/test_GamessFMOOutput.py - test cases for GamessFMO Writer
-
-Copyright (C) 2012 Casper Steinmann
-
-This file is part of the FragIt project.
-
-FragIt is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-FragIt is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301, USA.
-***********************************************************************/
+Copyright (C) 2012-2016 Casper Steinmann
 """
 import os
 import sys
-#sys.path.append('../src')
 import unittest
 from src.gamessfmo import GamessFMO
 
@@ -50,7 +28,8 @@ class TestGamessFMOOutputModule(unittest.TestCase):
     def test_water_1(self):
       filename = "temp.inp"
       otherfile = self.fixtures + "/water_1.fixture"
-      gamessfmo = GamessFMO(self.fragmentation)
+      directories = {'share':''}
+      gamessfmo = GamessFMO(self.fragmentation, directories)
       gamessfmo.setup()
       gamessfmo.writeFile(filename)
       generated = ReadStringListFromFile(filename)
@@ -68,7 +47,8 @@ class TestGamessFMOOutputModule(unittest.TestCase):
       self.fragmentation.beginFragmentation()
       self.fragmentation.doFragmentation()
       self.fragmentation.finishFragmentation()
-      gamessfmo = GamessFMO(self.fragmentation)
+      directories = {'share':''}
+      gamessfmo = GamessFMO(self.fragmentation, directories)
       gamessfmo.setup()
       gamessfmo.writeFile(filename)
       generated = ReadStringListFromFile(filename)
@@ -86,7 +66,8 @@ class TestGamessFMOOutputModule(unittest.TestCase):
       self.fragmentation.beginFragmentation()
       self.fragmentation.doFragmentation()
       self.fragmentation.finishFragmentation()
-      gamessfmo = GamessFMO(self.fragmentation)
+      directories = {'share':''}
+      gamessfmo = GamessFMO(self.fragmentation, directories)
       gamessfmo.setCentralFragmentID(1)
       gamessfmo.setup()
       gamessfmo.writeFile(filename)
@@ -105,7 +86,8 @@ class TestGamessFMOOutputModule(unittest.TestCase):
       self.fragmentation.beginFragmentation()
       self.fragmentation.doFragmentation()
       self.fragmentation.finishFragmentation()
-      gamessfmo = GamessFMO(self.fragmentation)
+      directories = {'share':''}
+      gamessfmo = GamessFMO(self.fragmentation, directories)
       gamessfmo.setCentralFragmentID(1)
       gamessfmo.setBoundariesFromString("1.0")
       gamessfmo.setup()
@@ -125,7 +107,8 @@ class TestGamessFMOOutputModule(unittest.TestCase):
       self.fragmentation.beginFragmentation()
       self.fragmentation.doFragmentation()
       self.fragmentation.finishFragmentation()
-      gamessfmo = GamessFMO(self.fragmentation)
+      directories = {'share':''}
+      gamessfmo = GamessFMO(self.fragmentation, directories)
       gamessfmo.setCentralFragmentID(1)
       gamessfmo.setBoundariesFromString("1.0")
       gamessfmo.setActiveAtomsDistance(1.0)
