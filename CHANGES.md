@@ -4,7 +4,7 @@ FragIt v1.X.Y Release Notes
 This major update brings several changes to default keywords
 and to the command line interface for FragIt
 
-Updates since v1.6.0
+Updates since v1.6.1
 
   * FragIt is now compatible with python 3.5 after
     minor modifications to the source code mostly
@@ -18,6 +18,17 @@ Updates since v1.6.0
 
   * Templates are now located appropriately in a
     'share' directory in the installation directory
+
+FragIt v1.6.1 Release Notes
+===========================
+
+This is a bug-fix and minor improvements release.
+
+Updates since  v1.6.0
+
+  * Fixes a default value in the base configuration
+    for FMO input files such that atom names are
+    ignored
 
 FragIt v1.6.0 Release Notes
 ===========================
