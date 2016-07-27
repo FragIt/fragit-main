@@ -1,7 +1,8 @@
 FragIt v1.X.Y Release Notes
 ===========================
 
-This is a bug-fix and minor improvements release.
+This major update brings several changes to default keywords
+and to the command line interface for FragIt
 
 Updates since v1.6.0
 
@@ -15,7 +16,9 @@ Updates since v1.6.0
     also why it is compatible but not entirely
     supported for now.
 
-Updates since  v1.5.0
+  * Templates are now located appropriately in a
+    'share' directory in the installation directory
+
 FragIt v1.6.0 Release Notes
 ===========================
 
