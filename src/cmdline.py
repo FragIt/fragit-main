@@ -14,7 +14,6 @@ def main(directories, argv=None):
     if argv is None:
         argv = sys.argv[1:]
 
-    print directories
     # load defaults so we can use them below
     from .config import FragItConfig
     cfg = FragItConfig()
