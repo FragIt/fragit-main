@@ -19,6 +19,38 @@ Updates since v1.6.0
   * Templates are now located appropriately in a
     'share' directory in the installation directory
 
+  * The GAMESS-FMO writer now supports the hybrid
+    orbital projection (HOP) scheme for fragmentation
+    as well as the AFO scheme that has always been
+    present. HOP orbitals are located in the
+    'hmo' folder in the share directory. Limited to
+    support of only SP3 C-C bonds but that should
+    cover 99 % of all current use cases.
+
+    HOP is enabled per default and AFO is enabled
+    by specifying
+
+    [fmo]
+    dohop = False
+
+    in the configuration file.
+
+  * The GAMESS-FMO writer now has improved support
+    for multilayer calculations as well. Through a
+    new section [qm] in the configuration it is
+    possible to specify the basis set for an FMO
+    calculation. In the case of multilayer runs
+    FragIt supports the multilayer notation from
+    FMO as well so one specifies basis sets on a
+    per layer basis separated by colons:
+
+    [qm]
+    basis = STO-3G:3-21G
+    
+    In multilayer calculations the approrpiate
+    basis set will be added to the $DATA group
+    and leave out the $BASIS group.
+
 FragIt v1.6.0 Release Notes
 ===========================
 

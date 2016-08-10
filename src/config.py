@@ -39,6 +39,7 @@ class FragItDataBase(dict):
         self.data_types['includecovalent']=bool
         self.data_types['includeallwithin']=float
         self.data_types['verbose']=bool
+        self.data_types['dohop']=bool
 
         # items here are complex values that need
         # specific parsing later on
@@ -101,6 +102,10 @@ class FragItDataBase(dict):
         # options for QM level of theory
         self['qm'] = dict()
         self['qm']['basis'] = "" # colon separated list for multi-layer runs
+
+        # fmo specific options
+        self['fmo'] = dict() 
+        self['fmo']['dohop'] = True
 
     def getType(self, option, section):
         if "pattern" in section:
@@ -442,3 +447,11 @@ class FragItConfig(object):
 
     def setQMBasis(self, value):
         self.values['qm']['basis'] = value
+
+    # options for FMO
+    def doFMOHOPFragmentation(self):
+        return self.values['fmo']['dohop']
+
+    def setFMOAFOFragmentation(self):
+        self.values['fmo']['dohop'] = False
+

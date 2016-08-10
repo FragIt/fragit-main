@@ -2,6 +2,8 @@
 Copyright (C) 2010-2011 Mikael W. Ibsen
 Some portions Copyright (C) 2011-2016 Casper Steinmann
 """
+import os
+
 from numpy import sqrt, dot, where, array
 
 from .writer import Standard
@@ -232,12 +234,35 @@ class GamessFMO(Standard):
         return False
 
     def writeFile(self, filename):
-        outStringTemplate = "%s%s%s%s%s%s%s%s%s%s"
-        outString = outStringTemplate % (    self.SYSTEMgroup(),self.GDDIgroup(),self.SCFgroup(),
-                            self.CONTRLgroup(),self.BASISgroup(),self.FMOPRPgroup(),
-                            self.FMOgroup(),self.FMOBNDgroup(),self.DATAgroup(),
-                            self.FMOXYZgroup())
+        outStringTemplate = "%s%s%s%s%s%s%s%s%s%s%s"
+        outString = outStringTemplate % (self.SYSTEMgroup(),
+                                         self.GDDIgroup(),
+                                         self.SCFgroup(),
+                                         self.CONTRLgroup(),
+                                         self.BASISgroup(),
+                                         self.FMOPRPgroup(),
+                                         self.FMOgroup(),
+                                         self.FMOBNDgroup(), 
+                                         self.DATAgroup(),
+                                         self.FMOHYBgroup(), 
+                                         self.FMOXYZgroup())
         WriteStringToFile(filename, outString)
+
+    def FMOHYBgroup(self):
+        s = ""
+        nbonds_broken = self._fragmentation.getNumBrokenBonds()
+        dohop = self._fragmentation.doFMOHOPFragmentation()
+        if nbonds_broken > 0 and dohop:
+            s += " $FMOHYB\n"
+            basis_sets = self._fragmentation.getQMBasis()
+            basis = basis_sets[0]
+            nbas = len(basis_sets)
+            nlayers = self._nlayers
+            path_to_hmo = os.path.join(self._directories['share'], "hmo/{0:s}".format(basis))
+            with open(path_to_hmo, 'r') as f:
+                s += "".join(f.readlines())
+            s += " $END\n"
+        return s
 
     def SYSTEMgroup(self):
         return " $SYSTEM MWORDS=125 $END\n"
@@ -267,9 +292,11 @@ class GamessFMO(Standard):
             also returns the $STATPT group
         """
 
-        localize = " LOCAL=BOYS"
-        if len(self._fragmentation.getExplicitlyBreakAtomPairs()) == 0:
-            localize = ""
+        nbonds_broken = self._fragmentation.getNumBrokenBonds()
+        dohop = self._fragmentation.doFMOHOPFragmentation()
+        localize = ""
+        if nbonds_broken > 0 and not dohop:
+            localize = " LOCAL=BOYS"
         base = " $CONTRL NPRINT=-5 ISPHER=1%s\n         RUNTYP=%s\n $END\n"
         statpt = " $STATPT OPTTOL=5.0e-4 NSTEP=2000\n%s\n $END\n"
         if(len(self._active_fragments) == 0 and self._active_atoms_distance <= 0.0):
@@ -358,7 +385,13 @@ class GamessFMO(Standard):
         return "".join(["{0:s}".format(self._formatBrokenBond(bond)) for bond in bonds])
 
     def _formatBrokenBond(self,bond_atoms):
-        return "\n{0:10s}{1:10s}" % ("-"+str(bond_atoms[0]),bond_atoms[1])
+        s = "\n{0:>10s}{1:10d}".format("-"+str(bond_atoms[0]),bond_atoms[1])
+        dohop = self._fragmentation.doFMOHOPFragmentation()
+        basis_sets = self._fragmentation.getQMBasis()
+        if dohop:
+           for i in range(self._nlayers):
+               s += " {0:>s}".format(basis_sets[i])
+        return s
 
     def DATAgroup(self):
         """ Returns the $DATA group
@@ -434,8 +467,10 @@ class GamessFMO(Standard):
 
     def _getFMODefaults(self):
         s = "      {0:s}\n".format("NBODY=2")
-        if self._fragmentation._nbonds_broken > 0:
-            s += "      {0:s}\n" % ("RAFO(1)=1,1,1")
+        nbonds_broken = self._fragmentation.getNumBrokenBonds()
+        dohop = self._fragmentation.doFMOHOPFragmentation()
+        if nbonds_broken > 0 and not dohop:
+            s += "      {0:s}\n".format("RAFO(1)=1,1,1")
         s += "      {0:s}\n".format("RESDIM=2.0")
         s += "      {0:s}\n".format("RCORSD=2.0")
         return s
