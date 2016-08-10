@@ -132,7 +132,7 @@ class TestGamessFMOOutputModule(unittest.TestCase):
       for i in range(len(fixture)):
         self.assertEqual(generated[i], fixture[i])
 
-      # self.delete_file(filename)
+      self.delete_file(filename)
 
     # -----------
     # 5 ala tests
@@ -182,8 +182,10 @@ class TestGamessFMOOutputModule(unittest.TestCase):
       for i in range(len(fixture)):
         self.assertEqual(generated[i], fixture[i])
 
-      #self.delete_file(filename)
+      self.delete_file(filename)
 
+
+    ## HOP TESTS ##
     def test_5ala_1_hop(self):
       filename = "temp.inp"
       otherfile = self.fixtures + "/5ala_1_hop.fixture"
@@ -204,6 +206,7 @@ class TestGamessFMOOutputModule(unittest.TestCase):
         self.assertEqual(generated[i], fixture[i])
 
       self.delete_file(filename)
+
 
     def test_5ala_2_hop(self):
       filename = "temp.inp"
@@ -231,7 +234,8 @@ class TestGamessFMOOutputModule(unittest.TestCase):
 
     def test_5ala_3_hop(self):
       """ Regression test to make sure if only one basis
-          set is specified we get the correct answer for HOP
+          set is specified we get the correct input file
+          FMO with HOP
       """
       filename = "temp.inp"
       otherfile = self.fixtures + "/5ala_3_hop.fixture"
