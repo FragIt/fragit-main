@@ -10,6 +10,72 @@ from .util import file_extension,listTo2D,join2D
 from .util import listToRanges,listOfRangesToString,Uniqify,ravel2D
 from .util import deepLength
 
+# $BASIS set data depending on basis set
+GAMESS_BASIS_GROUP = dict()
+GAMESS_BASIS_GROUP['sto-3g']      =  "GBASIS=STO NGAUSS=3"
+GAMESS_BASIS_GROUP['3-21G']       =  "GBASIS=N21 NGAUSS=3"
+GAMESS_BASIS_GROUP['6-31G']       =  "GBASIS=N31 NGAUSS=6"
+GAMESS_BASIS_GROUP['6-31G*']      =  "GBASIS=N31 NGAUSS=6 NDFUNC=1"
+GAMESS_BASIS_GROUP['6-31G(d)']    =  "GBASIS=N31 NGAUSS=6 NDFUNC=1"
+GAMESS_BASIS_GROUP['6-31+G*']     =  "GBASIS=N31 NGAUSS=6 NDFUNC=1 DIFFSP=.T."
+GAMESS_BASIS_GROUP['6-31+G(d)']   =  "GBASIS=N31 NGAUSS=6 NDFUNC=1 DIFFSP=.T."
+GAMESS_BASIS_GROUP['cc-pVDZ']     =  "GBASIS=CCD"
+GAMESS_BASIS_GROUP['cc-pVTZ']     =  "GBASIS=CCT"
+GAMESS_BASIS_GROUP['aug-cc-pVDZ'] =  "GBASIS=ACCD"
+GAMESS_BASIS_GROUP['aug-cc-pVTZ'] =  "GBASIS=ACCT"
+
+# basis set data for atoms in $DATA group
+GAMESS_DATA_BASIS = dict()
+GAMESS_DATA_BASIS['STO-3G'] = dict()
+GAMESS_DATA_BASIS['STO-3G']['H'] = 'STO 3'
+GAMESS_DATA_BASIS['STO-3G']['C'] = 'STO 3'
+GAMESS_DATA_BASIS['STO-3G']['N'] = 'STO 3'
+GAMESS_DATA_BASIS['STO-3G']['O'] = 'STO 3'
+GAMESS_DATA_BASIS['STO-3G']['S'] = 'STO 3'
+
+GAMESS_DATA_BASIS['3-21G'] = dict()
+GAMESS_DATA_BASIS['3-21G']['H'] = 'N21 3'
+GAMESS_DATA_BASIS['3-21G']['C'] = 'N21 3'
+GAMESS_DATA_BASIS['3-21G']['N'] = 'N21 3'
+GAMESS_DATA_BASIS['3-21G']['O'] = 'N21 3'
+GAMESS_DATA_BASIS['3-21G']['S'] = 'N21 3'
+
+GAMESS_DATA_BASIS['6-31G'] = dict()
+GAMESS_DATA_BASIS['6-31G']['H'] = 'N31 6'
+GAMESS_DATA_BASIS['6-31G']['C'] = 'N31 6'
+GAMESS_DATA_BASIS['6-31G']['N'] = 'N31 6'
+GAMESS_DATA_BASIS['6-31G']['O'] = 'N31 6'
+GAMESS_DATA_BASIS['6-31G']['S'] = 'N31 6'
+
+# see emsl database for specifics
+GAMESS_DATA_BASIS['6-31G(d)'] = dict()
+GAMESS_DATA_BASIS['6-31G(d)']['H'] = 'N31 6'
+GAMESS_DATA_BASIS['6-31G(d)']['C'] = 'N31 6\n  D   1\n    1      0.8000000              1.0000000'
+GAMESS_DATA_BASIS['6-31G(d)']['N'] = 'N31 6\n  D   1\n    1      0.8000000              1.0000000'
+GAMESS_DATA_BASIS['6-31G(d)']['O'] = 'N31 6\n  D   1\n    1      0.8000000              1.0000000'
+GAMESS_DATA_BASIS['6-31G(d)']['S'] = 'N31 6\n  D   1\n    1      0.6500000              1.0000000'
+
+GAMESS_DATA_BASIS['cc-pVDZ'] = dict()
+GAMESS_DATA_BASIS['cc-pVDZ']['H'] = 'CCD'
+GAMESS_DATA_BASIS['cc-pVDZ']['C'] = 'CCD'
+GAMESS_DATA_BASIS['cc-pVDZ']['N'] = 'CCD'
+GAMESS_DATA_BASIS['cc-pVDZ']['O'] = 'CCD'
+GAMESS_DATA_BASIS['cc-pVDZ']['S'] = 'CCD'
+
+GAMESS_DATA_BASIS['pcseg-0'] = dict()
+GAMESS_DATA_BASIS['pcseg-0']['H'] = 'PCseg-0'
+GAMESS_DATA_BASIS['pcseg-0']['C'] = 'PCseg-0'
+GAMESS_DATA_BASIS['pcseg-0']['N'] = 'PCseg-0'
+GAMESS_DATA_BASIS['pcseg-0']['O'] = 'PCseg-0'
+GAMESS_DATA_BASIS['pcseg-0']['S'] = 'PCseg-0'
+
+GAMESS_DATA_BASIS['pcseg-1'] = dict()
+GAMESS_DATA_BASIS['pcseg-1']['H'] = 'PCseg-1'
+GAMESS_DATA_BASIS['pcseg-1']['C'] = 'PCseg-1'
+GAMESS_DATA_BASIS['pcseg-1']['N'] = 'PCseg-1'
+GAMESS_DATA_BASIS['pcseg-1']['O'] = 'PCseg-1'
+GAMESS_DATA_BASIS['pcseg-1']['S'] = 'PCseg-1'
+
 class GamessFMO(Standard):
     def __init__(self, fragmentation, directories):
         Standard.__init__(self,fragmentation, directories)
@@ -166,7 +232,7 @@ class GamessFMO(Standard):
         return False
 
     def writeFile(self, filename):
-        outStringTemplate = "%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n"
+        outStringTemplate = "%s%s%s%s%s%s%s%s%s%s"
         outString = outStringTemplate % (    self.SYSTEMgroup(),self.GDDIgroup(),self.SCFgroup(),
                             self.CONTRLgroup(),self.BASISgroup(),self.FMOPRPgroup(),
                             self.FMOgroup(),self.FMOBNDgroup(),self.DATAgroup(),
@@ -174,19 +240,19 @@ class GamessFMO(Standard):
         WriteStringToFile(filename, outString)
 
     def SYSTEMgroup(self):
-        return " $SYSTEM MWORDS=125 $END"
+        return " $SYSTEM MWORDS=125 $END\n"
 
     def SCFgroup(self):
-        return " $SCF CONV=1E-7 DIRSCF=.T. NPUNCH=0 DIIS=.F. SOSCF=.T. $END"
+        return " $SCF CONV=1E-7 DIRSCF=.T. NPUNCH=0 DIIS=.F. SOSCF=.T. $END\n"
 
     def GDDIgroup(self):
-        return " $GDDI NGROUP=1 $END"
+        return " $GDDI NGROUP=1 $END\n"
 
     def FMOPRPgroup(self):
         return self._get_FMOPRP_basestring() % self._calculateOrbitalGuess()
 
     def _get_FMOPRP_basestring(self):
-        return " $FMOPRP NPRINT=9 NGUESS=%i $END"
+        return " $FMOPRP NPRINT=9 NGUESS=%i $END\n"
 
     def _calculateOrbitalGuess(self):
         nguess = 2 # project orbitals out of huckel guess
@@ -198,7 +264,7 @@ class GamessFMO(Standard):
         localize = " LOCAL=BOYS"
         if len(self._fragmentation.getExplicitlyBreakAtomPairs()) == 0:
             localize = ""
-        base = " $CONTRL NPRINT=-5 ISPHER=1%s\n         RUNTYP=%s\n $END"
+        base = " $CONTRL NPRINT=-5 ISPHER=1%s\n         RUNTYP=%s\n $END\n"
         statpt = " $STATPT OPTTOL=5.0e-4 NSTEP=2000\n%s\n $END"
         if(len(self._active_fragments) == 0 and self._active_atoms_distance <= 0.0):
             return base % (localize, "ENERGY")
@@ -244,11 +310,35 @@ class GamessFMO(Standard):
         return active % active_atoms
 
     def BASISgroup(self):
-        default_basis = " $BASIS GBASIS=N21 NGAUSS=3 $END"
-        #basis = self._fragmentation.getBasisSet()
-        #if len(basis) == 0:
-        #    basis = default_basis
-        return default_basis
+        """ Returns a $BASIS group for GAMESS input.
+
+            If there are multiple basis sets defined in the configuration
+            file and there are multiple layers basis must be specified
+            differently in the $DATA group. In that case this subroutine
+            returns nothing
+
+            This method will print warnings if there are discrepancies
+            between number of layers and basis sets provided.
+        """
+        basis_sets = self._fragmentation.getQMBasis()
+
+        nbas = len(basis_sets)
+        nlayers = self._nlayers
+
+        if nbas != nlayers:
+            if nbas > 1:
+                raise ValueError("Error: FragIt [GAMESS-FMO] Number of basis sets ({}) and layers ({}) do not agree.".format(nbas, nlayers))
+
+        if nbas > 1 and nlayers > 1:
+            return ""
+
+        if nbas == 0:
+            print("Warning: FragIt [GAMESS-FMO] no basis set defined. Defaulting to 3-21G")
+            basis_sets = ['3-21G']
+
+        basis = basis_sets[0]
+
+        return " $BASIS {0:s} $END\n".format(GAMESS_BASIS_GROUP[basis])
 
     def FMOBNDgroup(self):
         broken_bonds = self._fragmentation.getExplicitlyBreakAtomPairs()
@@ -257,16 +347,23 @@ class GamessFMO(Standard):
         if len(broken_bonds) == 0:
             return "\n"
 
-        return " $FMOBND%s\n $END" % self._getBondGroupData(broken_bonds)
+        return " $FMOBND{0:s}\n $END\n".format(self._getBondGroupData(broken_bonds))
 
     def _getBondGroupData(self, bonds):
-        return "".join(["%s" % self._formatBrokenBond(bond) for bond in bonds])
+        return "".join(["{0:s}".format(self._formatBrokenBond(bond)) for bond in bonds])
 
     def _formatBrokenBond(self,bond_atoms):
-        return "\n%10s%10s" % ("-"+str(bond_atoms[0]),bond_atoms[1])
+        return "\n{0:10s}{1:10s}" % ("-"+str(bond_atoms[0]),bond_atoms[1])
 
     def DATAgroup(self):
-        return " $DATA\n%s\nc1\n%s $END" % (self._title, self._getBasisSet())
+        """ Returns the $DATA group
+
+            This group usually only contains simple information as the
+            basis set is provided through the $BASIS group. However, for
+            multilayer calculations the basis set has to be specified here
+            when multiple basis sets are requested.
+        """
+        return " $DATA\n%s\nc1\n%s $END\n" % (self._title, self._getBasisSet())
 
     def _getBasisSet(self):
         return "".join([self._getBasisAtoms(ilayer) for ilayer in range(1, self._nlayers+1)])
@@ -278,11 +375,38 @@ class GamessFMO(Standard):
         return "".join([self._formatSingleAtomBasis(ilayer,atom) for atom in atoms])
 
     def _formatSingleAtomBasis(self,ilayer,atom):
-        return "%s-%i %i\n" % (atom,ilayer,self._elements.GetAtomicNum(atom))
+        """ Formats the basis set for a single atom
+
+            the most common case is to just define the atom,
+            the layer and the nuclear charge and the rest is
+            handled by the $BASIS group.
+
+            In multilayer cases where different basis sets are requested for each
+            layer the basis set must be specified here.
+        """
+        s = "{0:s}-{1:d} {2:d}\n".format(atom,ilayer,self._elements.GetAtomicNum(atom))
+        basis_sets = self._fragmentation.getQMBasis()
+        nbas = len(basis_sets)
+        nlayers = self._nlayers
+
+        if nbas > 1 and nlayers > 1:
+            basis = basis_sets[ilayer-1]
+            try:
+                basis_data = GAMESS_DATA_BASIS[basis]
+            except KeyError:
+                exit("Error: Basis set '{}' not defined. Aborting.".format(basis))
+            try:
+                atom_basis_data = basis_data[atom]
+            except KeyError:
+                exit("Error: Basis set '{}' not defined for atom '{}'. Aborting.".format(basis, atom))
+
+            s += "  {0:s}\n\n".format(basis_data[atom])
+
+        return s
 
     ## the $FMOXYZ group
     def FMOXYZgroup(self):
-        return " $FMOXYZ\n%s\n $END" % self._formatAtoms()[:-1]
+        return " $FMOXYZ\n%s\n $END\n" % self._formatAtoms()[:-1]
 
     def _formatAtoms(self):
         return "".join([self._formatSingleAtom(i+1,atom) for i,atom in enumerate(self._fragmentation.getAtoms())])
@@ -297,31 +421,32 @@ class GamessFMO(Standard):
 
     ## The $FMO group
     def FMOgroup(self):
-        fmoString = " $FMO\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n $END"
-        fmo = fmoString % (    self._getFMODefaults(),self._getFMONLayer(),self._getFMONFrag(),
-                  self._getFMOICharg(),self._getFMOFrgnam(),self._getFMOMplevl(),
-                  self._getFMOIndat(),self._getFMOLayer(),self._getFMOActfg())
+        fmoString = " $FMO\n%s%s%s\n%s\n%s\n%s\n%s\n%s\n%s\n $END\n"
+        fmo = fmoString % ( self._getFMONFrag(), self._getFMODefaults(),self._getFMONLayer(),self._getFMOMplevl(),
+                  self._getFMOICharg(), self._getFMOFrgnam(),
+                  self._getFMOIndat(), self._getFMOLayer(), self._getFMOActfg())
         return fmo
 
     def _getFMODefaults(self):
-        s = "      %s\n" % ("NBODY=2")
+        s = "      {0:s}\n".format("NBODY=2")
         if self._fragmentation._nbonds_broken > 0:
-            s += "      %s\n" % ("RAFO(1)=1,1,1")
-        s += "      %s" % ("RESDIM=2.0 RCORSD=2.0")
+            s += "      {0:s}\n" % ("RAFO(1)=1,1,1")
+        s += "      {0:s}\n".format("RESDIM=2.0")
+        s += "      {0:s}\n".format("RCORSD=2.0")
         return s
 
     def _getFMONFrag(self):
-        return "      NFRAG=%i" % len(self._fragmentation.getFragments())
+        return "      NFRAG={0:d}\n".format(len(self._fragmentation.getFragments()))
 
     def _getFMOICharg(self):
-        return "      ICHARG(1)=%s" % (self._formatCharges())
+        return "      ICHARG(1)={0:s}".format(self._formatCharges())
 
     def _formatCharges(self):
         list2D = listTo2D(self._fragmentation.getFragmentCharges(), 10, '%3i')
         return join2D(list2D, ',', ",\n                 ")
 
     def _getFMOFrgnam(self):
-        return "      FRGNAM(1)=%s" % (self._formatFragmentNames())
+        return "      FRGNAM(1)={0:s}".format(self._formatFragmentNames())
 
     def _formatFragmentNames(self):
         fragnames = list()

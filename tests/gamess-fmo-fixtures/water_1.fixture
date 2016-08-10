@@ -7,13 +7,14 @@
  $BASIS GBASIS=N21 NGAUSS=3 $END
  $FMOPRP NPRINT=9 NGUESS=2 $END
  $FMO
-      NBODY=2
-      RESDIM=2.0 RCORSD=2.0
-      NLAYER=1
       NFRAG=0
+      NBODY=2
+      RESDIM=2.0
+      RCORSD=2.0
+      NLAYER=1
+      MPLEVL(1)=0
       ICHARG(1)=
       FRGNAM(1)=
-      MPLEVL(1)=0
       INDAT(1)=0
 
 
