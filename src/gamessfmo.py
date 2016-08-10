@@ -57,6 +57,13 @@ GAMESS_DATA_BASIS['6-31G(d)']['N'] = 'N31 6\n  D   1\n    1      0.8000000      
 GAMESS_DATA_BASIS['6-31G(d)']['O'] = 'N31 6\n  D   1\n    1      0.8000000              1.0000000'
 GAMESS_DATA_BASIS['6-31G(d)']['S'] = 'N31 6\n  D   1\n    1      0.6500000              1.0000000'
 
+GAMESS_DATA_BASIS['6-31G*'] = dict()
+GAMESS_DATA_BASIS['6-31G*']['H'] = 'N31 6'
+GAMESS_DATA_BASIS['6-31G*']['C'] = 'N31 6\n  D   1\n    1      0.8000000              1.0000000'
+GAMESS_DATA_BASIS['6-31G*']['N'] = 'N31 6\n  D   1\n    1      0.8000000              1.0000000'
+GAMESS_DATA_BASIS['6-31G*']['O'] = 'N31 6\n  D   1\n    1      0.8000000              1.0000000'
+GAMESS_DATA_BASIS['6-31G*']['S'] = 'N31 6\n  D   1\n    1      0.6500000              1.0000000'
+
 GAMESS_DATA_BASIS['cc-pVDZ'] = dict()
 GAMESS_DATA_BASIS['cc-pVDZ']['H'] = 'CCD'
 GAMESS_DATA_BASIS['cc-pVDZ']['C'] = 'CCD'
@@ -255,12 +262,13 @@ class GamessFMO(Standard):
         if nbonds_broken > 0 and dohop:
             s += " $FMOHYB\n"
             basis_sets = self._fragmentation.getQMBasis()
-            basis = basis_sets[0]
             nbas = len(basis_sets)
             nlayers = self._nlayers
-            path_to_hmo = os.path.join(self._directories['share'], "hmo/{0:s}".format(basis))
-            with open(path_to_hmo, 'r') as f:
-                s += "".join(f.readlines())
+            for ilayer in range(nlayers):
+                basis = basis_sets[ilayer]
+                path_to_hmo = os.path.join(self._directories['share'], "hmo/{0:s}".format(basis))
+                with open(path_to_hmo, 'r') as f:
+                    s += "".join(f.readlines())
             s += " $END\n"
         return s
 
