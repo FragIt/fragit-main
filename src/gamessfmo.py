@@ -264,6 +264,8 @@ class GamessFMO(Standard):
             basis_sets = self._fragmentation.getQMBasis()
             nbas = len(basis_sets)
             nlayers = self._nlayers
+            if nbas == 1:
+                nlayers = nbas
             for ilayer in range(nlayers):
                 basis = basis_sets[ilayer]
                 path_to_hmo = os.path.join(self._directories['share'], "hmo/{0:s}".format(basis))
@@ -396,9 +398,13 @@ class GamessFMO(Standard):
         s = "\n{0:>10s}{1:10d}".format("-"+str(bond_atoms[0]),bond_atoms[1])
         dohop = self._fragmentation.doFMOHOPFragmentation()
         basis_sets = self._fragmentation.getQMBasis()
+        nbas = len(basis_sets)
         if dohop:
            for i in range(self._nlayers):
-               s += " {0:>s}".format(basis_sets[i])
+               if nbas == 1:
+                   s += " {0:>s}".format(basis_sets[0])
+               else:
+                   s += " {0:>s}".format(basis_sets[i])
         return s
 
     def DATAgroup(self):

@@ -160,7 +160,7 @@ class TestGamessFMOOutputModule(unittest.TestCase):
       self.delete_file(filename)
 
     def test_5ala_1_hop(self):
-      filename = "temp_lol.inp"
+      filename = "temp.inp"
       otherfile = self.fixtures + "/5ala_1_hop.fixture"
       molecule = fileToMol("tests/5ala.xyz")
       fragmentation = Fragmentation(molecule)
@@ -181,7 +181,7 @@ class TestGamessFMOOutputModule(unittest.TestCase):
       self.delete_file(filename)
 
     def test_5ala_2_hop(self):
-      filename = "temp_lol.inp"
+      filename = "temp.inp"
       otherfile = self.fixtures + "/5ala_2_hop.fixture"
       molecule = fileToMol("tests/5ala.xyz")
       fragmentation = Fragmentation(molecule)
@@ -202,34 +202,34 @@ class TestGamessFMOOutputModule(unittest.TestCase):
       for i in range(len(fixture)):
         self.assertEqual(generated[i], fixture[i])
 
+      self.delete_file(filename)
+
+    def test_5ala_3_hop(self):
+      """ Regression test to make sure if only one basis
+          set is specified we get the correct answer for HOP
+      """
+      filename = "temp_lol.inp"
+      otherfile = self.fixtures + "/5ala_3_hop.fixture"
+      molecule = fileToMol("tests/5ala.xyz")
+      fragmentation = Fragmentation(molecule)
+      fragmentation.setQMBasis('3-21G')
+      fragmentation.beginFragmentation()
+      fragmentation.doFragmentation()
+      fragmentation.finishFragmentation()
+      directories = {'share':'share'}
+      gamessfmo = GamessFMO(fragmentation, directories)
+      gamessfmo.setCentralFragmentID(1)
+      gamessfmo.setBoundariesFromString("1.0")
+      gamessfmo.setup()
+      gamessfmo.writeFile(filename)
+      generated = ReadStringListFromFile(filename)
+      fixture = ReadStringListFromFile(otherfile)
+
+      self.assertEqual(len(generated), len(fixture))
+      for i in range(len(fixture)):
+        self.assertEqual(generated[i], fixture[i])
+
       # self.delete_file(filename)
-
-    #def test_5ala_3_hop(self):
-    #  """ Regression test to make sure if only one basis
-    #      set is specified we get the correct answer for HOP
-    #  """
-    #  filename = "temp_lol.inp"
-    #  otherfile = self.fixtures + "/5ala_2_hop.fixture"
-    #  molecule = fileToMol("tests/5ala.xyz")
-    #  fragmentation = Fragmentation(molecule)
-    #  fragmentation.setQMBasis('3-21G:6-31G(d)')
-    #  fragmentation.beginFragmentation()
-    #  fragmentation.doFragmentation()
-    #  fragmentation.finishFragmentation()
-    #  directories = {'share':'share'}
-    #  gamessfmo = GamessFMO(fragmentation, directories)
-    #  gamessfmo.setCentralFragmentID(1)
-    #  gamessfmo.setBoundariesFromString("1.0")
-    #  gamessfmo.setup()
-    #  gamessfmo.writeFile(filename)
-    #  generated = ReadStringListFromFile(filename)
-    #  fixture = ReadStringListFromFile(otherfile)
-
-    #  self.assertEqual(len(generated), len(fixture))
-    #  for i in range(len(fixture)):
-    #    self.assertEqual(generated[i], fixture[i])
-
-    #  # self.delete_file(filename)
 
 def suite():
   s = unittest.TestSuite()
