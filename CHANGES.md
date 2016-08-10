@@ -51,6 +51,14 @@ Updates since v1.6.0
     basis set will be added to the $DATA group
     and leave out the $BASIS group.
 
+    For regular FMO runs just specifying basis
+    sets as
+
+    [qm]
+    basis = 6-31G(d)
+
+    will suffice
+
 FragIt v1.6.0 Release Notes
 ===========================
 
