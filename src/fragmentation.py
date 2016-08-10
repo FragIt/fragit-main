@@ -509,3 +509,6 @@ class Fragmentation(FragItConfig):
             except ValueError:
                 print("Error: FragIt [FRAGMENTATION] found that the bond between atoms {0:s} is not valid.".format(pair))
                 raise
+
+    def getNumBrokenBonds(self):
+        return self._nbonds_broken

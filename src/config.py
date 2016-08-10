@@ -39,6 +39,7 @@ class FragItDataBase(dict):
         self.data_types['includecovalent']=bool
         self.data_types['includeallwithin']=float
         self.data_types['verbose']=bool
+        self.data_types['dohop']=bool
 
         # items here are complex values that need
         # specific parsing later on
@@ -48,6 +49,7 @@ class FragItDataBase(dict):
         self.data_types['pairs']=str
         self.data_types['atomids']=str
         self.data_types['combinefragments'] = str
+        self.data_types['basis']=str
 
         self['fragmentation'] = dict()
         self['fragmentation']['maxfragsize']=100
@@ -97,6 +99,14 @@ class FragItDataBase(dict):
         self['qmmm']['includecovalent'] = False
         self['qmmm']['includeallwithin'] = 0.0
 
+        # options for QM level of theory
+        self['qm'] = dict()
+        self['qm']['basis'] = "" # colon separated list for multi-layer runs
+
+        # fmo specific options
+        self['fmo'] = dict() 
+        self['fmo']['dohop'] = True
+
     def getType(self, option, section):
         if "pattern" in section:
             return str
@@ -127,6 +137,13 @@ class FragItDataFMO(FragItDataBase):
 
         # protection patterns are needed to remove small fragments
         self['protectpatterns']['nterminal']="[$([NH2]),$([NH3])]CC(=O)[$(NCC=O)]"
+
+        # don't use atom names when using FMO. This can cause
+        # annoying errors in GAMESS
+        self['output']['useatomnames'] = False
+
+        # basis set for QM calculations
+        self['qm']['basis'] = '3-21G'
 
 class FragItDataPE(FragItDataBase):
     """ Initializes FragIt with options which are applicable to the
@@ -426,4 +443,18 @@ class FragItConfig(object):
 
     def getQMMMIncludeAllWithinDistance(self):
         return self.values['qmmm']['includeallwithin']
+
+    # options for QM
+    def getQMBasis(self):
+        return self.values['qm']['basis'].split(':')
+
+    def setQMBasis(self, value):
+        self.values['qm']['basis'] = value
+
+    # options for FMO
+    def doFMOHOPFragmentation(self):
+        return self.values['fmo']['dohop']
+
+    def setFMOAFOFragmentation(self):
+        self.values['fmo']['dohop'] = False
 
