@@ -165,7 +165,7 @@ class TestGamessFMOOutputModule(unittest.TestCase):
       molecule = fileToMol("tests/5ala.xyz")
       fragmentation = Fragmentation(molecule)
       fragmentation.setFMOAFOFragmentation()
-      fragmentation.setQMBasis('3-21G:6-31G*')
+      fragmentation.setQMBasis('3-21G:6-31G(d)')
       fragmentation.beginFragmentation()
       fragmentation.doFragmentation()
       fragmentation.finishFragmentation()
