@@ -1,6 +1,5 @@
 *.py[co]
 *~
-*.inp
 *.swp
 *.coverage
 src/*.py[co]
