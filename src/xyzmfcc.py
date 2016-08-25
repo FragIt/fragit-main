@@ -14,8 +14,8 @@ from .util import shares_elements, calculate_hydrogen_position
 
 
 class XYZMFCC(Standard):
-    def __init__(self, fragmentation):
-        Standard.__init__(self,fragmentation)
+    def __init__(self, fragmentation, directories):
+        Standard.__init__(self,fragmentation, directories)
         self._mfcc = MFCC(fragmentation)
 
     def setup(self):
