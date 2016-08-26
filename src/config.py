@@ -40,6 +40,7 @@ class FragItDataBase(dict):
         self.data_types['includeallwithin']=float
         self.data_types['verbose']=bool
         self.data_types['dohop']=bool
+        self.data_types['efpwaters']=int
 
         # items here are complex values that need
         # specific parsing later on
@@ -106,6 +107,7 @@ class FragItDataBase(dict):
         # fmo specific options
         self['fmo'] = dict() 
         self['fmo']['dohop'] = True
+        self['fmo']['efpwaters'] = 0 # disable EFP waters
 
     def getType(self, option, section):
         if "pattern" in section:
@@ -458,3 +460,13 @@ class FragItConfig(object):
     def setFMOAFOFragmentation(self):
         self.values['fmo']['dohop'] = False
 
+    def doFMOEFPWaters(self):
+        return self.getFMOEFPWatersFromLayer() > 0
+
+    def getFMOEFPWatersFromLayer(self):
+        return self.values['fmo']['efpwaters']
+
+    def setFMOEFPWatersFromLayer(self, value):
+        if not isinstance(value, int):
+            raise TypeError
+        self.values['fmo']['efpwaters'] = value
