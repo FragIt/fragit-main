@@ -110,7 +110,7 @@ class GamessFMO(Standard):
             #    If this is not a multilayer calculation, ALL
             #    waters are promoted (demoted?) to EFP waters
             water_oxygen = self._fragmentation.getWaterMolecules()
-            self._water_fragments = [self._getFragmentFromAtom(i) for i in water_oxygen]
+            self._water_fragments = sorted([self._getFragmentFromAtom(i) for i in water_oxygen])
 
 
         if self._central_fragment == 0:
