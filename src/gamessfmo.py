@@ -568,11 +568,12 @@ class GamessFMO(Standard):
         """
         names = self._fragmentation.getFragmentNames()
         fragnames = []
+        fragment_index = 1
         for i, name in enumerate(names):
             if i in self._water_fragments:
                 continue
-            s = " {0:5>s}{1:03d}".format(name, i+1)
-            fragnames.append(s)
+            fragnames.append(" {0:5>s}{1:03d}".format(name, fragment_index))
+            fragment_index += 1
         return join2D(listTo2D(fragnames, 5), ', ', ",\n                 ")
 
     def _getFMOMplevl(self):

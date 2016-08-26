@@ -14,7 +14,7 @@
       NLAYER=1
       MPLEVL(1)=0
       ICHARG(1)=  0,  0,  0,  0,  0
-      FRGNAM(1)= FRM001,  FRM002,  HOH003,  HOH006,  HOH008
+      FRGNAM(1)= FRM001,  FRM002,  HOH003,  HOH004,  HOH005
       INDAT(1)=0
                 1     -4      0
                 5     -8      0
