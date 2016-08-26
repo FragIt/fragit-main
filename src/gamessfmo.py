@@ -105,26 +105,33 @@ class GamessFMO(Standard):
         self._water_fragments = []
         layers = array([1 for i in fragments])
 
-        # find water molecules
         if self._fragmentation.doFMOEFPWaters():
+            #1 - figure out which fragments these oxygens belong to.
+            #    If this is not a multilayer calculation, ALL
+            #    waters are promoted (demoted?) to EFP waters
             water_oxygen = self._fragmentation.getWaterMolecules()
-            #1 - figure out which fragments these oxygens belong to
             self._water_fragments = [self._getFragmentFromAtom(i) for i in water_oxygen]
 
-            #2 - if this is not a multilayer calculation, ALL
-            #    waters are promoted (demoted?) to EFP waters
-
-            #3 - if it is a multilayer calculation, all waters in
-            #    the layer specified by getFMOEFPWatersFromLayer
-            #    are promoted (demoted?) to EFP waters and multilayer
-            #    is switched off.
-            #    self._fragment_layers[active_fragment_id] = 2
 
         if self._central_fragment == 0:
             return layers
         other_fragment = fragments[self._central_fragment-1]
         distances = self._getFragmentDistancesVector(other_fragment)
         layers = self._getLayersFromDistances(distances)
+
+        if self._fragmentation.doFMOEFPWaters():
+            #3 - if it is a multilayer calculation, all waters in
+            #    the layer specified by getFMOEFPWatersFromLayer
+            #    are promoted (demoted?) to EFP waters and multilayer
+            #    is switched off.
+            #    self._fragment_layers[active_fragment_id] = 2
+            water_fragments = []
+            for idx, water_fragment in enumerate(sorted(self._water_fragments)):
+                if layers[water_fragment] == self._fragmentation.getFMOEFPWatersFromLayer():
+                    water_fragments.append(water_fragment)
+            self._water_fragments = water_fragments[:]
+            layers = array([1 for i in fragments])
+            self._nlayers = 1
         return layers
 
     def _dump_pymol(self):
@@ -572,6 +579,12 @@ class GamessFMO(Standard):
         return "      MPLEVL(1)=%s" % (join2D(listTo2D([0 for i in range(self._nlayers)],10,'%i'),',',",\n"))
 
     def _getFMOIndat(self):
+        """ Returns the indices of fragments in an FMO calculation
+
+            There is a sanity check going on here, that if the indices
+            are not continous, i.e. 1, 2, 3, ... -> N the list will be
+            rebuilt.
+        """
         indat_base_string = "      INDAT(1)=0\n{0:s}"
 
         fragments = self._fragmentation.getFragments()
@@ -580,6 +593,29 @@ class GamessFMO(Standard):
             if i in self._water_fragments:
                 continue
             indices.append(fragment)
+
+        # we must check that the indices list is continous
+        chklist = ravel2D(indices)
+        chkval1 = sum(chklist)
+
+        # the value of [sum_n=1^N n is 0.5*N*(N+1)] if it is continous.
+        N = len(chklist)
+        chkval2 = int(N*(N+1)/2)
+        if chkval1 != chkval2:
+            print("Warning: FragIt [GAMESS-FMO] Re-sequencing fragment indices.")
+            # if we end up here, indices is not a continous series
+            # which is must be for it to make sense in FMO.
+            # So now we make a new index list with proper indices.
+            new_indices = []
+            i_start = 1
+            for index in indices:
+                i_end = i_start + len(index)
+                new_indices.append(list(range(i_start, i_end)))
+                i_start = i_end
+
+            # copy new indices to indices list
+            indices = new_indices[:]
+
         indat ="".join([listOfRangesToString(listToRanges(frag)) for frag in indices])
         return indat_base_string.format(indat)
 
