@@ -160,7 +160,7 @@ class TestGamessFMOOutputModule(unittest.TestCase):
       self.delete_file(filename)
 
     def test_5ala_2_afo(self):
-      filename = "temp_lol.inp"
+      filename = "temp.inp"
       otherfile = self.fixtures + "/5ala_2_afo.fixture"
       molecule = fileToMol("tests/5ala.xyz")
       fragmentation = Fragmentation(molecule)
@@ -249,6 +249,55 @@ class TestGamessFMOOutputModule(unittest.TestCase):
       gamessfmo = GamessFMO(fragmentation, directories)
       gamessfmo.setCentralFragmentID(1)
       gamessfmo.setBoundariesFromString("1.0")
+      gamessfmo.setup()
+      gamessfmo.writeFile(filename)
+      generated = ReadStringListFromFile(filename)
+      fixture = ReadStringListFromFile(otherfile)
+
+      self.assertEqual(len(generated), len(fixture))
+      for i in range(len(fixture)):
+        self.assertEqual(generated[i], fixture[i])
+
+      self.delete_file(filename)
+
+    ## Test FMO EFP writer ##
+    # basic test, all waters replaced by H2ORHF waters.
+    def test_2form8wat_1(self):
+      filename = "temp.inp"
+      otherfile = self.fixtures + "/2form8wat_1.fixture"
+      molecule = fileToMol("tests/2form8wat.pdb")
+      fragmentation = Fragmentation(molecule)
+      fragmentation.beginFragmentation()
+      fragmentation.doFragmentation()
+      fragmentation.finishFragmentation()
+      fragmentation.setFMOEFPWatersFromLayer(1)
+      directories = {'share':''}
+      gamessfmo = GamessFMO(fragmentation, directories)
+      gamessfmo.setup()
+      gamessfmo.writeFile(filename)
+      generated = ReadStringListFromFile(filename)
+      fixture = ReadStringListFromFile(otherfile)
+
+      self.assertEqual(len(generated), len(fixture))
+      for i in range(len(fixture)):
+        self.assertEqual(generated[i], fixture[i])
+
+      self.delete_file(filename)
+
+    @unittest.skip("This test is broken because fragmentation can yield randomness.")
+    def test_2form8wat_2(self):
+      filename = "temp.inp"
+      otherfile = self.fixtures + "/2form8wat_2.fixture"
+      molecule = fileToMol("tests/2form8wat.pdb")
+      fragmentation = Fragmentation(molecule)
+      fragmentation.beginFragmentation()
+      fragmentation.doFragmentation()
+      fragmentation.finishFragmentation()
+      fragmentation.setFMOEFPWatersFromLayer(1)
+      directories = {'share':''}
+      gamessfmo = GamessFMO(fragmentation, directories)
+      gamessfmo.setCentralFragmentID(1)
+      gamessfmo.setBoundariesFromString("3.0")
       gamessfmo.setup()
       gamessfmo.writeFile(filename)
       generated = ReadStringListFromFile(filename)

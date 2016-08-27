@@ -101,6 +101,7 @@ class Fragmentation(FragItConfig):
     def beginFragmentation(self):
         self.printPreFragmentationInformation()
         self.identifyBackboneAtoms()
+        self.identifyWaterMolecules()
         self.identifyMergeableAtoms()
         self.identifyResidues()
         if self.useAtomNames():
@@ -112,6 +113,12 @@ class Fragmentation(FragItConfig):
         self.pat.Init(pattern)
         self.pat.Match(self.mol)
         self._backbone_atoms = Uniqify(self._listMatches(self.pat.GetUMapList()))
+
+    def identifyWaterMolecules(self):
+        pattern = "[OH2]"
+        self.pat.Init(pattern)
+        self.pat.Match(self.mol)
+        self._watermolecules = Uniqify(self._listMatches(self.pat.GetUMapList()))
 
     def identifyMergeableAtoms(self):
         patterns = self.getMergePatterns()
@@ -437,6 +444,9 @@ class Fragmentation(FragItConfig):
 
     def getBackboneAtoms(self):
         return self._backbone_atoms
+
+    def getWaterMolecules(self):
+        return self._watermolecules
 
     def nameAtoms(self):
         """attempt to name atoms """

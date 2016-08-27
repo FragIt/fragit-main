@@ -102,20 +102,46 @@ class GamessFMO(Standard):
 
     def _getFragmentLayersFromFragment(self):
         fragments = self._fragmentation.getFragments()
-        if self._central_fragment == 0: return array([1 for i in fragments])
+        self._water_fragments = []
+        layers = array([1 for i in fragments])
+
+        if self._fragmentation.doFMOEFPWaters():
+            #1 - figure out which fragments these oxygens belong to.
+            #    If this is not a multilayer calculation, ALL
+            #    waters are promoted (demoted?) to EFP waters
+            water_oxygen = self._fragmentation.getWaterMolecules()
+            self._water_fragments = sorted([self._getFragmentFromAtom(i) for i in water_oxygen])
+
+
+        if self._central_fragment == 0:
+            return layers
         other_fragment = fragments[self._central_fragment-1]
         distances = self._getFragmentDistancesVector(other_fragment)
         layers = self._getLayersFromDistances(distances)
+
+        if self._fragmentation.doFMOEFPWaters():
+            #3 - if it is a multilayer calculation, all waters in
+            #    the layer specified by getFMOEFPWatersFromLayer
+            #    are promoted (demoted?) to EFP waters and multilayer
+            #    is switched off.
+            #    self._fragment_layers[active_fragment_id] = 2
+            water_fragments = []
+            for idx, water_fragment in enumerate(sorted(self._water_fragments)):
+                if layers[water_fragment] == self._fragmentation.getFMOEFPWatersFromLayer():
+                    water_fragments.append(water_fragment)
+            self._water_fragments = water_fragments[:]
+            layers = array([1 for i in fragments])
+            self._nlayers = 1
         return layers
 
     def _dump_pymol(self):
-        from pymol import PymolTemplate
+        from .pymol import PymolTemplate
         pt = PymolTemplate(self._directories, self._input_filename, self._output_filename)
         self._setTemplateData(pt)
         self._writeTemplateFile(pt)
 
     def _dump_jmol(self):
-        from jmol import JmolTemplate
+        from .jmol import JmolTemplate
         pt = JmolTemplate(self._directories, self._input_filename, self._output_filename)
         self._setTemplateData(pt)
         self._writeTemplateFile(pt)
@@ -142,6 +168,9 @@ class GamessFMO(Standard):
         atoms = self._active_atoms[:]
         frags = self._fragmentation.getFragments()
         fragment_layers = self._fragment_layers[:]
+
+        # if no fragment is specified as central, just
+        # keep current multilayer stuff (if any) and exit
         if self._central_fragment == 0:
             self._active_frags = []
             return
@@ -241,7 +270,7 @@ class GamessFMO(Standard):
         return False
 
     def writeFile(self, filename):
-        outStringTemplate = "%s%s%s%s%s%s%s%s%s%s%s"
+        outStringTemplate = "%s%s%s%s%s%s%s%s%s%s%s%s%s"
         outString = outStringTemplate % (self.SYSTEMgroup(),
                                          self.GDDIgroup(),
                                          self.SCFgroup(),
@@ -252,10 +281,13 @@ class GamessFMO(Standard):
                                          self.FMOBNDgroup(), 
                                          self.DATAgroup(),
                                          self.FMOHYBgroup(), 
-                                         self.FMOXYZgroup())
+                                         self.FMOXYZgroup(),
+                                         self.FMOEFPgroup(),
+                                         self.EFRAGgroup())
         WriteStringToFile(filename, outString)
 
     def FMOHYBgroup(self):
+        """ Generates the FMOHYB input group """
         s = ""
         nbonds_broken = self._fragmentation.getNumBrokenBonds()
         dohop = self._fragmentation.doFMOHOPFragmentation()
@@ -424,9 +456,9 @@ class GamessFMO(Standard):
         atom_numbers = Uniqify([atom.GetAtomicNum() for atom in self._fragmentation.getAtoms()])
         atom_numbers.sort()
         atoms = [self._elements.GetSymbol(atom_number) for atom_number in atom_numbers]
-        return "".join([self._formatSingleAtomBasis(ilayer,atom) for atom in atoms])
+        return "".join([self._formatSingleFMOXYZAtomBasis(ilayer,atom) for atom in atoms])
 
-    def _formatSingleAtomBasis(self,ilayer,atom):
+    def _formatSingleFMOXYZAtomBasis(self,ilayer,atom):
         """ Formats the basis set for a single atom
 
             the most common case is to just define the atom,
@@ -458,13 +490,26 @@ class GamessFMO(Standard):
 
     ## the $FMOXYZ group
     def FMOXYZgroup(self):
-        return " $FMOXYZ\n%s\n $END\n" % self._formatAtoms()[:-1]
+        s = " $FMOXYZ\n{0:s}\n $END\n"
+        xyzstring = self._formatFMOXYZAtoms()[:-1]
+        if len(xyzstring) == 0:
+            s = ""
+        return s.format(xyzstring)
 
-    def _formatAtoms(self):
-        return "".join([self._formatSingleAtom(i+1,atom) for i,atom in enumerate(self._fragmentation.getAtoms())])
+    def _formatFMOXYZAtoms(self):
+        fragment_atoms = self._fragmentation.getAtoms()
+        fragments = self._fragmentation.getFragments()
+        fmo_fragments = []
 
-    def _formatSingleAtom(self, index, atom):
-        strindex = "%7i" % (index)
+        for i, fragment in enumerate(fragments):
+            if i in self._water_fragments:
+                continue
+            fmo_fragments.extend(fragment)
+        atoms = [fragment_atoms[i-1] for i in sorted(fmo_fragments)]
+        return "".join([self._formatSingleFMOXYZAtom(i,atom) for i, atom in enumerate(atoms, start=1)])
+
+    def _formatSingleFMOXYZAtom(self, index, atom):
+        strindex = "{0:7d}".format(index)
         if self._fragmentation.hasAtomNames():
              names = self._fragmentation.getAtomNames()
              strindex = "%7s" % (names[index-1])
@@ -479,7 +524,18 @@ class GamessFMO(Standard):
                   self._getFMOIndat(), self._getFMOLayer(), self._getFMOActfg())
         return fmo
 
+    def _getFMONFrag(self):
+        """ Returns the number of FMO fragments in the calculations
+
+            INFO: This number is modified if EFP waters are included
+        """
+        nfrag = len(self._fragmentation.getFragments())
+        nefpwaters = len(self._water_fragments)
+        nfrag -= nefpwaters
+        return "      NFRAG={0:d}\n".format(nfrag)
+
     def _getFMODefaults(self):
+        """ Returns FMO defaults """
         s = "      {0:s}\n".format("NBODY=2")
         nbonds_broken = self._fragmentation.getNumBrokenBonds()
         dohop = self._fragmentation.doFMOHOPFragmentation()
@@ -489,35 +545,80 @@ class GamessFMO(Standard):
         s += "      {0:s}\n".format("RCORSD=2.0")
         return s
 
-    def _getFMONFrag(self):
-        return "      NFRAG={0:d}\n".format(len(self._fragmentation.getFragments()))
-
     def _getFMOICharg(self):
         return "      ICHARG(1)={0:s}".format(self._formatCharges())
 
     def _formatCharges(self):
-        list2D = listTo2D(self._fragmentation.getFragmentCharges(), 10, '%3i')
+        fragment_charges = self._fragmentation.getFragmentCharges()
+        charges = []
+        for i, charge in enumerate(fragment_charges):
+            if i in self._water_fragments:
+                continue
+            charges.append(charge)
+        list2D = listTo2D(charges, 10, '%3i')
         return join2D(list2D, ',', ",\n                 ")
 
     def _getFMOFrgnam(self):
         return "      FRGNAM(1)={0:s}".format(self._formatFragmentNames())
 
     def _formatFragmentNames(self):
-        fragnames = list()
+        """ Formats fragment names in FMO
+
+            This group can technically be left out but at the moment it isn't so
+        """
         names = self._fragmentation.getFragmentNames()
-        for i in range(1, len(names) + 1):
-            s = "%5s%03i" % (names[i-1], i)
-            fragnames.append(s)
+        fragnames = []
+        fragment_index = 1
+        for i, name in enumerate(names):
+            if i in self._water_fragments:
+                continue
+            fragnames.append(" {0:5>s}{1:03d}".format(name, fragment_index))
+            fragment_index += 1
         return join2D(listTo2D(fragnames, 5), ', ', ",\n                 ")
 
     def _getFMOMplevl(self):
         return "      MPLEVL(1)=%s" % (join2D(listTo2D([0 for i in range(self._nlayers)],10,'%i'),',',",\n"))
 
     def _getFMOIndat(self):
-        frags = self._fragmentation.getFragments()
-        indat_string = "      INDAT(1)=0\n%s"
-        indat ="".join([listOfRangesToString(listToRanges(frag)) for frag in frags])
-        return indat_string % indat
+        """ Returns the indices of fragments in an FMO calculation
+
+            There is a sanity check going on here, that if the indices
+            are not continous, i.e. 1, 2, 3, ... -> N the list will be
+            rebuilt.
+        """
+        indat_base_string = "      INDAT(1)=0\n{0:s}"
+
+        fragments = self._fragmentation.getFragments()
+        indices = []
+        for i, fragment in enumerate(fragments):
+            if i in self._water_fragments:
+                continue
+            indices.append(fragment)
+
+        # we must check that the indices list is continous
+        chklist = ravel2D(indices)
+        chkval1 = sum(chklist)
+
+        # the value of [sum_n=1^N n is 0.5*N*(N+1)] if it is continous.
+        N = len(chklist)
+        chkval2 = int(N*(N+1)/2)
+        if chkval1 != chkval2:
+            print("Warning: FragIt [GAMESS-FMO] Re-sequencing fragment indices.")
+            # if we end up here, indices is not a continous series
+            # which is must be for it to make sense in FMO.
+            # So now we make a new index list with proper indices.
+            new_indices = []
+            i_start = 1
+            for index in indices:
+                i_end = i_start + len(index)
+                new_indices.append(list(range(i_start, i_end)))
+                i_start = i_end
+
+            # copy new indices to indices list
+            indices = new_indices[:]
+
+        indat ="".join([listOfRangesToString(listToRanges(frag)) for frag in indices])
+        return indat_base_string.format(indat)
 
     def _getFMONLayer(self):
         return "      NLAYER=%i" % self._nlayers
@@ -547,6 +648,7 @@ class GamessFMO(Standard):
         return r_max
 
     def _getDistanceBetweenAtoms(self, iat, jat):
+        """ Returns the distance between two atoms """
         ivec = self._getAtomVector(iat)
         jvec = self._getAtomVector(jat)
         atom_vector = jvec - ivec
@@ -565,3 +667,28 @@ class GamessFMO(Standard):
             layer +=1
         return fragment_layers
 
+    def FMOEFPgroup(self):
+        s = ""
+        nefpwaters = len(self._water_fragments)
+        if nefpwaters > 0:
+            s += " $FMOEFP\n"
+            s += "   NLEVEL=1\n" # default to NLEVEL = 1 which minimizes EFP for each fragment and dimer.
+            s += " $END\n"
+        return s
+
+    def EFRAGgroup(self):
+        s = ""
+        nefpwaters = len(self._water_fragments)
+        fragments = self._fragmentation.getFragments()
+        fragment_atoms = self._fragmentation.getAtoms()
+        if nefpwaters > 0:
+            s += " $EFRAG\n"
+            s += "COORD=CART\n"
+            for water_fragment in self._water_fragments:
+                s += "FRAGNAME=H2ORHF\n"
+                for idx, atom_index in enumerate(fragments[water_fragment], start=1):
+                    atom = fragment_atoms[atom_index-1]
+                    symbol = self._elements.GetSymbol(atom.GetAtomicNum())
+                    s += "{0:s}{1:d}{2:17.6f}{3:13.6f}{4:13.6f}\n".format(symbol, idx, atom.GetX(), atom.GetY(), atom.GetZ())
+            s += " $END\n"
+        return s
