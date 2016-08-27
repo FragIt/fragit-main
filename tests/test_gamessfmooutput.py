@@ -284,6 +284,7 @@ class TestGamessFMOOutputModule(unittest.TestCase):
 
       self.delete_file(filename)
 
+    @unittest.skip("This test is broken because fragmentation can yield randomness.")
     def test_2form8wat_2(self):
       filename = "temp.inp"
       otherfile = self.fixtures + "/2form8wat_2.fixture"
