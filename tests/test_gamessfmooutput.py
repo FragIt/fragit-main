@@ -279,12 +279,21 @@ class TestGamessFMOOutputModule(unittest.TestCase):
       fixture = ReadStringListFromFile(otherfile)
 
       self.assertEqual(len(generated), len(fixture))
+
+      ignoring = False
       for i in range(len(fixture)):
-        self.assertEqual(generated[i], fixture[i])
+        if "EFRAG" in generated[i] or "EFRAG" in fixture[i]:
+            ignoring = True
+
+        if ignoring:
+            if "END" in genenerated[i] or "END" in fixture[i]:
+                ignoring = False
+
+        if not ignoring:
+            self.assertEqual(generated[i], fixture[i])
 
       self.delete_file(filename)
 
-    @unittest.skip("This test is broken because fragmentation can yield randomness.")
     def test_2form8wat_2(self):
       filename = "temp.inp"
       otherfile = self.fixtures + "/2form8wat_2.fixture"
@@ -304,8 +313,18 @@ class TestGamessFMOOutputModule(unittest.TestCase):
       fixture = ReadStringListFromFile(otherfile)
 
       self.assertEqual(len(generated), len(fixture))
+
+      ignoring = False
       for i in range(len(fixture)):
-        self.assertEqual(generated[i], fixture[i])
+        if "EFRAG" in generated[i] or "EFRAG" in fixture[i]:
+            ignoring = True
+
+        if ignoring:
+            if "END" in genenerated[i] or "END" in fixture[i]:
+                ignoring = False
+
+        if not ignoring:
+            self.assertEqual(generated[i], fixture[i])
 
       self.delete_file(filename)
 
