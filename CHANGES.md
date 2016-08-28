@@ -96,7 +96,7 @@ Updates since v1.6.1
 
     Please note that this will *disable* the
     multilayer calculation as that option
-    does seem like a too exotic feature.
+    does seem like an exotic feature.
     
 
 FragIt v1.6.1 Release Notes
