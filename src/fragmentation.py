@@ -36,6 +36,7 @@ class Fragmentation(FragItConfig):
         self._verbose = self.getVerbose()
         self._nbonds_broken = 0
 
+
     def _removeMetalAtoms(self):
         _metalAtoms = []
 
@@ -72,6 +73,7 @@ class Fragmentation(FragItConfig):
 
         return _metalAtoms
 
+
     def _fixAtomsAndCharges(self):
         """Removes unwanted atoms to make the charge calculation
            work. Be sure to re-insert the atoms once it is done
@@ -98,7 +100,15 @@ class Fragmentation(FragItConfig):
                 self._atoms.append(atom)
                 self.formalCharges.append(atom.GetFormalCharge())
 
+
     def beginFragmentation(self):
+        """ Performs the nescessary actions before fragmentation
+
+            This includes identifying fragments which could
+            potentially be of importance. It also identifies
+            which atoms are potentially excluded from parti-
+            cipating in fragmentation
+        """
         self.printPreFragmentationInformation()
         self.identifyBackboneAtoms()
         self.identifyWaterMolecules()
@@ -108,17 +118,22 @@ class Fragmentation(FragItConfig):
             self.nameAtoms()
         self.setProtectedAtoms()
 
+
     def identifyBackboneAtoms(self):
         pattern = "N([*])C([H])C(=O)"
         self.pat.Init(pattern)
         self.pat.Match(self.mol)
         self._backbone_atoms = Uniqify(self._listMatches(self.pat.GetUMapList()))
 
+
     def identifyWaterMolecules(self):
+        """ Identifies all water molecules in the system """
         pattern = "[OH2]"
+        # maybe O([H])[H] will give us all the atoms, actually
         self.pat.Init(pattern)
         self.pat.Match(self.mol)
         self._watermolecules = Uniqify(self._listMatches(self.pat.GetUMapList()))
+
 
     def identifyMergeableAtoms(self):
         patterns = self.getMergePatterns()
@@ -127,6 +142,7 @@ class Fragmentation(FragItConfig):
             value = self._getAtomsToProtect(patterns[pattern])
             value.sort()
             self._mergeable_atoms.extend(value)
+
 
     def doFragmentMerging(self):
         fragments_to_merge = self.getFragmentsToMerge()
@@ -141,6 +157,7 @@ class Fragmentation(FragItConfig):
         self._fragments = fragments[:]
         self._CleanMergedBonds()
 
+
     def doFragmentCombination(self):
         fragments_to_combine = self.getCombineFragments()
         if len(fragments_to_combine) == 0: return
@@ -152,6 +169,7 @@ class Fragmentation(FragItConfig):
         self._fragments = fragments[:]
         self._CleanMergedBonds()
 
+
     def getFragmentsToMerge(self):
         fragments = self.getFragments()
         fragments_to_merge = []
@@ -161,6 +179,7 @@ class Fragmentation(FragItConfig):
                     fragments_to_merge.append(i)
         return fragments_to_merge
 
+
     def doFragmentation(self):
         """ Performas the actual fragmentation based on the
             actions performed in beginFragmentation
@@ -168,28 +187,36 @@ class Fragmentation(FragItConfig):
         self.breakBonds()
         self.determineFragments()
 
+
     def finishFragmentation(self):
         self.determineFragmentCharges()
         self.nameFragments()
 
+
     def getFragments(self):
         return self._fragments
+
 
     def getFragmentNames(self):
         return self._fragment_names
 
+
     def getAtoms(self):
         return self._atoms
+
 
     def setActiveFragments(self, active_fragments):
         if not isinstance(active_fragments, list): raise TypeError
         self.active_fragments = active_fragments
 
+
     def setProtectedAtoms(self):
         self.applySmartProtectPatterns()
 
+
     def clearProtectionPatterns(self):
         self.protected_atoms = list()
+
 
     def applySmartProtectPatterns(self):
         patterns = self.getProtectPatterns()
@@ -198,16 +225,19 @@ class Fragmentation(FragItConfig):
             if len(pattern) == 0: continue
             self.addExplicitlyProtectedAtoms(self._getAtomsToProtect(pattern))
 
+
     def _getAtomsToProtect(self,pattern):
         self.pat.Init(pattern)
         self.pat.Match(self.mol)
         return self._listMatches(self.pat.GetUMapList())
+
 
     def _listMatches(self,matches):
         results = []
         for match in matches:
             results.extend(match)
         return results
+
 
     def identifyResidues(self):
         if (len(self._residue_names) > 0):
@@ -229,6 +259,7 @@ class Fragmentation(FragItConfig):
         self._residue_names = result
         return result
 
+
     def isBondProtected(self,bond_pair):
         protected_atoms = self.getExplicitlyProtectedAtoms()
         for bond_atom in bond_pair:
@@ -236,9 +267,11 @@ class Fragmentation(FragItConfig):
                 return True
         return False
 
+
     def breakBonds(self):
         self._BreakPatternBonds()
         self._DeleteOBMolBonds()
+
 
     def _DeleteOBMolBonds(self):
         for pair in self.getExplicitlyBreakAtomPairs():
