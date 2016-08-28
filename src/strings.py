@@ -2,10 +2,10 @@
 Copyright (C) 2011-2016 Casper Steinmann
 """
 
-version = ("1","6","1")
+version = ("1","7","0")
 version_str = ".".join(version)
 
-doc_str = """FragIt fragments molecules for fragment based methods using in quantum chemistry.
+doc_str = """FragIt fragments molecules for fragment based methods in quantum chemistry.
 The output of FragIt is an input file which can be run in a suitable quantum chemistry program
 The preferable way to use FragIt is to use the configuration file option
 described below to have access to all options
