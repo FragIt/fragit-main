@@ -286,7 +286,7 @@ class TestGamessFMOOutputModule(unittest.TestCase):
             ignoring = True
 
         if ignoring:
-            if "END" in genenerated[i] or "END" in fixture[i]:
+            if "END" in generated[i] or "END" in fixture[i]:
                 ignoring = False
 
         if not ignoring:
@@ -320,7 +320,7 @@ class TestGamessFMOOutputModule(unittest.TestCase):
             ignoring = True
 
         if ignoring:
-            if "END" in genenerated[i] or "END" in fixture[i]:
+            if "END" in generated[i] or "END" in fixture[i]:
                 ignoring = False
 
         if not ignoring:
