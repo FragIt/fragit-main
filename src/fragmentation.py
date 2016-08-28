@@ -315,7 +315,8 @@ class Fragmentation(FragItConfig):
     def realBondBreaker(self, bondtype, bond_pair):
         if self.isBondProtected(bond_pair):
             if self._verbose:
-                print("      bond pair {0:>15s} will not be broken.".format(bond_pair))
+                s_pair = "({0[0]:d},{0[1]:d})".format(bond_pair)
+                print("      bond pair {0:>15s} will not be broken.".format(s_pair))
             return
         self.addExplicitlyBreakAtomPairs([bond_pair])
 
