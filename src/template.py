@@ -26,6 +26,7 @@ class Template(object):
         self.template_filename = "" # must be set later
         self.load_structure_string = None
         self.replacements = {}
+        self.fragment_charges = list()
 
     def _setTemplateType(self,value):
         if not isinstance(value, str): raise ValueError("Template type is a string value.")
@@ -58,6 +59,9 @@ class Template(object):
     def setPairData(self,value):
         self.fragpairs = value
 
+    def setFragmentCharges(self, value):
+        self.fragment_charges = value
+
     def formatSingleFragment(self, fragment_data):
         raise NotImplementedError
 
@@ -76,6 +80,9 @@ class Template(object):
     def formatBreakPoints(self):
         raise NotImplementedError
 
+    def formatFragmentCharges(self):
+        raise NotImplementedError
+
     def override(self):
         if self.load_structure_string is None: raise ValueError("Load structure string not defined")
 
@@ -85,6 +92,7 @@ class Template(object):
         self.replacements['BACKBONE'] = self.formatBackbone()
         self.replacements['BREAKPOINTS'] = self.formatBreakPoints()
         self.replacements['LOADCOMMAND'] = self.load_structure_string % (self.infile)
+        self.replacements['FRAGMENTQ'] = self.formatFragmentCharges()
 
     def write(self):
         outfile = "{0:s}.{1:s}".format(self.outfile, self.template_type)

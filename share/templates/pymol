@@ -4,6 +4,7 @@ $FRAGMENTS
 $BUFFER
 $ACTIVE
 $BACKBONE
+$FRAGMENTQ
 
 def atom_data_to_lists(l):
   lists = list()
@@ -13,6 +14,11 @@ def atom_data_to_lists(l):
     atmlists = fraglist.split(",")
     lists.append(map(int, atmlists))
   return lists
+
+def fragment_data_to_list(l):
+  if len(l) == 0: return []
+  fragment_properties = map(int, l.split(","))
+  return fragment_properties
 
 def select_fragment_by_id(id):
   fragments = atom_data_to_lists(fragments_data)
@@ -126,6 +132,17 @@ def color_all_fragments():
   for i,atomlist in enumerate(frags):
     color_atoms(atomlist, colors[i])
 
+def color_fragments_by_charge():
+  charges = fragment_data_to_list(fragment_charges)
+  fragments = atom_data_to_lists(fragments_data)
+  for i, (fragment, charge) in enumerate(zip(fragments, charges)):
+    if charge == -1:
+      color_atoms(fragment, "red")
+    elif charge == +1:
+      color_atoms(fragment, "blue")
+    else:
+      color_atoms(fragment, "white")
+
 def color_fragments(sele="fragments"):
   cmd.bg_color("white")
   if sele == "fragments":    
@@ -139,6 +156,9 @@ def color_fragments(sele="fragments"):
     cmd.do("color gray, sele-frozen")
     cmd.do("color marine, sele-buffer")
     cmd.do("color raspberry, sele-active")
+
+  elif "charge" in sele:
+    color_fragments_by_charge()
 
 def calculate_center(list_of_coords):
   n = len(list_of_coords)

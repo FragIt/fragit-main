@@ -46,3 +46,7 @@ class PymolTemplate(Template):
     def formatBreakPoints(self):
         return ""
 
+    def formatFragmentCharges(self):
+        charges = "fragment_charges=\"%s\""
+        s = ",".join(map(str, self.fragment_charges))
+        return charges % s
