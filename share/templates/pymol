@@ -133,6 +133,7 @@ def color_all_fragments():
     color_atoms(atomlist, colors[i])
 
 def color_fragments_by_charge():
+  """ Colors fragments by charges """
   charges = fragment_data_to_list(fragment_charges)
   fragments = atom_data_to_lists(fragments_data)
   for i, (fragment, charge) in enumerate(zip(fragments, charges)):
@@ -144,6 +145,11 @@ def color_fragments_by_charge():
       color_atoms(fragment, "white")
 
 def color_fragments(sele="fragments"):
+  """ PyMOL GUI coloring function
+
+      This function is invoked by the 'ColorFragments' option
+      in the PyMOL user interface.
+  """
   cmd.bg_color("white")
   if sele == "fragments":    
     color_all_fragments()
@@ -195,6 +201,11 @@ def name_fragments(action="show"):
   if action == "show":
     name_all_fragments()
 
+def setup_rendering_defaults():
+  cmd.do("set antialias, 2")
+  cmd.do("set ray_trace_mode, 1")
+  cmd.do("set ray_shadow, off")
+
 # default commands we need to execute
 # to set up the environment correctly
 stored.did_labels = False
@@ -210,3 +221,5 @@ cmd.do("select sele, none")
 cmd.extend("NameFragments", name_fragments)
 cmd.extend("ColorFragments", color_fragments)
 cmd.extend("SelectFragments", make_selection)
+
+setup_rendering_defaults()
