@@ -9,8 +9,6 @@ FragIt was made out of the need to quickly benchmark many different molecules wh
 
 Currently, FragIt supports the [fragment molecular orbital](http://en.wikipedia.org/wiki/Fragment_Molecular_Orbital) method in [GAMESS](http://www.msg.ameslab.gov/gamess/index.html). FragIt also comes with a standard purpose XYZ writer that dumps each fragment in a separate `.xyz` file. Finally, there is a new XYZ-MFCC writer to support molecular fragmentation with conjugate caps that will yield capped fragments and caps for MFCC. New output writers can be added easily to support other methods and programs.
 
-There is also an [online-version available](http://www.fragit.org/) which requires only a browser and Java but is limited in the number of fragments / residues that can be fragmented.
-
 ## Obtaining FragIt
 
 Since you found this file, it is obvious that you also found the source code. You can obtain the latest version from [github](https://www.github.com/FragIt/fragit-main) where [tagged releases](https://github.com/FragIt/fragit-main/releases) are also available.
