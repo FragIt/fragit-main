@@ -30,20 +30,21 @@ Updates since v1.6.1
     support of only SP3 C-C bonds but that should
     cover 99 % of all current use cases.
 
-    HOP is enabled per default and AFO is enabled
+    HOP is disabled per default. You can enable it
     by specifying
 
     [fmo]
-    dohop = False
+    dohop = True
 
     in the configuration file.
 
   * The GAMESS-FMO writer now has improved
-    support for multilayer calculations as well
-    well. Through a new section [qm] in the
-    configuration it is possible to specify the
-    basis set for an FMO calculation.
-       In the case of multilayer runs FragIt
+    support for multilayer calculations as well.
+    Through a new section [qm] in the configuration
+    it is possible to specify the basis set for an
+    FMO calculation.
+
+    In the case of multilayer runs FragIt
     supports the multilayer notation from FMO
     as well so one specifies basis sets on a
     per layer basis separated by colons:
@@ -51,7 +52,7 @@ Updates since v1.6.1
     [qm]
     basis = STO-3G:3-21G
     
-    In multilayer calculations the approrpiate
+    In multilayer calculations the appropriate
     basis set will be added to the $DATA group
     and leave out the $BASIS group.
 
@@ -96,7 +97,7 @@ Updates since v1.6.1
 
     Please note that this will *disable* the
     multilayer calculation as that option
-    does seem like an exotic feature.
+    seems a little exuberant.
     
 
 FragIt v1.6.1 Release Notes

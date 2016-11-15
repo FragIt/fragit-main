@@ -106,7 +106,7 @@ class FragItDataBase(dict):
 
         # fmo specific options
         self['fmo'] = dict() 
-        self['fmo']['dohop'] = True
+        self['fmo']['dohop'] = False
         self['fmo']['efpwaters'] = 0 # disable EFP waters
 
     def getType(self, option, section):
