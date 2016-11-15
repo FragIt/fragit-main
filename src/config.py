@@ -460,6 +460,9 @@ class FragItConfig(object):
     def setFMOAFOFragmentation(self):
         self.values['fmo']['dohop'] = False
 
+    def setFMOHOPFragmentation(self):
+        self.values['fmo']['dohop'] = True
+
     def doFMOEFPWaters(self):
         return self.getFMOEFPWatersFromLayer() > 0
 

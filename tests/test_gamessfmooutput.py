@@ -164,7 +164,6 @@ class TestGamessFMOOutputModule(unittest.TestCase):
       otherfile = self.fixtures + "/5ala_2_afo.fixture"
       molecule = fileToMol("tests/5ala.xyz")
       fragmentation = Fragmentation(molecule)
-      fragmentation.setFMOAFOFragmentation()
       fragmentation.setQMBasis('3-21G:6-31G(d)')
       fragmentation.beginFragmentation()
       fragmentation.doFragmentation()
@@ -191,6 +190,7 @@ class TestGamessFMOOutputModule(unittest.TestCase):
       otherfile = self.fixtures + "/5ala_1_hop.fixture"
       molecule = fileToMol("tests/5ala.xyz")
       fragmentation = Fragmentation(molecule)
+      fragmentation.setFMOHOPFragmentation()
       fragmentation.beginFragmentation()
       fragmentation.doFragmentation()
       fragmentation.finishFragmentation()
@@ -214,6 +214,7 @@ class TestGamessFMOOutputModule(unittest.TestCase):
       molecule = fileToMol("tests/5ala.xyz")
       fragmentation = Fragmentation(molecule)
       fragmentation.setQMBasis('3-21G:6-31G*')
+      fragmentation.setFMOHOPFragmentation()
       fragmentation.beginFragmentation()
       fragmentation.doFragmentation()
       fragmentation.finishFragmentation()
@@ -241,6 +242,7 @@ class TestGamessFMOOutputModule(unittest.TestCase):
       otherfile = self.fixtures + "/5ala_3_hop.fixture"
       molecule = fileToMol("tests/5ala.xyz")
       fragmentation = Fragmentation(molecule)
+      fragmentation.setFMOHOPFragmentation()
       fragmentation.setQMBasis('3-21G')
       fragmentation.beginFragmentation()
       fragmentation.doFragmentation()
