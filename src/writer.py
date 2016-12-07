@@ -8,10 +8,10 @@ try:
 except ImportError:
     raise OBNotFoundException("OpenBabel not found. Please install OpenBabel to use FragIt.")
 
-from util import floatlistFromString, intlistFromString
+from .util import floatlistFromString, intlistFromString
 
 class Standard(object):
-    def __init__(self, fragmentation):
+    def __init__(self, fragmentation, directories):
         self._fragmentation = fragmentation
         self._elements = openbabel.OBElementTable()
         self._nlayers = 1
@@ -25,6 +25,7 @@ class Standard(object):
         self._do_jmol = False
         self._do_pymol = False
         self._verbose = self._fragmentation.getVerbose()
+        self._directories = directories
 
     def writeFile(self):
         raise NotImplementedError

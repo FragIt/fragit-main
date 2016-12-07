@@ -1,9 +1,9 @@
 from pymol import stored
 
-<<fragments>>
-<<buffer>>
-<<active>>
-<<backbone>>
+$FRAGMENTS
+$BUFFER
+$ACTIVE
+$BACKBONE
 
 def atom_data_to_lists(l):
   lists = list()
@@ -132,13 +132,13 @@ def color_fragments(sele="fragments"):
     color_all_fragments()
 
   elif sele == "buffer" or sele == "layers":
-    cmd.do("color green, sele-frozen")
-    cmd.do("color blue, sele-buffer")
+    cmd.do("color gray, sele-frozen")
+    cmd.do("color marine, sele-buffer")
 
   elif sele == "active":
-    cmd.do("color green, sele-frozen")
-    cmd.do("color blue, sele-buffer")
-    cmd.do("color red, sele-active")
+    cmd.do("color gray, sele-frozen")
+    cmd.do("color marine, sele-buffer")
+    cmd.do("color raspberry, sele-active")
 
 def calculate_center(list_of_coords):
   n = len(list_of_coords)
@@ -178,7 +178,7 @@ def name_fragments(action="show"):
 # default commands we need to execute
 # to set up the environment correctly
 stored.did_labels = False
-<<pdbfilename>>
+$LOADCOMMAND
 
 color_fragments("fragments")
 if len(atom_data_to_lists(fragments_data)) < 50:

@@ -28,7 +28,7 @@ import unittest
 import openbabel
 
 from src.fragmentation import Fragmentation
-from src.util import is_dictionary, lenOfLists, fileToMol
+from src.util import lenOfLists, fileToMol
 
 class TestFragmentationModule(unittest.TestCase):
 
@@ -76,7 +76,7 @@ class TestFragmentationModule(unittest.TestCase):
         self.assertEqual(self.fragmentation.getExplicitlyProtectedAtoms(), [1, 2, 3, 4, 10, 44, 55, 67])
 
     def test_FragmentationAddBrokenBond(self):
-	pass
+        pass
 
     def test_FragmentationIsBondProtected(self):
         bond_pair = (2, 3)
@@ -142,15 +142,21 @@ class TestFragmentationModule(unittest.TestCase):
     def test_FragmentationFindFragmentsNoGrouping(self):
         self.fragmentation.breakBonds()
         self.fragmentation.determineFragments()
+        res1 = [12, 13, 31, 32]
+        res1.extend(range(35, 43))
         self.assertEqual(self.fragmentation.getAtomsInSameFragment(11, 0), [3, 4, 10, 11, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30])
-        self.assertEqual(self.fragmentation.getAtomsInSameFragment(12, 0), [12, 13, 31, 32] + range(35, 43))
+        self.assertEqual(self.fragmentation.getAtomsInSameFragment(12, 0), res1)
 
     def test_FragmentationFindFragmentsNoGroupingWithProtect(self):
         self.fragmentation.setProtectedAtoms()
         self.fragmentation.breakBonds()
         self.fragmentation.determineFragments()
-        self.assertEqual(self.fragmentation.getAtomsInSameFragment(11, 0), range(1, 12)+range(14, 31))
-        self.assertEqual(self.fragmentation.getAtomsInSameFragment(12, 0), [12, 13, 31, 32] + range(35, 43))
+        res1 = list(range(1,12))
+        res1.extend(list(range(14,31)))
+        res2 = [12, 13, 31, 32]
+        res2.extend(list(range(35, 43)))
+        self.assertEqual(self.fragmentation.getAtomsInSameFragment(11, 0), res1)
+        self.assertEqual(self.fragmentation.getAtomsInSameFragment(12, 0), res2)
 
     def test_FragmentationFragmentChargeAfterFragment(self):
         #self.fragmentation.determineFormalCharges()

@@ -9,8 +9,6 @@ FragIt was made out of the need to quickly benchmark many different molecules wh
 
 Currently, FragIt supports the [fragment molecular orbital](http://en.wikipedia.org/wiki/Fragment_Molecular_Orbital) method in [GAMESS](http://www.msg.ameslab.gov/gamess/index.html). FragIt also comes with a standard purpose XYZ writer that dumps each fragment in a separate `.xyz` file. Finally, there is a new XYZ-MFCC writer to support molecular fragmentation with conjugate caps that will yield capped fragments and caps for MFCC. New output writers can be added easily to support other methods and programs.
 
-There is also an [online-version available](http://www.fragit.org/) which requires only a browser and Java but is limited in the number of fragments / residues that can be fragmented.
-
 ## Obtaining FragIt
 
 Since you found this file, it is obvious that you also found the source code. You can obtain the latest version from [github](https://www.github.com/FragIt/fragit-main) where [tagged releases](https://github.com/FragIt/fragit-main/releases) are also available.
@@ -44,4 +42,4 @@ In order to run FragIt, you *need* the following installed on your system:
 * The FragIt source code, look above for information on how to obtain it
 * [Open Babel](http://www.openbabel.org) 2.3 or newer with [python language bindings](http://openbabel.org/docs/dev/Installation/install.html#compile-language-bindings) enabled. Github user [andersx](https://github.com/andersx) [wrote a guide](http://combichem.blogspot.dk/2013/12/compiling-open-babel-with-python.html) to how that is accomplished.
 * [Numpy](http://numpy.scipy.org) 1.5 or newer.
-* [Python](http://www.python.org) version 2.4 or later (not 3.X)
+* [Python](http://www.python.org) version 2.7 or later. There is limited support for 3.X.

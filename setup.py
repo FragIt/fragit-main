@@ -38,9 +38,9 @@ Topic :: Software Development :: Libraries :: Python Modules
 """
 
 def setup_fragit():
-  doclines = __doc__.split("\n")
+    doclines = __doc__.split("\n")
 
-  setup(name="fragit",
+    setup(name="fragit",
         version=version_str,
         url = "https://github.com/FragIt/fragit-main",
         author = "Casper Steinmann",
@@ -56,7 +56,18 @@ def setup_fragit():
         packages=['fragit'],
         scripts=['scripts/fragit', 'scripts/fragit-conf'],
         package_data = {'': ['pymol_template','jmol_template']}, # relative to 'packages' specified above
-        data_files=[('',['README.md','LICENSE', 'CHANGES.md'])]
+        data_files=[
+            ('', ['README.md','LICENSE', 'CHANGES.md']),
+            ('share', ['share/README.md']),
+            ('share/templates', [
+                'share/templates/pymol', 'share/templates/jmol'
+            ]),
+            ('share/hmo', [
+                'share/hmo/STO-3G', 'share/hmo/3-21G', 'share/hmo/6-31G',
+                'share/hmo/6-31G(d)', 'share/hmo/6-31G*', 'share/hmo/cc-pVDZ',
+                'share/hmo/pcseg-0', 'share/hmo/pcseg-1'
+            ])
+        ]
   )
 
 if __name__ == '__main__':

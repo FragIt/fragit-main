@@ -1,30 +1,8 @@
 """
-**********************************************************************
-tests/test_GamessFMOOutput.py - test cases for GamessFMO Writer
-
-Copyright (C) 2012 Casper Steinmann
-
-This file is part of the FragIt project.
-
-FragIt is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-FragIt is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301, USA.
-***********************************************************************/
+Copyright (C) 2012-2016 Casper Steinmann
 """
 import os
 import sys
-#sys.path.append('../src')
 import unittest
 from src.gamessfmo import GamessFMO
 
@@ -34,8 +12,6 @@ from src.fragmentation import Fragmentation
 class TestGamessFMOOutputModule(unittest.TestCase):
 
     def setUp(self):
-      self.molecule = fileToMol("tests/watercluster4.xyz")
-      self.fragmentation = Fragmentation(self.molecule)
       self.fixtures = 'tests/gamess-fmo-fixtures'
 
     def delete_file(self,filename):
@@ -50,7 +26,10 @@ class TestGamessFMOOutputModule(unittest.TestCase):
     def test_water_1(self):
       filename = "temp.inp"
       otherfile = self.fixtures + "/water_1.fixture"
-      gamessfmo = GamessFMO(self.fragmentation)
+      molecule = fileToMol("tests/watercluster4.xyz")
+      fragmentation = Fragmentation(molecule)
+      directories = {'share':''}
+      gamessfmo = GamessFMO(fragmentation, directories)
       gamessfmo.setup()
       gamessfmo.writeFile(filename)
       generated = ReadStringListFromFile(filename)
@@ -65,10 +44,15 @@ class TestGamessFMOOutputModule(unittest.TestCase):
     def test_water_2(self):
       filename = "temp.inp"
       otherfile = self.fixtures + "/water_2.fixture"
-      self.fragmentation.beginFragmentation()
-      self.fragmentation.doFragmentation()
-      self.fragmentation.finishFragmentation()
-      gamessfmo = GamessFMO(self.fragmentation)
+      molecule = fileToMol("tests/watercluster4.xyz")
+      fragmentation = Fragmentation(molecule)
+      directories = {'share':''}
+      gamessfmo = GamessFMO(fragmentation, directories)
+      fragmentation.beginFragmentation()
+      fragmentation.doFragmentation()
+      fragmentation.finishFragmentation()
+      directories = {'share':''}
+      gamessfmo = GamessFMO(fragmentation, directories)
       gamessfmo.setup()
       gamessfmo.writeFile(filename)
       generated = ReadStringListFromFile(filename)
@@ -83,10 +67,13 @@ class TestGamessFMOOutputModule(unittest.TestCase):
     def test_water_3(self):
       filename = "temp.inp"
       otherfile = self.fixtures + "/water_3.fixture"
-      self.fragmentation.beginFragmentation()
-      self.fragmentation.doFragmentation()
-      self.fragmentation.finishFragmentation()
-      gamessfmo = GamessFMO(self.fragmentation)
+      molecule = fileToMol("tests/watercluster4.xyz")
+      fragmentation = Fragmentation(molecule)
+      fragmentation.beginFragmentation()
+      fragmentation.doFragmentation()
+      fragmentation.finishFragmentation()
+      directories = {'share':''}
+      gamessfmo = GamessFMO(fragmentation, directories)
       gamessfmo.setCentralFragmentID(1)
       gamessfmo.setup()
       gamessfmo.writeFile(filename)
@@ -102,10 +89,13 @@ class TestGamessFMOOutputModule(unittest.TestCase):
     def test_water_4(self):
       filename = "temp.inp"
       otherfile = self.fixtures + "/water_4.fixture"
-      self.fragmentation.beginFragmentation()
-      self.fragmentation.doFragmentation()
-      self.fragmentation.finishFragmentation()
-      gamessfmo = GamessFMO(self.fragmentation)
+      molecule = fileToMol("tests/watercluster4.xyz")
+      fragmentation = Fragmentation(molecule)
+      fragmentation.beginFragmentation()
+      fragmentation.doFragmentation()
+      fragmentation.finishFragmentation()
+      directories = {'share':''}
+      gamessfmo = GamessFMO(fragmentation, directories)
       gamessfmo.setCentralFragmentID(1)
       gamessfmo.setBoundariesFromString("1.0")
       gamessfmo.setup()
@@ -122,10 +112,13 @@ class TestGamessFMOOutputModule(unittest.TestCase):
     def test_water_5(self):
       filename = "temp.inp"
       otherfile = self.fixtures + "/water_5.fixture"
-      self.fragmentation.beginFragmentation()
-      self.fragmentation.doFragmentation()
-      self.fragmentation.finishFragmentation()
-      gamessfmo = GamessFMO(self.fragmentation)
+      molecule = fileToMol("tests/watercluster4.xyz")
+      fragmentation = Fragmentation(molecule)
+      fragmentation.beginFragmentation()
+      fragmentation.doFragmentation()
+      fragmentation.finishFragmentation()
+      directories = {'share':''}
+      gamessfmo = GamessFMO(fragmentation, directories)
       gamessfmo.setCentralFragmentID(1)
       gamessfmo.setBoundariesFromString("1.0")
       gamessfmo.setActiveAtomsDistance(1.0)
@@ -138,6 +131,202 @@ class TestGamessFMOOutputModule(unittest.TestCase):
       self.assertEqual(len(generated), len(fixture))
       for i in range(len(fixture)):
         self.assertEqual(generated[i], fixture[i])
+
+      self.delete_file(filename)
+
+    # -----------
+    # 5 ala tests
+    # -----------
+    def test_5ala_1_afo(self):
+      filename = "temp.inp"
+      otherfile = self.fixtures + "/5ala_1_afo.fixture"
+      molecule = fileToMol("tests/5ala.xyz")
+      fragmentation = Fragmentation(molecule)
+      fragmentation.setFMOAFOFragmentation()
+      fragmentation.beginFragmentation()
+      fragmentation.doFragmentation()
+      fragmentation.finishFragmentation()
+      directories = {'share':''}
+      gamessfmo = GamessFMO(fragmentation, directories)
+      gamessfmo.setup()
+      gamessfmo.writeFile(filename)
+      generated = ReadStringListFromFile(filename)
+      fixture = ReadStringListFromFile(otherfile)
+
+      self.assertEqual(len(generated), len(fixture))
+      for i in range(len(fixture)):
+        self.assertEqual(generated[i], fixture[i])
+
+      self.delete_file(filename)
+
+    def test_5ala_2_afo(self):
+      filename = "temp.inp"
+      otherfile = self.fixtures + "/5ala_2_afo.fixture"
+      molecule = fileToMol("tests/5ala.xyz")
+      fragmentation = Fragmentation(molecule)
+      fragmentation.setQMBasis('3-21G:6-31G(d)')
+      fragmentation.beginFragmentation()
+      fragmentation.doFragmentation()
+      fragmentation.finishFragmentation()
+      directories = {'share':'share'}
+      gamessfmo = GamessFMO(fragmentation, directories)
+      gamessfmo.setCentralFragmentID(1)
+      gamessfmo.setBoundariesFromString("1.0")
+      gamessfmo.setup()
+      gamessfmo.writeFile(filename)
+      generated = ReadStringListFromFile(filename)
+      fixture = ReadStringListFromFile(otherfile)
+
+      self.assertEqual(len(generated), len(fixture))
+      for i in range(len(fixture)):
+        self.assertEqual(generated[i], fixture[i])
+
+      self.delete_file(filename)
+
+
+    ## HOP TESTS ##
+    def test_5ala_1_hop(self):
+      filename = "temp.inp"
+      otherfile = self.fixtures + "/5ala_1_hop.fixture"
+      molecule = fileToMol("tests/5ala.xyz")
+      fragmentation = Fragmentation(molecule)
+      fragmentation.setFMOHOPFragmentation()
+      fragmentation.beginFragmentation()
+      fragmentation.doFragmentation()
+      fragmentation.finishFragmentation()
+      directories = {'share':'share'}
+      gamessfmo = GamessFMO(fragmentation, directories)
+      gamessfmo.setup()
+      gamessfmo.writeFile(filename)
+      generated = ReadStringListFromFile(filename)
+      fixture = ReadStringListFromFile(otherfile)
+
+      self.assertEqual(len(generated), len(fixture))
+      for i in range(len(fixture)):
+        self.assertEqual(generated[i], fixture[i])
+
+      self.delete_file(filename)
+
+
+    def test_5ala_2_hop(self):
+      filename = "temp.inp"
+      otherfile = self.fixtures + "/5ala_2_hop.fixture"
+      molecule = fileToMol("tests/5ala.xyz")
+      fragmentation = Fragmentation(molecule)
+      fragmentation.setQMBasis('3-21G:6-31G*')
+      fragmentation.setFMOHOPFragmentation()
+      fragmentation.beginFragmentation()
+      fragmentation.doFragmentation()
+      fragmentation.finishFragmentation()
+      directories = {'share':'share'}
+      gamessfmo = GamessFMO(fragmentation, directories)
+      gamessfmo.setCentralFragmentID(1)
+      gamessfmo.setBoundariesFromString("1.0")
+      gamessfmo.setup()
+      gamessfmo.writeFile(filename)
+      generated = ReadStringListFromFile(filename)
+      fixture = ReadStringListFromFile(otherfile)
+
+      self.assertEqual(len(generated), len(fixture))
+      for i in range(len(fixture)):
+        self.assertEqual(generated[i], fixture[i])
+
+      self.delete_file(filename)
+
+    def test_5ala_3_hop(self):
+      """ Regression test to make sure if only one basis
+          set is specified we get the correct input file
+          FMO with HOP
+      """
+      filename = "temp.inp"
+      otherfile = self.fixtures + "/5ala_3_hop.fixture"
+      molecule = fileToMol("tests/5ala.xyz")
+      fragmentation = Fragmentation(molecule)
+      fragmentation.setFMOHOPFragmentation()
+      fragmentation.setQMBasis('3-21G')
+      fragmentation.beginFragmentation()
+      fragmentation.doFragmentation()
+      fragmentation.finishFragmentation()
+      directories = {'share':'share'}
+      gamessfmo = GamessFMO(fragmentation, directories)
+      gamessfmo.setCentralFragmentID(1)
+      gamessfmo.setBoundariesFromString("1.0")
+      gamessfmo.setup()
+      gamessfmo.writeFile(filename)
+      generated = ReadStringListFromFile(filename)
+      fixture = ReadStringListFromFile(otherfile)
+
+      self.assertEqual(len(generated), len(fixture))
+      for i in range(len(fixture)):
+        self.assertEqual(generated[i], fixture[i])
+
+      self.delete_file(filename)
+
+    ## Test FMO EFP writer ##
+    # basic test, all waters replaced by H2ORHF waters.
+    def test_2form8wat_1(self):
+      filename = "temp.inp"
+      otherfile = self.fixtures + "/2form8wat_1.fixture"
+      molecule = fileToMol("tests/2form8wat.pdb")
+      fragmentation = Fragmentation(molecule)
+      fragmentation.beginFragmentation()
+      fragmentation.doFragmentation()
+      fragmentation.finishFragmentation()
+      fragmentation.setFMOEFPWatersFromLayer(1)
+      directories = {'share':''}
+      gamessfmo = GamessFMO(fragmentation, directories)
+      gamessfmo.setup()
+      gamessfmo.writeFile(filename)
+      generated = ReadStringListFromFile(filename)
+      fixture = ReadStringListFromFile(otherfile)
+
+      self.assertEqual(len(generated), len(fixture))
+
+      ignoring = False
+      for i in range(len(fixture)):
+        if "EFRAG" in generated[i] or "EFRAG" in fixture[i]:
+            ignoring = True
+
+        if ignoring:
+            if "END" in generated[i] or "END" in fixture[i]:
+                ignoring = False
+
+        if not ignoring:
+            self.assertEqual(generated[i], fixture[i])
+
+      self.delete_file(filename)
+
+    def test_2form8wat_2(self):
+      filename = "temp.inp"
+      otherfile = self.fixtures + "/2form8wat_2.fixture"
+      molecule = fileToMol("tests/2form8wat.pdb")
+      fragmentation = Fragmentation(molecule)
+      fragmentation.beginFragmentation()
+      fragmentation.doFragmentation()
+      fragmentation.finishFragmentation()
+      fragmentation.setFMOEFPWatersFromLayer(1)
+      directories = {'share':''}
+      gamessfmo = GamessFMO(fragmentation, directories)
+      gamessfmo.setCentralFragmentID(1)
+      gamessfmo.setBoundariesFromString("3.0")
+      gamessfmo.setup()
+      gamessfmo.writeFile(filename)
+      generated = ReadStringListFromFile(filename)
+      fixture = ReadStringListFromFile(otherfile)
+
+      self.assertEqual(len(generated), len(fixture))
+
+      ignoring = False
+      for i in range(len(fixture)):
+        if "EFRAG" in generated[i] or "EFRAG" in fixture[i]:
+            ignoring = True
+
+        if ignoring:
+            if "END" in generated[i] or "END" in fixture[i]:
+                ignoring = False
+
+        if not ignoring:
+            self.assertEqual(generated[i], fixture[i])
 
       self.delete_file(filename)
 

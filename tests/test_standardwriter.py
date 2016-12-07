@@ -1,26 +1,5 @@
 """
-**********************************************************************
-tests/test_StandardWriter.py - test cases for Standard Writer
-
-Copyright (C) 2016 Casper Steinmann
-
-This file is part of the FragIt project.
-
-FragIt is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-FragIt is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301, USA.
-***********************************************************************/
+Copyright (C) 2012-2016 Casper Steinmann
 """
 import os
 import unittest
@@ -31,9 +10,10 @@ from src.fragmentation import Fragmentation
 class TestStandardWriterModule(unittest.TestCase):
 
     def setUp(self):
+      directories = {'share':''}
       self.molecule = fileToMol("tests/1UAO.pdb")
       self.fragmentation = Fragmentation(self.molecule)
-      self.standardwriter = Standard(self.fragmentation)
+      self.standardwriter = Standard(self.fragmentation, directories)
 
     def test_defaults(self):
       self.assertEqual(self.standardwriter._nlayers, 1)

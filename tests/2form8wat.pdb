@@ -1,0 +1,69 @@
+COMPND    2 FORMALDEHYDE IN 8 WATER MOLECULES
+AUTHOR    CASPER STEINMANN
+HETNAM     FRM FORMALDEHYDE
+HETATM    1  C   FRM A   1       0.134  -0.223   1.736  1.00  0.00           C  
+HETATM    2  O   FRM A   1       1.337  -0.342   1.984  1.00  0.00           O  
+HETATM    3  H   FRM A   1      -0.472   0.592   2.129  1.00  0.00           H  
+HETATM    4  H   FRM A   1      -0.381  -0.935   1.064  1.00  0.00           H  
+HETATM    5  C   FRM A   2       0.480   2.657   0.509  1.00  0.00           C  
+HETATM    6  O   FRM A   2       1.551   2.830   1.075  1.00  0.00           O  
+HETATM    7  H   FRM A   2       0.280   1.752  -0.088  1.00  0.00           H  
+HETATM    8  H   FRM A   2      -0.346   3.385   0.558  1.00  0.00           H  
+HETATM    9  O   HOH A   3       0.567  -3.198   2.168  1.00  0.00           O  
+HETATM   10  H   HOH A   3       1.449  -2.833   2.348  1.00  0.00           H  
+HETATM   11  H   HOH A   3       0.698  -3.608   1.296  1.00  0.00           H  
+HETATM   12  O   HOH A   4       3.014  -1.981  -2.150  1.00  0.00           O  
+HETATM   13  H   HOH A   4       3.283  -2.273  -1.251  1.00  0.00           H  
+HETATM   14  H   HOH A   4       2.085  -2.279  -2.150  1.00  0.00           H  
+HETATM   15  O   HOH A   5      -0.503   1.918  -2.418  1.00  0.00           O  
+HETATM   16  H   HOH A   5       0.359   2.219  -2.758  1.00  0.00           H  
+HETATM   17  H   HOH A   5      -0.555   0.995  -2.737  1.00  0.00           H  
+HETATM   18  O   HOH A   6      -0.715  -0.259   4.502  1.00  0.00           O  
+HETATM   19  H   HOH A   6       0.024   0.365   4.588  1.00  0.00           H  
+HETATM   20  H   HOH A   6      -0.270  -1.113   4.364  1.00  0.00           H  
+HETATM   21  O   HOH A   7       2.696  -1.893   0.478  1.00  0.00           O  
+HETATM   22  H   HOH A   7       2.825  -1.395   1.321  1.00  0.00           H  
+HETATM   23  H   HOH A   7       1.895  -1.414   0.174  1.00  0.00           H  
+HETATM   24  O   HOH A   8       2.708   0.641  -1.169  1.00  0.00           O  
+HETATM   25  H   HOH A   8       3.247  -0.025  -1.659  1.00  0.00           H  
+HETATM   26  H   HOH A   8       3.122   0.591  -0.284  1.00  0.00           H  
+HETATM   27  O   HOH A   9       2.622   3.502  -1.430  1.00  0.00           O  
+HETATM   28  H   HOH A   9       2.743   2.535  -1.352  1.00  0.00           H  
+HETATM   29  H   HOH A   9       2.553   3.753  -0.486  1.00  0.00           H  
+HETATM   30  O   HOH A  10       0.565  -0.651  -2.367  1.00  0.00           O  
+HETATM   31  H   HOH A  10       1.114  -0.752  -3.167  1.00  0.00           H  
+HETATM   32  H   HOH A  10       1.134  -0.044  -1.841  1.00  0.00           H  
+CONECT    1    4    2    3                                            
+CONECT    2    1                                                      
+CONECT    3    1                                                      
+CONECT    4    1                                                      
+CONECT    5    7    8    6                                            
+CONECT    6    5                                                      
+CONECT    7    5                                                      
+CONECT    8    5                                                      
+CONECT    9   11   10                                                 
+CONECT   10    9                                                      
+CONECT   11    9                                                      
+CONECT   12   14   13                                                 
+CONECT   13   12                                                      
+CONECT   14   12                                                      
+CONECT   15   16   17                                                 
+CONECT   16   15                                                      
+CONECT   17   15                                                      
+CONECT   18   20   19                                                 
+CONECT   19   18                                                      
+CONECT   20   18                                                      
+CONECT   21   23   22                                                 
+CONECT   22   21                                                      
+CONECT   23   21                                                      
+CONECT   24   25   26                                                 
+CONECT   25   24                                                      
+CONECT   26   24                                                      
+CONECT   27   28   29                                                 
+CONECT   28   27                                                      
+CONECT   29   27                                                      
+CONECT   30   31   32                                                 
+CONECT   31   30                                                      
+CONECT   32   30                                                      
+MASTER        0    0    0    0    0    0    0    0   32    0   32    0
+END

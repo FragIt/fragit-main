@@ -2,20 +2,20 @@
 Copyright (C) 2013-2016 Casper Steinmann
 """
 from numpy import sqrt, dot, where, array
-from writer import Standard
-from util import WriteStringToFile
 
-from util import file_extension,is_list,listTo2D,join2D,is_int
-from util import listToRanges,listOfRangesToString,Uniqify,ravel2D
-from util import deepLength,listDiff,intlistToString
-from util import getFilenameAndExtension
-from util import shares_elements, calculate_hydrogen_position
+from .mfcc import MFCC, Cap
+from .writer import Standard
+from .util import WriteStringToFile
+from .util import file_extension
+from .util import listToRanges,listOfRangesToString,Uniqify,ravel2D
+from .util import deepLength,listDiff,intlistToString
+from .util import getFilenameAndExtension
+from .util import shares_elements, calculate_hydrogen_position
 
-from mfcc import MFCC, Cap
 
 class XYZMFCC(Standard):
-    def __init__(self, fragmentation):
-        Standard.__init__(self,fragmentation)
+    def __init__(self, fragmentation, directories):
+        Standard.__init__(self,fragmentation, directories)
         self._mfcc = MFCC(fragmentation)
 
     def setup(self):
@@ -37,13 +37,13 @@ class XYZMFCC(Standard):
 
     def _dump_pymol(self):
         from pymol import PymolTemplate
-        pt = PymolTemplate(self._input_filename, self._output_filename)
+        pt = PymolTemplate(self._directories, self._input_filename, self._output_filename)
         self._setTemplateData(pt)
         self._writeTemplateFile(pt)
 
     def _dump_jmol(self):
         from jmol import JmolTemplate
-        pt = JmolTemplate(self._input_filename, self._output_filename)
+        pt = JmolTemplate(self._directories, self._input_filename, self._output_filename)
         self._setTemplateData(pt)
         self._writeTemplateFile(pt)
 

@@ -1,16 +1,16 @@
 import unittest
 
-import test_util
-import test_fragmentation
-import test_outputformats
-import test_standardwriter
-import test_gamessfmooutput
+from .test_util import suite as tu_suite
+from .test_fragmentation import suite as tf_suite
+from .test_outputformats import suite as to_suite
+from .test_standardwriter import suite as ts_suite
+from .test_gamessfmooutput import suite as tg_suite
 
 if __name__ == '__main__':
-  suite = unittest.TestSuite()
-  suite.addTest(test_util.suite())
-  suite.addTest(test_fragmentation.suite())
-  suite.addTest(test_outputformats.suite())
-  suite.addTest(test_standardwriter.suite())
-  suite.addTest(test_gamessfmooutput.suite())
-  unittest.TextTestRunner().run(suite)
+    suite = unittest.TestSuite()
+    suite.addTest(tu_suite)
+    suite.addTest(tf_suite)
+    suite.addTest(to_suite)
+    suite.addTest(ts_suite)
+    suite.addTest(tg_suite)
+    unittest.TextTestRunner().run(suite)

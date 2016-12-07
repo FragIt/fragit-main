@@ -2,11 +2,11 @@
 Copyright (C) 2011-2012 Casper Steinmann
 """
 
-from template import Template
+from .template import Template
 
 class JmolTemplate(Template):
-    def __init__(self,infile,outfile):
-        Template.__init__(self,infile,outfile)
+    def __init__(self,directories, infile, outfile):
+        Template.__init__(self, directories, infile, outfile)
         self._setTemplateType("jmol")
         self._setLoadStructureString("load %s")
 

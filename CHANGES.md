@@ -1,3 +1,105 @@
+FragIt v1.7.0 Release Notes
+===========================
+
+This major update brings several changes to default keywords
+and to the command line interface for FragIt.
+
+Updates since v1.6.1
+
+  * FragIt is now compatible with python 3.5 after
+    minor modifications to the source code mostly
+    regarding imports and print statements.
+
+  * Travis-CI builds are failing for python 3.5 for
+    some compilation/install of openbabel problem
+    so testing is done manually for now. This is
+    also why it is compatible but not entirely
+    supported for now.
+
+  * Templates are now located appropriately in a
+    'share' directory in the installation directory
+
+  * The PyMol template received some colorscheme
+    upgrades for multilayer and FMO/FD (FDD) runs.
+
+  * The GAMESS-FMO writer now supports the hybrid
+    orbital projection (HOP) scheme for fragmentation
+    as well as the AFO scheme that has always been
+    present. HOP orbitals are located in the
+    'hmo' folder in the share directory. Limited to
+    support of only SP3 C-C bonds but that should
+    cover 99 % of all current use cases.
+
+    HOP is disabled per default. You can enable it
+    by specifying
+
+    [fmo]
+    dohop = True
+
+    in the configuration file.
+
+  * The GAMESS-FMO writer now has improved
+    support for multilayer calculations as well.
+    Through a new section [qm] in the configuration
+    it is possible to specify the basis set for an
+    FMO calculation.
+
+    In the case of multilayer runs FragIt
+    supports the multilayer notation from FMO
+    as well so one specifies basis sets on a
+    per layer basis separated by colons:
+
+    [qm]
+    basis = STO-3G:3-21G
+    
+    In multilayer calculations the appropriate
+    basis set will be added to the $DATA group
+    and leave out the $BASIS group.
+
+    For regular FMO runs just specifying basis
+    sets as
+
+    [qm]
+    basis = 6-31G(d)
+
+    will suffice.
+
+  * The GAMESS-FMO writer now has support to
+    generate FMO/EFP input files. The feature
+    is enabled by
+
+    [fmo]
+    efpwaters = 1
+
+    in the configuration file. This will, if
+    no multilayer options are specified, gen-
+    erate an FMO input file with *all* water
+    molecules demoted from FMO fragments to
+    EFP fragments.
+
+    This new option also supports a slightly
+    more involved use case scenario where
+    all water molecules some distance R from
+    a central molecule, such as a ligand in
+    a protein, are demoted to EFP water. The
+    options are
+
+    [fmo]
+    efpwaters = 1
+
+    [output]
+    centralfragment = 1
+    boundaries = 3.0
+
+    which will convert all water molecules not
+    within a distance R = 3.0 angstrom from 
+    fragment 1 to EFP water.
+
+    Please note that this will *disable* the
+    multilayer calculation as that option
+    seems a little exuberant.
+
+
 FragIt v1.6.1 Release Notes
 ===========================
 

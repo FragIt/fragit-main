@@ -3,9 +3,13 @@ Copyright (C) 2010-2011 Mikael W. Ibsen
 Some portions Copyright (C) 2011-2016 Casper Steinmann
 """
 import sys
+try:
+    # python 2.X
+    from ConfigParser import RawConfigParser
+except ImportError:
+    from configparser import RawConfigParser
 
-from util import *
-from ConfigParser import RawConfigParser
+from .util import *
 
 class FragItDataBase(dict):
     """default data for FragIt"""
@@ -35,6 +39,8 @@ class FragItDataBase(dict):
         self.data_types['includecovalent']=bool
         self.data_types['includeallwithin']=float
         self.data_types['verbose']=bool
+        self.data_types['dohop']=bool
+        self.data_types['efpwaters']=int
 
         # items here are complex values that need
         # specific parsing later on
@@ -44,6 +50,7 @@ class FragItDataBase(dict):
         self.data_types['pairs']=str
         self.data_types['atomids']=str
         self.data_types['combinefragments'] = str
+        self.data_types['basis']=str
 
         self['fragmentation'] = dict()
         self['fragmentation']['maxfragsize']=100
@@ -93,11 +100,20 @@ class FragItDataBase(dict):
         self['qmmm']['includecovalent'] = False
         self['qmmm']['includeallwithin'] = 0.0
 
+        # options for QM level of theory
+        self['qm'] = dict()
+        self['qm']['basis'] = "" # colon separated list for multi-layer runs
+
+        # fmo specific options
+        self['fmo'] = dict() 
+        self['fmo']['dohop'] = False
+        self['fmo']['efpwaters'] = 0 # disable EFP waters
+
     def getType(self, option, section):
         if "pattern" in section:
             return str
 
-        if not self.data_types.has_key(option):
+        if option not in self.data_types:
             raise ValueError("Option '%s' is not recognized." % option)
 
         return self.data_types[option]
@@ -123,6 +139,13 @@ class FragItDataFMO(FragItDataBase):
 
         # protection patterns are needed to remove small fragments
         self['protectpatterns']['nterminal']="[$([NH2]),$([NH3])]CC(=O)[$(NCC=O)]"
+
+        # don't use atom names when using FMO. This can cause
+        # annoying errors in GAMESS
+        self['output']['useatomnames'] = False
+
+        # basis set for QM calculations
+        self['qm']['basis'] = '3-21G'
 
 class FragItDataPE(FragItDataBase):
     """ Initializes FragIt with options which are applicable to the
@@ -182,18 +205,18 @@ class FragItConfig(object):
         try:
                 with open(filename,'r') as f: pass
         except IOError:
-                print "The configuration file '%s' does not exist. Aborting." % filename
+                print("The configuration file '{}' does not exist. Aborting.".format(filename))
                 sys.exit()
         self.cfg.read(filename)
 
         # code to parse data from sections into values
         # do section check and sanity checks here too
         for section in self.cfg.sections():
-            if not self.values.has_key(section):
+            if section not in self.values:
                 raise KeyError("Section '%s' is not recognized." % section)
 
             for key in self.cfg.options(section):
-                if not self.values[section].has_key(key) and "pattern" not in section: # dubious hack to make custom patterns writable.
+                if key not in self.values[section] and "pattern" not in section: # dubious hack to make custom patterns writable.
                     raise KeyError("Option '%s' in '%s' is not recognized." % (key,section))
 
                 format = self.values.getType(key,section)
@@ -203,23 +226,27 @@ class FragItConfig(object):
                 self.values[section][key] = value
 
     def writeConfigurationToFile(self,file):
-        if is_string(file):
+        if isinstance(file, str):
             raise ValueError("Deprecated: File parameter currently only accepts a file handle, not filename.")
 
         self._addSections()
         self.cfg.write(file)
 
     def setMaximumFragmentSize(self, value):
-        if not is_int(value): raise TypeError
-        if value <= 0: raise ValueError("Fragment sizes cannot be zero or negative")
+        if not isinstance(value, int):
+            raise TypeError("Expected an integer to define maximum fragment size.")
+        if value <= 0:
+            raise ValueError("Maximum fragment sizes must be positive.")
         self.values['fragmentation']['maxfragsize'] = value
 
     def getMaximumFragmentSize(self):
         return self.values['fragmentation']['maxfragsize']
 
     def setMinimumFragmentSize(self, value):
-        if not is_int(value): raise TypeError
-        if value <= 0: value = -1
+        if not isinstance(value, int):
+            raise TypeError("Expected an integer to define minimum fragment size.")
+        if value <= 0:
+            value = -1
         self.values['fragmentation']['minfragsize'] = value
 
     def getMinimumFragmentSize(self):
@@ -233,7 +260,8 @@ class FragItConfig(object):
         self.values['fragmentation']['chargemodel'] = value.upper()
 
     def setFragmentGroupCount(self, value):
-        if not is_int(value): raise TypeError
+        if not isinstance(value, int):
+            raise TypeError("Expected integer input in fragment group count.")
         if value <= 0: value = 1
         self.values['fragmentation']['groupcount'] = value
 
@@ -241,7 +269,8 @@ class FragItConfig(object):
         return self.values['fragmentation']['groupcount']
 
     def setWriter(self,value):
-        if not is_string(value): raise TypeError
+        if not isinstance(value, str):
+            raise TypeError
         self.values['fragmentation']['writer'] = value
 
     def getWriter(self):
@@ -251,14 +280,16 @@ class FragItConfig(object):
         return self.values['fragmentpatterns']
 
     def setBreakPatterns(self,value):
-        if not is_dict(value): raise TypeError
+        if not isinstance(value, dict):
+            raise TypeError
         self.values['fragmentpatterns'] = value
 
     def getProtectPatterns(self):
         return self.values['protectpatterns']
 
     def setProtectPatterns(self,value):
-        if not is_dict(value): raise TypeError
+        if not isinstance(value, dict):
+            raise TypeError
         self.values['protectpatterns'] = value
 
     def clearProtectPatterns(self):
@@ -268,23 +299,25 @@ class FragItConfig(object):
         values = self.values['fragmentation']['combinefragments']
         if len(values) > 0:
             list_of_ids = values.split(",")
-            return map(int, list_of_ids)
+            return list(map(int, list_of_ids))
         return []
 
     def setCombineFragments(self, value):
-        if not is_string(value): raise TypeError
-        if len(value) == 0: return
+        if not isinstance(value, str):
+            raise TypeError
+        if len(value) == 0:
+            return
         self.values['fragmentation']['combinefragments'] = value
 
     def getExplicitlyProtectedAtoms(self):
         values = self.values['explicitprotectatoms']['atomids']
         if len(values) > 0:
             list_of_ids = values.split(",")
-            return map(int, list_of_ids)
+            return list(map(int, list_of_ids))
         return []
 
     def addExplicitlyProtectedAtoms(self,value):
-        if not is_list(value): raise TypeError
+        if not isinstance(value, list): raise TypeError
         list_of_ids = self.getExplicitlyProtectedAtoms()
         list_of_ids.extend(value)
         list_of_ids = Uniqify(list_of_ids)
@@ -297,7 +330,7 @@ class FragItConfig(object):
         if len(values) > 0:
             if values[-1] == ";": values = values[:-1]
             list_of_ids = values.split(";")
-            return map(self._pair_to_tuple, list_of_ids)
+            return list(map(self._pair_to_tuple, list_of_ids))
         return []
 
     def _pair_to_tuple(self,value):
@@ -305,11 +338,14 @@ class FragItConfig(object):
         return tuple(map(int, values))
 
     def _pair_from_tuple(self,value):
-        if not is_tuple(value) and len(value) != 2: raise ValueError
+        if not isinstance(value, tuple) and len(value) != 2:
+            raise ValueError
         return "%i,%i" % (value[0],value[1])
 
     def addExplicitlyBreakAtomPairs(self,value):
         values = self.getExplicitlyBreakAtomPairs()
+        if not isinstance(values, list):
+            raise ValueError("Error: Expected list in addExplicitlyBreakAtomPairs. Got: '{}'".format(type(values)))
         if value not in values: values.extend(value)
         values = Uniqify(values)
         values.sort()
@@ -318,7 +354,8 @@ class FragItConfig(object):
 
     def popExplicitlyBreakAtomPairs(self,value):
         values = self.getExplicitlyBreakAtomPairs()
-        if value in values: values.remove(value)
+        if value in values:
+            values.remove(value)
         values_str = map(self._pair_from_tuple, values)
         self.values['explicitfragmentpairs']['pairs'] = ";".join(values_str)
 
@@ -326,7 +363,7 @@ class FragItConfig(object):
         return self.values['fragmentation']['writer']
 
     def setOutputFormat(self, value):
-        if not is_string(value): raise TypeError
+        if not isinstance(value, str): raise TypeError
         self.values['fragmentation']['writer'] = value
 
     def enableMergeGlycinePattern(self):
@@ -346,21 +383,24 @@ class FragItConfig(object):
         return self.values['output']['centralfragment']
 
     def setCentralFragmentID(self, value):
-        if not is_int(value): raise TypeError
+        if not isinstance(value, int):
+            raise TypeError
         self.values['output']['centralfragment'] = value
 
     def getWriteJmolScript(self):
         return self.values['output']['writejmol']
 
     def setWriteJmolScript(self, value):
-        if not is_bool(value): raise TypeError
+        if not isinstance(value, bool):
+            raise TypeError
         self.values['output']['writejmol'] = value
 
     def getWritePymolScript(self):
         return self.values['output']['writepymol']
 
     def setWritePymolScript(self, value):
-        if not is_bool(value): raise TypeError
+        if not isinstance(value, bool):
+            raise TypeError
         self.values['output']['writepymol'] = value
 
     def getFreezeBackbone(self):
@@ -406,3 +446,30 @@ class FragItConfig(object):
     def getQMMMIncludeAllWithinDistance(self):
         return self.values['qmmm']['includeallwithin']
 
+    # options for QM
+    def getQMBasis(self):
+        return self.values['qm']['basis'].split(':')
+
+    def setQMBasis(self, value):
+        self.values['qm']['basis'] = value
+
+    # options for FMO
+    def doFMOHOPFragmentation(self):
+        return self.values['fmo']['dohop']
+
+    def setFMOAFOFragmentation(self):
+        self.values['fmo']['dohop'] = False
+
+    def setFMOHOPFragmentation(self):
+        self.values['fmo']['dohop'] = True
+
+    def doFMOEFPWaters(self):
+        return self.getFMOEFPWatersFromLayer() > 0
+
+    def getFMOEFPWatersFromLayer(self):
+        return self.values['fmo']['efpwaters']
+
+    def setFMOEFPWatersFromLayer(self, value):
+        if not isinstance(value, int):
+            raise TypeError
+        self.values['fmo']['efpwaters'] = value

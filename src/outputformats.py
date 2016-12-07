@@ -2,23 +2,23 @@
 Copyright (C) 2011-2016 Casper Steinmann
 """
 
-import gamessfmo
-import xyzmfcc
-import xyz
+from .gamessfmo import GamessFMO
+from .xyzmfcc import XYZMFCC
+from .xyz import XYZ
 
 def get_writer_and_extension(theformat):
     formats = supported_output_formats()
     extensions = supported_output_fileexts()
-    if not formats.has_key(theformat):
+    if theformat not in formats:
         raise ValueError("The format you requested is not available")
     return (formats[theformat],extensions[theformat])
 
 ## Returns ALL supported output formats
 def supported_output_formats():
     formats = dict()
-    formats['GAMESS-FMO'] = gamessfmo.GamessFMO
-    formats['XYZ-MFCC'] = xyzmfcc.XYZMFCC
-    formats['XYZ'] = xyz.XYZ
+    formats['GAMESS-FMO'] = GamessFMO
+    formats['XYZ-MFCC'] = XYZMFCC
+    formats['XYZ'] = XYZ
     return formats
 
 ## Returns ALL supported output formats
