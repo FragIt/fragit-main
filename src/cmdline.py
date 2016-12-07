@@ -80,7 +80,6 @@ are capped (when nescessary) and concaps are created (when nescessary).
                 help="Write a complimentary pymol script for visualization.")
 
     args = parser.parse_args()
-    print(args)
 
     infile = args.input
 

@@ -164,7 +164,6 @@ class TestGamessFMOOutputModule(unittest.TestCase):
       otherfile = self.fixtures + "/5ala_2_afo.fixture"
       molecule = fileToMol("tests/5ala.xyz")
       fragmentation = Fragmentation(molecule)
-      fragmentation.setFMOAFOFragmentation()
       fragmentation.setQMBasis('3-21G:6-31G(d)')
       fragmentation.beginFragmentation()
       fragmentation.doFragmentation()
@@ -191,6 +190,7 @@ class TestGamessFMOOutputModule(unittest.TestCase):
       otherfile = self.fixtures + "/5ala_1_hop.fixture"
       molecule = fileToMol("tests/5ala.xyz")
       fragmentation = Fragmentation(molecule)
+      fragmentation.setFMOHOPFragmentation()
       fragmentation.beginFragmentation()
       fragmentation.doFragmentation()
       fragmentation.finishFragmentation()
@@ -214,6 +214,7 @@ class TestGamessFMOOutputModule(unittest.TestCase):
       molecule = fileToMol("tests/5ala.xyz")
       fragmentation = Fragmentation(molecule)
       fragmentation.setQMBasis('3-21G:6-31G*')
+      fragmentation.setFMOHOPFragmentation()
       fragmentation.beginFragmentation()
       fragmentation.doFragmentation()
       fragmentation.finishFragmentation()
@@ -241,6 +242,7 @@ class TestGamessFMOOutputModule(unittest.TestCase):
       otherfile = self.fixtures + "/5ala_3_hop.fixture"
       molecule = fileToMol("tests/5ala.xyz")
       fragmentation = Fragmentation(molecule)
+      fragmentation.setFMOHOPFragmentation()
       fragmentation.setQMBasis('3-21G')
       fragmentation.beginFragmentation()
       fragmentation.doFragmentation()
@@ -279,12 +281,21 @@ class TestGamessFMOOutputModule(unittest.TestCase):
       fixture = ReadStringListFromFile(otherfile)
 
       self.assertEqual(len(generated), len(fixture))
+
+      ignoring = False
       for i in range(len(fixture)):
-        self.assertEqual(generated[i], fixture[i])
+        if "EFRAG" in generated[i] or "EFRAG" in fixture[i]:
+            ignoring = True
+
+        if ignoring:
+            if "END" in generated[i] or "END" in fixture[i]:
+                ignoring = False
+
+        if not ignoring:
+            self.assertEqual(generated[i], fixture[i])
 
       self.delete_file(filename)
 
-    @unittest.skip("This test is broken because fragmentation can yield randomness.")
     def test_2form8wat_2(self):
       filename = "temp.inp"
       otherfile = self.fixtures + "/2form8wat_2.fixture"
@@ -304,8 +315,18 @@ class TestGamessFMOOutputModule(unittest.TestCase):
       fixture = ReadStringListFromFile(otherfile)
 
       self.assertEqual(len(generated), len(fixture))
+
+      ignoring = False
       for i in range(len(fixture)):
-        self.assertEqual(generated[i], fixture[i])
+        if "EFRAG" in generated[i] or "EFRAG" in fixture[i]:
+            ignoring = True
+
+        if ignoring:
+            if "END" in generated[i] or "END" in fixture[i]:
+                ignoring = False
+
+        if not ignoring:
+            self.assertEqual(generated[i], fixture[i])
 
       self.delete_file(filename)
 

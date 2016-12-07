@@ -14,7 +14,7 @@ from .util import deepLength
 
 # $BASIS set data depending on basis set
 GAMESS_BASIS_GROUP = dict()
-GAMESS_BASIS_GROUP['sto-3g']      =  "GBASIS=STO NGAUSS=3"
+GAMESS_BASIS_GROUP['STO-3G']      =  "GBASIS=STO NGAUSS=3"
 GAMESS_BASIS_GROUP['3-21G']       =  "GBASIS=N21 NGAUSS=3"
 GAMESS_BASIS_GROUP['6-31G']       =  "GBASIS=N31 NGAUSS=6"
 GAMESS_BASIS_GROUP['6-31G*']      =  "GBASIS=N31 NGAUSS=6 NDFUNC=1"

@@ -106,7 +106,7 @@ class FragItDataBase(dict):
 
         # fmo specific options
         self['fmo'] = dict() 
-        self['fmo']['dohop'] = True
+        self['fmo']['dohop'] = False
         self['fmo']['efpwaters'] = 0 # disable EFP waters
 
     def getType(self, option, section):
@@ -459,6 +459,9 @@ class FragItConfig(object):
 
     def setFMOAFOFragmentation(self):
         self.values['fmo']['dohop'] = False
+
+    def setFMOHOPFragmentation(self):
+        self.values['fmo']['dohop'] = True
 
     def doFMOEFPWaters(self):
         return self.getFMOEFPWatersFromLayer() > 0
