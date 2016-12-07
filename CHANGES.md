@@ -1,4 +1,4 @@
-FragIt v1.X.Y Release Notes
+FragIt v1.7.0 Release Notes
 ===========================
 
 This major update brings several changes to default keywords
@@ -98,7 +98,7 @@ Updates since v1.6.1
     Please note that this will *disable* the
     multilayer calculation as that option
     seems a little exuberant.
-    
+
 
 FragIt v1.6.1 Release Notes
 ===========================
