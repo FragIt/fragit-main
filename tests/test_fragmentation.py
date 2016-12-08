@@ -29,6 +29,7 @@ import openbabel
 
 from src.fragmentation import Fragmentation
 from src.util import lenOfLists, fileToMol
+from src.config import FragItDataFMO
 
 class TestFragmentationModule(unittest.TestCase):
 
@@ -37,7 +38,7 @@ class TestFragmentationModule(unittest.TestCase):
 
         # for testing, use OpenBabel functionality directly
         self.molecule = fileToMol(self.filename_pdb)
-        self.fragmentation = Fragmentation(self.molecule)
+        self.fragmentation = Fragmentation(self.molecule, defaults=FragItDataFMO)
 
     def tearDown(self):
         pass

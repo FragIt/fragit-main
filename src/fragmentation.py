@@ -12,14 +12,15 @@ except ImportError:
 import numpy
 
 from .util import *
-from .config import FragItConfig
+from .config import FragItConfig, FragItDataBase
 
 
 class Fragmentation(FragItConfig):
 
     def __init__(self, mol, **kwargs):
         conffile = kwargs.get('conffile', None)
-        FragItConfig.__init__(self, filename=conffile)
+        defaults = kwargs.get('defaults', FragItDataBase)
+        FragItConfig.__init__(self, defaults=defaults, filename=conffile)
         self.mol     = mol
         self.obc     = openbabel.OBConversion()
         self.pat     = openbabel.OBSmartsPattern()
