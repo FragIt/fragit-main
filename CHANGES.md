@@ -1,3 +1,15 @@
+FragIt v1.X.Y Release Notes
+===========================
+
+This major update brings several changes to default keywords
+and to the command line interface for FragIt.
+
+Updates since v1.7.0
+
+  * FragIt now uses the cleaner ConfigBase configuration
+    for its default parameter set. This used to default
+    to FMO.
+
 FragIt v1.7.0 Release Notes
 ===========================
 

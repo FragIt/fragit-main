@@ -178,7 +178,7 @@ ConfigSettings = {'BARE': FragItDataBase, 'FMO': FragItDataFMO, 'PE': FragItData
 
 
 class FragItConfig(object):
-    def __init__(self, defaults=FragItDataFMO, **kwargs):
+    def __init__(self, defaults=FragItDataBase, **kwargs):
         filename = kwargs.get('filename', None)
         verbose = kwargs.get('verbose', False)
         self.cfg = RawConfigParser()

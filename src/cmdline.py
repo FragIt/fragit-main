@@ -15,8 +15,8 @@ def main(directories, argv=None):
         argv = sys.argv[1:]
 
     # load defaults so we can use them below
-    from .config import FragItConfig
-    cfg = FragItConfig()
+    from .config import FragItConfig, ConfigSettings
+    cfg = FragItConfig(defaults=ConfigSettings['BARE'])
 
     #parser = argparse.ArgumentParser(version=version_str,
     #                                 description=doc_str)
@@ -101,7 +101,7 @@ are capped (when nescessary) and concaps are created (when nescessary).
 
         (writer, output_extension) = get_writer_and_extension(args.format)
 
-    outfile = "%s%s" % (file_basename(infile), output_extension)
+    outfile = "{0:s}{1:s}".format(file_basename(infile), output_extension)
     if len(args.outputfile) > 0:
         outfile = args.outputfile
 
