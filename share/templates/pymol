@@ -113,7 +113,7 @@ def hex_to_float(value):
 def hex_to_rgb(value):
   value = value.lstrip('#')
   lv = len(value)
-  return tuple(int(value[i:i+lv/3], 16) for i in range(0, lv, lv/3))
+  return tuple(int(value[i:i+2], 16) for i in [0, 2, 4])
 
 def get_colors_for_fragments(list_of_fragments):
   color_names = ["color1", "color2", "color3", "color4", "color5", "color6", "color7", "color8", "color9", "color10"]
