@@ -1,14 +1,16 @@
 FragIt v1.X.Y Release Notes
 ===========================
 
-This major update brings several changes to default keywords
-and to the command line interface for FragIt.
+This is a bug-fix and minor improvements release.
 
-Updates since v1.7.0
+Updates since  v1.7.0
 
-  * FragIt now uses the cleaner ConfigBase configuration
-    for its default parameter set. This used to default
-    to FMO.
+  * Fixes a python3 issue with the pymol scripts and
+    template system.
+
+  In addition, some behind the scene updates were made
+  to the template system
+
 
 FragIt v1.7.0 Release Notes
 ===========================

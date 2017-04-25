@@ -60,7 +60,7 @@ def setup_fragit():
             ('', ['README.md','LICENSE', 'CHANGES.md']),
             ('share', ['share/README.md']),
             ('share/templates', [
-                'share/templates/pymol', 'share/templates/jmol'
+                'share/templates/pymol.py', 'share/templates/jmol.py'
             ]),
             ('share/hmo', [
                 'share/hmo/STO-3G', 'share/hmo/3-21G', 'share/hmo/6-31G',

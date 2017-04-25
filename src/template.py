@@ -9,8 +9,8 @@ import os
 from .util import substitute_file
 
 # filenames for templates
-filenames = {'pymol':'pymol',
-             'jmol' :'jmol'}
+filenames = {'pymol':'pymol.py',
+             'jmol' :'jmol.py'}
 
 class Template(object):
     def __init__(self, directories, infile, outfile):
@@ -32,7 +32,7 @@ class Template(object):
         if not isinstance(value, str): raise ValueError("Template type is a string value.")
         if value not in filenames: raise ValueError("Template type '%s' is not valid." % value)
         self.template_type = value
-        self.template_filename = os.path.join(self.template_directory, value)
+        self.template_filename = os.path.join(self.template_directory, filenames[value])
 
     def _setLoadStructureString(self,value):
         """ Command used in template to load a structure.
