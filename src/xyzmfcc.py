@@ -4,6 +4,8 @@ Copyright (C) 2013-2016 Casper Steinmann
 from numpy import sqrt, dot, where, array
 
 from .mfcc import MFCC, Cap
+from .pymol import PymolTemplate
+from .jmol import JmolTemplate
 from .writer import Standard
 from .util import WriteStringToFile
 from .util import file_extension
@@ -36,13 +38,11 @@ class XYZMFCC(Standard):
         self._active_atoms = []
 
     def _dump_pymol(self):
-        from pymol import PymolTemplate
         pt = PymolTemplate(self._directories, self._input_filename, self._output_filename)
         self._setTemplateData(pt)
         self._writeTemplateFile(pt)
 
     def _dump_jmol(self):
-        from jmol import JmolTemplate
         pt = JmolTemplate(self._directories, self._input_filename, self._output_filename)
         self._setTemplateData(pt)
         self._writeTemplateFile(pt)

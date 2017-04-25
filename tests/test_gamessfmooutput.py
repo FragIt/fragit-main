@@ -4,10 +4,11 @@ Copyright (C) 2012-2016 Casper Steinmann
 import os
 import sys
 import unittest
-from src.gamessfmo import GamessFMO
 
-from src.util import fileToMol, ReadStringListFromFile
+from src.config import FragItDataFMO
+from src.gamessfmo import GamessFMO
 from src.fragmentation import Fragmentation
+from src.util import fileToMol, ReadStringListFromFile
 
 class TestGamessFMOOutputModule(unittest.TestCase):
 
@@ -27,7 +28,7 @@ class TestGamessFMOOutputModule(unittest.TestCase):
       filename = "temp.inp"
       otherfile = self.fixtures + "/water_1.fixture"
       molecule = fileToMol("tests/watercluster4.xyz")
-      fragmentation = Fragmentation(molecule)
+      fragmentation = Fragmentation(molecule, defaults=FragItDataFMO)
       directories = {'share':''}
       gamessfmo = GamessFMO(fragmentation, directories)
       gamessfmo.setup()
@@ -45,7 +46,7 @@ class TestGamessFMOOutputModule(unittest.TestCase):
       filename = "temp.inp"
       otherfile = self.fixtures + "/water_2.fixture"
       molecule = fileToMol("tests/watercluster4.xyz")
-      fragmentation = Fragmentation(molecule)
+      fragmentation = Fragmentation(molecule, defaults=FragItDataFMO)
       directories = {'share':''}
       gamessfmo = GamessFMO(fragmentation, directories)
       fragmentation.beginFragmentation()
@@ -68,7 +69,7 @@ class TestGamessFMOOutputModule(unittest.TestCase):
       filename = "temp.inp"
       otherfile = self.fixtures + "/water_3.fixture"
       molecule = fileToMol("tests/watercluster4.xyz")
-      fragmentation = Fragmentation(molecule)
+      fragmentation = Fragmentation(molecule, defaults=FragItDataFMO)
       fragmentation.beginFragmentation()
       fragmentation.doFragmentation()
       fragmentation.finishFragmentation()
@@ -90,7 +91,7 @@ class TestGamessFMOOutputModule(unittest.TestCase):
       filename = "temp.inp"
       otherfile = self.fixtures + "/water_4.fixture"
       molecule = fileToMol("tests/watercluster4.xyz")
-      fragmentation = Fragmentation(molecule)
+      fragmentation = Fragmentation(molecule, defaults=FragItDataFMO)
       fragmentation.beginFragmentation()
       fragmentation.doFragmentation()
       fragmentation.finishFragmentation()
@@ -113,7 +114,7 @@ class TestGamessFMOOutputModule(unittest.TestCase):
       filename = "temp.inp"
       otherfile = self.fixtures + "/water_5.fixture"
       molecule = fileToMol("tests/watercluster4.xyz")
-      fragmentation = Fragmentation(molecule)
+      fragmentation = Fragmentation(molecule, defaults=FragItDataFMO)
       fragmentation.beginFragmentation()
       fragmentation.doFragmentation()
       fragmentation.finishFragmentation()
@@ -141,7 +142,7 @@ class TestGamessFMOOutputModule(unittest.TestCase):
       filename = "temp.inp"
       otherfile = self.fixtures + "/5ala_1_afo.fixture"
       molecule = fileToMol("tests/5ala.xyz")
-      fragmentation = Fragmentation(molecule)
+      fragmentation = Fragmentation(molecule, defaults=FragItDataFMO)
       fragmentation.setFMOAFOFragmentation()
       fragmentation.beginFragmentation()
       fragmentation.doFragmentation()
@@ -163,7 +164,7 @@ class TestGamessFMOOutputModule(unittest.TestCase):
       filename = "temp.inp"
       otherfile = self.fixtures + "/5ala_2_afo.fixture"
       molecule = fileToMol("tests/5ala.xyz")
-      fragmentation = Fragmentation(molecule)
+      fragmentation = Fragmentation(molecule, defaults=FragItDataFMO)
       fragmentation.setQMBasis('3-21G:6-31G(d)')
       fragmentation.beginFragmentation()
       fragmentation.doFragmentation()
@@ -189,7 +190,7 @@ class TestGamessFMOOutputModule(unittest.TestCase):
       filename = "temp.inp"
       otherfile = self.fixtures + "/5ala_1_hop.fixture"
       molecule = fileToMol("tests/5ala.xyz")
-      fragmentation = Fragmentation(molecule)
+      fragmentation = Fragmentation(molecule, defaults=FragItDataFMO)
       fragmentation.setFMOHOPFragmentation()
       fragmentation.beginFragmentation()
       fragmentation.doFragmentation()
@@ -212,7 +213,7 @@ class TestGamessFMOOutputModule(unittest.TestCase):
       filename = "temp.inp"
       otherfile = self.fixtures + "/5ala_2_hop.fixture"
       molecule = fileToMol("tests/5ala.xyz")
-      fragmentation = Fragmentation(molecule)
+      fragmentation = Fragmentation(molecule, defaults=FragItDataFMO)
       fragmentation.setQMBasis('3-21G:6-31G*')
       fragmentation.setFMOHOPFragmentation()
       fragmentation.beginFragmentation()
@@ -241,7 +242,7 @@ class TestGamessFMOOutputModule(unittest.TestCase):
       filename = "temp.inp"
       otherfile = self.fixtures + "/5ala_3_hop.fixture"
       molecule = fileToMol("tests/5ala.xyz")
-      fragmentation = Fragmentation(molecule)
+      fragmentation = Fragmentation(molecule, defaults=FragItDataFMO)
       fragmentation.setFMOHOPFragmentation()
       fragmentation.setQMBasis('3-21G')
       fragmentation.beginFragmentation()
@@ -268,7 +269,7 @@ class TestGamessFMOOutputModule(unittest.TestCase):
       filename = "temp.inp"
       otherfile = self.fixtures + "/2form8wat_1.fixture"
       molecule = fileToMol("tests/2form8wat.pdb")
-      fragmentation = Fragmentation(molecule)
+      fragmentation = Fragmentation(molecule, defaults=FragItDataFMO)
       fragmentation.beginFragmentation()
       fragmentation.doFragmentation()
       fragmentation.finishFragmentation()
@@ -300,7 +301,7 @@ class TestGamessFMOOutputModule(unittest.TestCase):
       filename = "temp.inp"
       otherfile = self.fixtures + "/2form8wat_2.fixture"
       molecule = fileToMol("tests/2form8wat.pdb")
-      fragmentation = Fragmentation(molecule)
+      fragmentation = Fragmentation(molecule, defaults=FragItDataFMO)
       fragmentation.beginFragmentation()
       fragmentation.doFragmentation()
       fragmentation.finishFragmentation()

@@ -152,6 +152,7 @@ class GamessFMO(Standard):
         template.setActiveData(self._active_atoms)
         template.setBackboneData(self._fragmentation.getBackboneAtoms())
         template.setPairData(self._fragmentation.getExplicitlyBreakAtomPairs())
+        template.setFragmentCharges(self._fragmentation.getFragmentCharges())
 
     def _writeTemplateFile(self, template):
         template.override()
