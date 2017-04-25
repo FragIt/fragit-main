@@ -8,6 +8,14 @@ Updates since  v1.7.0
   * Fixes a python3 issue with the pymol scripts and
     template system.
 
+  * PyMol scripts are now named .py instead of .pymol
+    to signify that they are different from the .pml
+    scripts. PyMol 1.8.6 enforces this rule.
+
+  * the calculation of fragment labels has changed to
+    a more efficient algorithm. Per default, fragment
+    labels are hidden.
+
   In addition, some behind the scene updates were made
   to the template system
 

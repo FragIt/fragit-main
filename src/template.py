@@ -12,6 +12,9 @@ from .util import substitute_file
 filenames = {'pymol':'pymol.py',
              'jmol' :'jmol.py'}
 
+extension = {'pymol':'py',
+             'jmol' :'jmol'}
+
 class Template(object):
     def __init__(self, directories, infile, outfile):
         self.template_directory = os.path.join(directories['share'], 'templates')
@@ -95,5 +98,5 @@ class Template(object):
         self.replacements['FRAGMENTQ'] = self.formatFragmentCharges()
 
     def write(self):
-        outfile = "{0:s}.{1:s}".format(self.outfile, self.template_type)
+        outfile = "{0:s}.{1:s}".format(self.outfile, extension[self.template_type])
         substitute_file(self.template_filename, outfile, self.replacements)

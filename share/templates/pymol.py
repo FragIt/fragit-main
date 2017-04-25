@@ -26,6 +26,7 @@ def select_fragment_by_id(id):
   selection = "select fragment-%03i, none" % (idx+1)
   string = "".join([" or id %i" % atom for atom in fragments[idx]])
   cmd.do(selection + string)
+  return "fragment-%03i" % (idx+1)
 
 def select_backbone():
   select_region("backbone", backbone_data)
@@ -83,8 +84,11 @@ def make_selection(type="fragment", id="1"):
 def make_fragment_selections():
   fragments = atom_data_to_lists(fragments_data)
   for i,fragments in enumerate(fragments):
-    select_fragment_by_id("%i" % (i+1))
+    selection_name = select_fragment_by_id("%i" % (i+1))
+    cmd.do("pseudoatom lbl-frag%i, selection='%s', label='Frag-%03i'" % (i+1,selection_name,i+1))
   cmd.do("group fragments, fragment-*")
+  cmd.do("group labels, lbl-*")
+  cmd.do("disable labels")
 
 def make_selections():
   make_selection("active")
@@ -166,36 +170,9 @@ def color_fragments(sele="fragments"):
   elif "charge" in sele:
     color_fragments_by_charge()
 
-def calculate_center(list_of_coords):
-  n = len(list_of_coords)
-  X = 0.0
-  Y = 0.0
-  Z = 0.0
-  for (x,y,z) in list_of_coords:
-    X += x
-    Y += y
-    Z += z
-
-  X /= n
-  Y /= n
-  Z /= n
-
-  return X,Y,Z
-
 # iterate over atoms in a fragment
 def name_all_fragments():
-  cmd.do("set label_size, 18")
-  frags = atom_data_to_lists(fragments_data)
-  for i,atms in enumerate(frags):
-    stored.frgcrds=[]
-    for atom in atms:
-      selection = "all and id %i " % atom
-      cmd.iterate_state(1, selector.process(selection), "stored.frgcrds.append([x,y,z])")
-    (X,Y,Z) = calculate_center(stored.frgcrds)
-    cmd.do("pseudoatom lbl-frag%i, pos=[%f,%f,%f]" % (i,X,Y,Z))
-    cmd.do("label lbl-frag%i, \"Frag-%i\"" % (i,i+1))
-  cmd.do("group labels, lbl-*")
-  stored.did_labels = True
+  cmd.do("enable labels")
 
 def name_fragments(action="show"):
   if action == "show":
@@ -208,12 +185,9 @@ def setup_rendering_defaults():
 
 # default commands we need to execute
 # to set up the environment correctly
-stored.did_labels = False
 $LOADCOMMAND
 
 color_fragments("fragments")
-if len(atom_data_to_lists(fragments_data)) < 50:
-  name_all_fragments()
 make_selections()
 
 cmd.do("show sticks, all")
