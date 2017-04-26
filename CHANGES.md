@@ -1,3 +1,20 @@
+FragIt v1.X.Y Release Notes
+===========================
+
+This major update brings several changes to default keywords
+and to the command line interface for FragIt.
+
+Updates since  v1.7.1
+
+  * It is now possible to show the charges of fragments
+    in PyMol. The command
+
+    ColorFragments charge
+
+    in the PyMol terminal will color the fragments with
+    red and blue
+
+
 FragIt v1.7.1 Release Notes
 ===========================
 
