@@ -105,20 +105,31 @@ class QMMM(object):
         for ibreak in remove_breaks:
             self._fragmentation.popExplicitlyBreakAtomPairs(breaks[ibreak])
 
-        #print("FRAGIT: [qm] {0}".format(fragment_for_qm))
         return (fragment_for_qm, qm_region_charge)
 
-    def satisfyValency(self, fragment, iheavy, bbreak):
-        """ Satisfies the valency of the heavy atom iheavy in the supplied fragment.
+    def satisfyValency(self, fragment, idx_heavy, bbreak):
+        """ Satisfies the valency of a fragment that had a bond cut by
+            adding a hydrogen atom along the same vector as that bond
+
+            Arguments:
+            fragment -- the fragment which valency needs to be satisfied
+            iheavy -- index of the heavy atom on which the hydrogen is to be satisfied
+            bbreak -- the indices of the atoms that were broken
 
             Returns a new fragment with all atoms in the correct place.
         """
 
+        assert idx_heavy in bbreak
+
         # heavy is the heavy atom that wants a hydrogen
-        heavy = self._fragmentation.getOBAtom(iheavy)
-        ilight = 0
-        if bbreak.index(iheavy) == 0: ilight = 1
-        light = self._fragmentation.getOBAtom(bbreak[ilight])
+        # the following section of code figures out which
+        # part of the bond we are investigating
+        heavy = self._fragmentation.getOBAtom(idx_heavy)
+        idx_light = 0
+        if bbreak.index(idx_heavy) == 0: idx_light = 1
+        light = self._fragmentation.getOBAtom(bbreak[idx_light])
+
+        # now we add the new hydrogen atom
         ival = heavy.GetImplicitValence()
         rval = heavy.GetValence()
         new_atoms = []
