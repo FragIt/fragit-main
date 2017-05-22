@@ -224,7 +224,7 @@ class TestFragmentationModule(unittest.TestCase):
         self.fragmentation.writeConfigurationToFile(handle)
         handle.close()
         otherfrag = Fragmentation(self.molecule)
-        otherfrag.readConfigurationFromFile(filename)
+        otherfrag.readConfigurationFromFile(filename, False)
         for key in otherfrag.values.keys():
           for key2 in otherfrag.values[key].keys():
             self.assertEqual(self.fragmentation.values[key][key2], otherfrag.values[key][key2])

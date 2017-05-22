@@ -19,7 +19,7 @@ class Fragmentation(FragItConfig):
 
     def __init__(self, mol, **kwargs):
         conffile = kwargs.get('conffile', None)
-        defaults = kwargs.get('defaults', FragItDataBase)
+        defaults = kwargs.pop('defaults', FragItDataBase)
         FragItConfig.__init__(self, defaults=defaults, filename=conffile, **kwargs)
         self.mol     = mol
         self.obc     = openbabel.OBConversion()
