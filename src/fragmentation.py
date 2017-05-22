@@ -34,7 +34,7 @@ class Fragmentation(FragItConfig):
         self._atoms = []
         self._fixAtomsAndCharges()
         self._elements = openbabel.OBElementTable()
-        self._verbose = self.getVerbose()
+        #self._verbose = self.getVerbose()
         self._nbonds_broken = 0
 
 
@@ -294,7 +294,7 @@ class Fragmentation(FragItConfig):
         breakPatterns = self.getBreakPatterns()
         for bondType in breakPatterns.keys():
             pattern = breakPatterns[bondType]
-            if self._verbose:
+            if self.getVerbose():
                 print("\n      Searching for '{0:s}' bonds.".format(bondType))
                 print("      Pattern: '{0:s}'".format(pattern))
 
@@ -306,7 +306,7 @@ class Fragmentation(FragItConfig):
             self.pat.Match(self.mol)
             matches = self.pat.GetUMapList()
             self._nbonds_broken += len(matches)
-            if self._verbose:
+            if self.getVerbose():
                 print("      Found {0:d} matching bonds.".format(len(matches)))
             for p in matches:
                 self.realBondBreaker(bondType, p)
@@ -314,7 +314,7 @@ class Fragmentation(FragItConfig):
 
     def realBondBreaker(self, bondtype, bond_pair):
         if self.isBondProtected(bond_pair):
-            if self._verbose:
+            if self.getVerbose():
                 s_pair = "({0[0]:d},{0[1]:d})".format(bond_pair)
                 print("      bond pair {0:>15s} will not be broken.".format(s_pair))
             return
@@ -546,13 +546,13 @@ class Fragmentation(FragItConfig):
         # if there are items left in "atoms_no_name" try to name them
         #print atoms_no_name
         if len(atoms_no_name) > 0:
-            if self._verbose:
+            if self.getVerbose():
                 print("Info: FragIt [FRAGMENTATION] will now try to name remaining {0:3d} atoms".format(len(atoms_no_name)))
 
             for i, id in enumerate(atoms_no_name):
                 atom = self.mol.GetAtom(id+1)
                 self._atom_names.append(atom.GetType())
-                if self._verbose:
+                if self.getVerbose():
                     print("   atom {0:4d} is forced to have name '{1:s}'".format(id, atom.GetType()))
 
 
@@ -572,7 +572,7 @@ class Fragmentation(FragItConfig):
 
 
     def printPreFragmentationInformation(self):
-        if not self._verbose:
+        if not self.getVerbose():
             return
 
         print("Info: FragIt [FRAGMENTATION] will break the following bonds defined in config file:")
