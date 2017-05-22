@@ -295,7 +295,6 @@ class Fragmentation(FragItConfig):
         for bondType in breakPatterns.keys():
             pattern = breakPatterns[bondType]
             if self._verbose:
-                #print("\nInfo: Fragit [FRAGMENTATION]")
                 print("\n      Searching for '{0:s}' bonds.".format(bondType))
                 print("      Pattern: '{0:s}'".format(pattern))
 
@@ -527,7 +526,7 @@ class Fragmentation(FragItConfig):
         """attempt to name atoms """
         has_residues = False
         residue_has_atoms = False
-        atoms_no_name = range(0, self.mol.NumAtoms())
+        atoms_no_name = list(range(0, self.mol.NumAtoms()))
 
         # first try to name atoms according to biological
         # function, i.e. from a PDB file.
@@ -577,12 +576,15 @@ class Fragmentation(FragItConfig):
             return
 
         print("Info: FragIt [FRAGMENTATION] will break the following bonds defined in config file:")
+
+        if len(self.getExplicitlyBreakAtomPairs()) > 0:
+            print("\n      Bonds explicitly defined between pairs of atoms:")
         for pair in self.getExplicitlyBreakAtomPairs():
             try:
                 if self.isValidExplicitBond(pair):
-                    print("   bond between atoms {0:s}.".format(pair))
+                    print("      {0[0]:>4d} <-> {0[1]:d}".format(pair))
             except ValueError:
-                print("Error: FragIt [FRAGMENTATION] found that the bond between atoms {0:s} is not valid.".format(pair))
+                print("Error: FragIt [FRAGMENTATION] found that the bond between atoms {0[0]:>4d} and {0[1]:d} is not valid.".format(pair))
                 raise
 
 

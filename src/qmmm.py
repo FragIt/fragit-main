@@ -105,20 +105,31 @@ class QMMM(object):
         for ibreak in remove_breaks:
             self._fragmentation.popExplicitlyBreakAtomPairs(breaks[ibreak])
 
-        #print("FRAGIT: [qm] {0}".format(fragment_for_qm))
         return (fragment_for_qm, qm_region_charge)
 
-    def satisfyValency(self, fragment, iheavy, bbreak):
-        """ Satisfies the valency of the heavy atom iheavy in the supplied fragment.
+    def satisfyValency(self, fragment, idx_heavy, bbreak):
+        """ Satisfies the valency of a fragment that had a bond cut by
+            adding a hydrogen atom along the same vector as that bond
+
+            Arguments:
+            fragment -- the fragment which valency needs to be satisfied
+            iheavy -- index of the heavy atom on which the hydrogen is to be satisfied
+            bbreak -- the indices of the atoms that were broken
 
             Returns a new fragment with all atoms in the correct place.
         """
 
+        assert idx_heavy in bbreak
+
         # heavy is the heavy atom that wants a hydrogen
-        heavy = self._fragmentation.getOBAtom(iheavy)
-        ilight = 0
-        if bbreak.index(iheavy) == 0: ilight = 1
-        light = self._fragmentation.getOBAtom(bbreak[ilight])
+        # the following section of code figures out which
+        # part of the bond we are investigating
+        heavy = self._fragmentation.getOBAtom(idx_heavy)
+        idx_light = 0
+        if bbreak.index(idx_heavy) == 0: idx_light = 1
+        light = self._fragmentation.getOBAtom(bbreak[idx_light])
+
+        # now we add the new hydrogen atom
         ival = heavy.GetImplicitValence()
         rval = heavy.GetValence()
         new_atoms = []
@@ -139,11 +150,9 @@ class QMMM(object):
                 covalently bound to QM region
 
             Arguments:
-            ----------
-            qmfragments : list of QM fragments
+            qmfragments -- list of QM fragments
 
             Returns:
-            --------
             updated list of QM fragments with possible neighbours included.
         """
         qmfrags = qmfragments[:]
@@ -169,11 +178,9 @@ class FragmentDistances(object):
         """ Obtains all hydrogen bound fragments to the idx'th fragment
 
             Arguments:
-            ----------
-            idx : the fragment index to which hydrogen bonds are to be found
+            idx -- the fragment index to which hydrogen bonds are to be found
 
             Returns:
-            --------
             A list of fragments hydrogen bound to the idx'th fragment.
         """
         hb_fragments = []
@@ -219,11 +226,9 @@ class FragmentDistances(object):
         """ Returns list of fragments that are covalently connected to the idx fragment
 
             Arguments:
-            ----------
-            idx : the fragment index to use when looking for other covalently bound fragments
+            idx -- the fragment index to use when looking for other covalently bound fragments
 
             Returns:
-            --------
             A list of fragments covalently bound to the idx'th fragment.
         """
         atomids = self._fragments[idx]
@@ -257,9 +262,10 @@ class FragmentDistances(object):
         """ angle > 110 is according to:
             http://pac.iupac.org/publications/pac/pdf/2011/pdf/8308x1637.pdf
 
-            D:   donor
-            H:   hydrogen
-            A:   acceptor
+            Arguments:
+            D -- donor
+            H -- hydrogen
+            A -- acceptor
         """
         RAH = A.GetDistance(H)
         RAD = A.GetDistance(D)
@@ -303,6 +309,11 @@ class FragmentDistances(object):
 
 
     def _is_doner(self, atom):
+        """ Returns whether or not an atom is a hydrogen bond donor
+        
+            Arguments:
+            atom -- OpenBabel atom
+        """
         return atom.IsNitrogen() or atom.IsOxygen()
 
 
@@ -311,11 +322,9 @@ class FragmentDistances(object):
             of the fragment idx
 
             Arguments:
-            ----------
-            idx : the fragment index to use when looking for nearby fragments
+            idx -- the fragment index to use when looking for nearby fragments
 
             Returns:
-            --------
             A list of fragments having at least an atom within a certain distance
         """
         other_fragments = []
@@ -352,6 +361,10 @@ class FragmentDistances(object):
     def _get_min_distances2(self, d1s, d2s):
         """ Returns the minimum distance squared (hence the 2) between
             two sets of coordinates d1s and d2s
+
+            Arguments:
+            d1s -- the first set of coordinates
+            d2s -- the second set of coordinates
         """
         d2s = numpy.array(d2s)
         R_min = 1.0e30
