@@ -20,7 +20,7 @@ class Fragmentation(FragItConfig):
     def __init__(self, mol, **kwargs):
         conffile = kwargs.get('conffile', None)
         defaults = kwargs.get('defaults', FragItDataBase)
-        FragItConfig.__init__(self, defaults=defaults, filename=conffile)
+        FragItConfig.__init__(self, defaults=defaults, filename=conffile, **kwargs)
         self.mol     = mol
         self.obc     = openbabel.OBConversion()
         self.pat     = openbabel.OBSmartsPattern()
@@ -34,7 +34,6 @@ class Fragmentation(FragItConfig):
         self._atoms = []
         self._fixAtomsAndCharges()
         self._elements = openbabel.OBElementTable()
-        #self._verbose = self.getVerbose()
         self._nbonds_broken = 0
 
 
