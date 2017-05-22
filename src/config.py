@@ -418,6 +418,11 @@ class FragItConfig(object):
     def getVerbose(self):
         return self.values['output']['verbose']
 
+    def setVerbose(self, value):
+        if not isinstance(value, bool):
+            raise TypeError
+        self.values['output']['verbose'] = value
+
     def getMFCCOrder(self):
         return self.values['mfcc']['order']
 
