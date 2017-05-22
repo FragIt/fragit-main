@@ -186,9 +186,7 @@ class FragItConfig(object):
         self._addSections()
 
         if filename is not None:
-            if verbose:
-                print("reading from '{}'".format(filename))
-            self.readConfigurationFromFile(filename)
+            self.readConfigurationFromFile(filename, verbose)
 
     def _addSections(self):
         """Updates the RawRawConfigParser with values from the data array
@@ -201,12 +199,20 @@ class FragItConfig(object):
                     value = ""
                 self.cfg.set(section,key,value)
 
-    def readConfigurationFromFile(self, filename):
+    def readConfigurationFromFile(self, filename, verbose):
         try:
                 with open(filename,'r') as f: pass
         except IOError:
                 print("The configuration file '{}' does not exist. Aborting.".format(filename))
                 sys.exit()
+
+        if verbose:
+            print("reading from '{}':".format(filename))
+            print("-"*50)
+            with open(filename, 'r') as f:
+                print f.read()
+            print("-"*50)
+
         self.cfg.read(filename)
 
         # code to parse data from sections into values
