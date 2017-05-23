@@ -90,7 +90,7 @@ class Fragmentation(FragItConfig):
         if charge_model.ComputeCharges(self.mol):
             self.formalCharges = list(charge_model.GetPartialCharges())
         else:
-            print("Info: Fragment charges are not available.")
+            print("Info: FragIt [FRAGMENTATION] fragment charges are not available.")
 
         # add back the metals, use the formal charges
         for atom in _metalAtoms:

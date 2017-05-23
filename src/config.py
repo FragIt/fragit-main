@@ -186,7 +186,18 @@ class FragItConfig(object):
         self._addSections()
 
         if filename is not None:
-            self.readConfigurationFromFile(filename, verbose)
+            # this code needs to be fixed but the verbosity flag should probably
+            # be on by default (lots of stuff printed) and then we should probably
+            # have a quench flag if one wants to remove all the output (for some reason)
+            print("Info: FragIt [CONFIG] reading config from '{}':".format(filename))
+            print("")
+            print("   Contents of the config file")
+            print(" -------------------------------")
+            with open(filename, 'r') as f:
+                print(f.read())
+            print(" -------------------------------")
+
+            self.readConfigurationFromFile(filename)
 
     def _addSections(self):
         """Updates the RawRawConfigParser with values from the data array
@@ -199,19 +210,12 @@ class FragItConfig(object):
                     value = ""
                 self.cfg.set(section,key,value)
 
-    def readConfigurationFromFile(self, filename, verbose):
+    def readConfigurationFromFile(self, filename):
         try:
                 with open(filename,'r') as f: pass
         except IOError:
                 print("The configuration file '{}' does not exist. Aborting.".format(filename))
                 sys.exit()
-
-        if verbose:
-            print("reading from '{}':".format(filename))
-            print("-"*50)
-            with open(filename, 'r') as f:
-                print f.read()
-            print("-"*50)
 
         self.cfg.read(filename)
 
