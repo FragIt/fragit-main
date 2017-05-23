@@ -1,28 +1,15 @@
 language: python
 
 sudo: required
-dist: precise
+dist: trusty
 
 python:
-  - "2.7"
+  - "2.7_with_system_site_packages"
 
 before_install:
   - sudo apt-get update -qq
 
 install:
- - sudo apt-get install -qq swig libeigen3-dev python-dev git-core
- - git clone https://github.com/openbabel/openbabel.git
- - cd openbabel
- - mkdir build
- - cd build
- - cmake -DCMAKE_CXX_FLAGS="-march=native -mno-avx" -DRUN_SWIG=ON -DPYTHON_BINDINGS=ON ..
- - make -j 2
- - sudo make install
- - export PYTHONPATH=/usr/local/lib/python${TRAVIS_PYTHON_VERSION}/site-packages:${PYTHONPATH}
- - echo ${PYTHONPATH}
- - echo ${TRAVIS_PYTHON_VERSION}
-
-before_script:
-  - cd ${TRAVIS_BUILD_DIR}
+  - sudo apt-get install -qq swig openbabel python-openbabel
 
 script: nosetests
