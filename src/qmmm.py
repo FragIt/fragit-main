@@ -1,5 +1,5 @@
 """
-Copyright (C) 2013-2016 Casper Steinmann
+Copyright (C) 2013-2017 Casper Steinmann
 """
 
 try:
@@ -165,8 +165,6 @@ class QMMM(object):
 
 class FragmentDistances(object):
     def __init__(self, fragmentation):
-        """ Fragments   : array of arrays of atomic numbers [[a1,a2,a3],[a4,a5,a6], ... ]
-        """
         self._fragmentation = fragmentation
         self._fragments = fragmentation.getFragments()
         self._fragment_donors = [self._donors_from_fragment(i) for i in range(len(self._fragments))]
@@ -194,6 +192,7 @@ class FragmentDistances(object):
 
         if len(donors) > 0 or len(acceptors) > 0:
             print("Info: FragIt will include all hydrogen bound molecules in the QM region.")
+
         # first we will find any donor (current fragment) -> acceptor (whole system) pairs
         isDonor = False
         for ifg, _acceptors in enumerate(self._fragment_acceptors):
@@ -240,7 +239,7 @@ class FragmentDistances(object):
         if not self._fragmentation.doQMMMIncludeCovalent():
             return other_fragments
 
-        print("Info: FragIt will include all fragments covalently bound in the QM region.")
+        print("Info: FragIt will include all fragments covalently bound to the QM region.")
 
         # let us find the nearby fragments that are covalently connected
         # currently, this only works with nearest neighbours
