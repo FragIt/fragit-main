@@ -40,17 +40,6 @@ def getFilenameAndExtension(path_to_file):
     basename = os.path.split(path_to_file)[1]
     return os.path.splitext(basename)
 
-#def TupleToStringTypeRepresentation(tuple_of_vars):
-#    if not isinstance(tuple_of_vars, tuple):
-#        raise TypeError
-#    if (len(tuple_of_vars) == 0): return ""
-#
-#    tuple_string = toString(tuple_of_vars[0])
-#    for i in range(1, len(tuple_of_vars)):
-#        tuple_string += ", " + toString(tuple_of_vars[i])
-#        
-#    return tuple_string
-
 
 def toList(input):
     return [p for p in input]
@@ -106,16 +95,6 @@ def listDiff(list1, list2):
     set1 = set(list1)
     set2 = set(list2)
     return list(set1 - set2)
-
-#def listDiff(list1, list2):
-#    if not is_list(list1) or not is_list(list2): raise TypeError
-#    if len(list2) > len(list1): raise ValueError("The first argument should be the list with the most items.")
-#
-#    difference_list = list()
-#    for i in list1:
-#        if i not in list2:
-#            difference_list.append(i)
-#    return difference_list
 
 def lenOfLists(lol):
     result = list()
@@ -254,13 +233,13 @@ def WriteStringToFile(filename, string):
     with open(filename, 'w') as f:
         f.write(string)
 
-def WriteStringListToFile(filename,thelist):
-    if not isStringList(thelist):
-        raise TypeError
-    f = open(filename,'w')
-    for item in thelist:
-        f.write("%s\n" % item)
-    f.close()
+#def WriteStringListToFile(filename,thelist):
+#    if not isStringList(thelist):
+#        raise TypeError
+#    f = open(filename,'w')
+#    for item in thelist:
+#        f.write("%s\n" % item)
+#    f.close()
 
 def ReadStringFromFile(filename):
     if not isinstance(filename, str):

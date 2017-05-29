@@ -1,26 +1,5 @@
 """
-**********************************************************************
-tests/test_util.py - test cases for util.py
-
-Copyright (C) 2011 Casper Steinmann
-
-This file is part of the FragIt project.
-
-FragIt is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-FragIt is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301, USA.
-***********************************************************************/
+Copyright (C) 2011-2017 Casper Steinmann
 """
 import os
 import unittest
@@ -43,7 +22,6 @@ class TestUtilModule(unittest.TestCase):
         self.dsimple = {'a':'value','b':'myvalue'}
 
     def delete_file(self, filename):
-        print("LOL")
         try:
             f = open(filename)
         except IOError:
@@ -105,16 +83,6 @@ class TestUtilModule(unittest.TestCase):
 #        answer1 = util.TupleToStringTypeRepresentation( test_tuple )
 #        self.assertEqual( answer1, "Int: 1, Int: 6")
         
-    def test_toString(self):
-        # we check several things here
-        #self.assertEqual( util.toString(self.ione), "Int: 1")
-        #self.assertEqual( util.toString(self.fone), "Float: 1.0")
-        #self.assertEqual( util.toString(self.lsimple), "List: [1, 2, 3, 4, 5]")
-
-        ## the odd case of None type
-        #self.assertEqual( util.toString(None), "None: None" )
-        pass
-
     def test_toList(self):
         self.assertEqual( util.toList( self.lsimple ), self.lsimple )
         self.assertEqual( util.toList( self.tsimple ), self.lsimple )
@@ -301,33 +269,6 @@ class TestUtilModule(unittest.TestCase):
 
         self.delete_file(test_filename)
 
-    def test_WriteStringListToFile(self):
-        test_list=['Hello World','Welcome Home']
-        test_string="Hello World\nWelcome Home\n"
-        test_filename="test.dat"
-        util.WriteStringListToFile(test_filename, test_list)
-        f = open(test_filename,'r')
-        read_string = f.read()
-        f.close()
-        self.assertEqual( read_string, test_string )
-
-        # only lists can be written
-        self.assertRaises(TypeError, util.WriteStringListToFile, test_filename, self.ione)
-        self.assertRaises(TypeError, util.WriteStringListToFile, test_filename, self.fone)
-        self.assertRaises(TypeError, util.WriteStringListToFile, test_filename, self.btrue)
-        self.assertRaises(TypeError, util.WriteStringListToFile, test_filename, self.tsimple)
-        self.assertRaises(TypeError, util.WriteStringListToFile, test_filename, self.ssimple)
-        self.assertRaises(TypeError, util.WriteStringListToFile, test_filename, self.dsimple)
-
-        # filename must be a string
-        self.assertRaises(TypeError, util.WriteStringListToFile, self.ione, test_string)
-        self.assertRaises(TypeError, util.WriteStringListToFile, self.fone, test_string)
-        self.assertRaises(TypeError, util.WriteStringListToFile, self.btrue, test_string)
-        self.assertRaises(TypeError, util.WriteStringListToFile, self.tsimple, test_string)
-        self.assertRaises(TypeError, util.WriteStringListToFile, self.lsimple, test_string)
-        self.assertRaises(TypeError, util.WriteStringListToFile, self.dsimple, test_string)
-
-        self.delete_file(test_filename)
 
     def test_ReadStringFromFile(self):
         test_string = "Hello World"
