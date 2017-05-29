@@ -45,16 +45,6 @@ def toList(input):
     return [p for p in input]
 
 
-def maximum_value(list_of_values):
-    if not isinstance(list_of_values, list):
-        raise TypeError
-    if len(list_of_values) == 0: return 0
-    max_value = max(list_of_values)
-    min_value = min(list_of_values)
-    if abs(min_value) > abs(max_value):
-        return min_value
-    return max_value
-
 def Uniqify(thelist):
     invalid_types = [int, float, bool, str]
     is_invalid = False
@@ -95,12 +85,6 @@ def listDiff(list1, list2):
     set1 = set(list1)
     set2 = set(list2)
     return list(set1 - set2)
-
-def lenOfLists(lol):
-    result = list()
-    for i in lol:
-        result.append(len(i))
-    return result
 
 def listTo2D(list1D, sublength, elmFormat = None):
     list2D     = list()
@@ -170,34 +154,6 @@ def floatlistFromString(string):
         result.append(f)
     return result
 
-
-
-def listOfDoubleIntTupleToString(diTuple, sep = ";"):
-    assert isinstance(diTuple, list)
-
-    tmp = list()
-
-    for (a1,a2) in diTuple:
-        assert isinstance(a1, int)
-        assert isinstance(a2, int)
-        tmp.append( "(" + str(a1) + "," + str(a2) + ")")
-
-    return ";".join(tmp)
-
-
-def listOfDoubleIntTupleFromString(string, sep = ";"):
-    if not isinstance(string, str):
-        raise TypeError
-    result = list()
-
-    if (string == ""): return list()
-
-    for pair in string.split(";"):
-        pair = pair[1:-1]
-        ints = pair.split(",")
-        result_tuple = (int(ints[0]), int(ints[1]))
-        result.append(result_tuple)
-    return result
 
 def isStringList( string_list ):
     if not isinstance(string_list, list):

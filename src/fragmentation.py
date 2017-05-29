@@ -356,10 +356,11 @@ class Fragmentation(FragItConfig):
 
     def doSanityCheckOnFragments(self):
         """ Performs some level of sanity check on the generated fragments. """
-        fragment_sizes = lenOfLists(self._fragments)
-        for i, fragment_size in enumerate(fragment_sizes, start=1):
-            if fragment_size > self.getMaximumFragmentSize():
-                raise ValueError("Error: FragIt [FRAGMENTATION] Size of fragment {0:d} is {1:d}. Maximum allowed is {2:d}.".format(i, fragment_size, self.getMaximumFragmentSize()))
+        for i, fragment in enumerate(self._fragments, start=1):
+            if len(fragment) > self.getMaximumFragmentSize():
+                raise ValueError("Error: FragIt [FRAGMENTATION] Size of fragment {0:d} is {1:d}. Maximum allowed is {2:d}.".format(i, len(fragment), self.getMaximumFragmentSize()))
+            if len(fragment) == 0:
+                raise ValueError("Error: FragIt [FRAGMENTATION] Fragment {0:d} is empty.".format(i))
 
 
     def _CleanMergedBonds(self):

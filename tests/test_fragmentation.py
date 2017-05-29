@@ -6,7 +6,7 @@ import unittest
 import openbabel
 
 from src.fragmentation import Fragmentation
-from src.util import lenOfLists, fileToMol
+from src.util import fileToMol
 from src.config import FragItDataFMO
 
 class TestFragmentationModule(unittest.TestCase):
@@ -98,21 +98,26 @@ class TestFragmentationModule(unittest.TestCase):
     def test_FragmentationDetermineFragmentsWithBreaking(self):
         self.fragmentation.breakBonds()
         self.fragmentation.determineFragments()
-        self.assertEqual(lenOfLists(self.fragmentation.getFragments()), [7, 21, 12, 14, 15, 14, 7, 14, 24, 10])
+        for fragment, expected_size in zip(self.fragmentation.getFragments(), [7, 21, 12, 14, 15, 14, 7, 14, 24, 10]):
+            self.assertEqual(len(fragment), expected_size)
 
     def test_FragmentationDetermineFragmentsWithBreakingAndGrouping(self):
         self.fragmentation.setFragmentGroupCount(2)
         self.fragmentation.breakBonds()
         self.fragmentation.determineFragments()
         self.fragmentation.doFragmentGrouping()
-        self.assertEqual(lenOfLists(self.fragmentation.getFragments()), [28, 26, 29, 21, 34])
+        self.assertEqual(len(self.fragmentation.getFragments()), 5)
+        for fragment, expected_size in zip(self.fragmentation.getFragments(), [28, 26, 29, 21, 34]):
+            self.assertEqual(len(fragment), expected_size)
 
     def test_FragmentationDetermineFragmentsWithBreakingAndGroupingTriple(self):
         self.fragmentation.setFragmentGroupCount(3)
         self.fragmentation.breakBonds()
         self.fragmentation.determineFragments()
         self.fragmentation.doFragmentGrouping()
-        self.assertEqual(lenOfLists(self.fragmentation.getFragments()), [40, 43, 45, 10])
+        self.assertEqual(len(self.fragmentation.getFragments()), 4)
+        for fragment, expected_size in zip(self.fragmentation.getFragments(), [40, 43, 45, 10]):
+            self.assertEqual(len(fragment), expected_size)
 
     def test_FragmentationFindFragmentsCastErrors(self):
         self.assertRaises(ValueError, self.fragmentation.getAtomsInSameFragment, 1, 1)

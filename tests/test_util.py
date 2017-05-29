@@ -96,17 +96,6 @@ class TestUtilModule(unittest.TestCase):
         self.assertEqual( util.Uniqify( self.lsimple ), self.lsimple )
         self.assertEqual( util.Uniqify( [1,2,2,3,4,5,5] ), self.lsimple )
 
-    def test_maximum_value(self):
-        # returns the maximum value of the list, be it positive or negative
-        self.assertRaises( TypeError, util.maximum_value, self.ione )
-        self.assertRaises( TypeError, util.maximum_value, self.fone )
-        self.assertRaises( TypeError, util.maximum_value, self.btrue )
-        self.assertRaises( TypeError, util.maximum_value, self.ssimple )
-        test_array = [1,2,3,5,9]
-        self.assertEqual(util.maximum_value(test_array), 9)
-        test_array = [1,2,3,5,-9]
-        self.assertEqual(util.maximum_value(test_array), -9)
-        self.assertEqual(util.maximum_value([]),0)
 
     def test_uniqifyListOfLists(self):
         test_array = [[1,2,3,4],[5,2,3,4],[1,2,3,4]]
@@ -136,11 +125,6 @@ class TestUtilModule(unittest.TestCase):
         test_array1 = range(10)
         test_array2 = range(3,7)
         self.assertEqual( util.listDiff( test_array1, test_array2 ), [0,1,2,7,8,9] )
-
-    def test_lenOfLists(self):
-        test_array = [[1,2,3,4],[1,2,3,4],[5,4,3,2,1]]
-        # returns a list of the individual sub lists
-        self.assertEqual( util.lenOfLists(test_array), [4,4,5] )
 
     def test_listTo2D(self):
         # check empty, it should return the correct dimension still
@@ -201,17 +185,6 @@ class TestUtilModule(unittest.TestCase):
         self.assertEqual(util.floatlistFromString(""),[])
         self.assertEqual(util.floatlistFromString("1.0,2.0,3.0"),[1.0,2.0,3.0])
         self.assertEqual(util.floatlistFromString("-1.0,2.0,3.0"),[-1.0,2.0,3.0])
-
-    def test_listOfDoubleIntTupleToString(self):
-        self.assertEqual(util.listOfDoubleIntTupleToString( [(1,2),(3,4)] ), "(1,2);(3,4)")
-
-    def test_listOfDoubleIntTupleFromString(self):
-        self.assertRaises(TypeError, util.listOfDoubleIntTupleFromString, self.ione)
-        self.assertRaises(TypeError, util.listOfDoubleIntTupleFromString, self.fone)
-        self.assertRaises(TypeError, util.listOfDoubleIntTupleFromString, self.btrue)
-        self.assertRaises(TypeError, util.listOfDoubleIntTupleFromString, self.tsimple)
-        self.assertRaises(TypeError, util.listOfDoubleIntTupleFromString, self.lsimple)
-        self.assertEqual(util.listOfDoubleIntTupleFromString("(1,2);(3,4)"), [(1,2),(3,4)])
 
     def test_isStringList(self):
         self.assertRaises(TypeError, util.isStringList, self.ione)
