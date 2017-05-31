@@ -52,16 +52,7 @@ class Fragmentation(FragItConfig):
                     if atom not in self._atoms: self._atoms.append(atom)
                     added += 1
                 else:
-                    print("Info: FragIt [FRAGMENTATION] Temporarily removing atom: {}, Z={}".format(i,atom.GetAtomicNum()))
-                    if len(self.getExplicitlyBreakAtomPairs()) > 0:
-                        print([" WARNING"]*8)
-                        print("    You have requested to manually fragment atom indices. However,")
-                        print("    because you _also_ have metal atoms in your input file, atom")
-                        print("    induces might have shifted around and you will likely see an")
-                        print("    error below about atoms not being connected with a bond.")
-                        print("")
-                        print("    A possible fix is to move metal atoms to the end of your file.")
-                        print([" WARNING"]*8)
+                    print("Info: FragIt [FRAGMENTATION] Temporarily removing atom with Z={}".format(atom.GetAtomicNum()))
                     # the atoms are most-likely counter ions, so we give them an
                     # appropriate formal charge (of +/- 1)
                     atomic_charge = 0 # default
@@ -77,9 +68,19 @@ class Fragmentation(FragItConfig):
                     _metalAtoms.append(new_atom)
                     self.mol.DeleteAtom(atom)
                     break
+
                 if added == self.mol.NumAtoms():
                     removing = False
                     break
+
+        if len(self.getExplicitlyBreakAtomPairs()) > 0:
+            print("\n WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING")
+            print("    You have requested to manually fragment atom indices. However,")
+            print("    because you _also_ have metal atoms in your input file, atom")
+            print("    induces might have shifted around and you will likely see an")
+            print("    error below about atoms not being connected with a bond.\n")
+            print("    A possible fix is to move metal atoms to the end of your file.\n")
+            #print(" WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING")
 
         return _metalAtoms
 
@@ -589,12 +590,15 @@ class Fragmentation(FragItConfig):
 
         print("Info: FragIt [FRAGMENTATION] will break the following bonds defined in config file:")
         for pair in self.getExplicitlyBreakAtomPairs():
+            print("   bond between atoms {0:s}.".format(pair))
+
+        print("")
+        for pair in self.getExplicitlyBreakAtomPairs():
             try:
-                if self.isValidExplicitBond(pair):
-                    print("   bond between atoms {0:s}.".format(pair))
-            except ValueError:
-                print("Error: FragIt [FRAGMENTATION] found that the bond between atoms {0:s} is not valid.".format(pair))
-                raise
+                self.isValidExplicitBond(pair)
+            except ValueError as e:
+                print(e)
+                sys.exit()  # we bomb here for now 
 
 
     def getNumBrokenBonds(self):
