@@ -4,7 +4,7 @@ FragIt v1.X.Y Release Notes
 This major update brings several changes to default keywords
 and to the command line interface for FragIt.
 
-Updates since  v1.7.1
+Updates since  v1.7.2
 
   * It is now possible to show the charges of fragments
     in PyMol. The command
@@ -13,6 +13,21 @@ Updates since  v1.7.1
 
     in the PyMol terminal will color the fragments with
     red and blue
+
+
+FragIt v1.7.2 Release Notes
+===========================
+
+This is a bug-fix and minor improvements release.
+
+Updates since  v1.7.1
+
+  * Mixing metals/ions with explicit bond cutting
+    can (and is still) problematic. For now, print
+    a warning with possible fixes so that the user
+    not only sees a "bond not found" error. (#26)
+                   -- Thanks to Morten S Nørby
+                      for reporting this issue.
 
 
 FragIt v1.7.1 Release Notes
