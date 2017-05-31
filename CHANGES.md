@@ -1,3 +1,18 @@
+FragIt v1.7.2 Release Notes
+===========================
+
+This is a bug-fix and minor improvements release.
+
+Updates since  v1.7.1
+
+  * Mixing metals/ions with explicit bond cutting
+    can (and is still) problematic. For now, print
+    a warning with possible fixes so that the user
+    not only sees a "bond not found" error. (#26)
+                   -- Thanks to Morten S Nørby
+                      for reporting this issue.
+
+
 FragIt v1.7.1 Release Notes
 ===========================
 

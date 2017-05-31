@@ -1,6 +1,6 @@
 """
 Copyright (C) 2010-2011 Mikael W. Ibsen
-Some portions Copyright (C) 2011-2016 Casper Steinmann
+Some portions Copyright (C) 2011-2017 Casper Steinmann
 """
 import os
 import sys
@@ -52,7 +52,16 @@ class Fragmentation(FragItConfig):
                     if atom not in self._atoms: self._atoms.append(atom)
                     added += 1
                 else:
-                    #print " Temporarily removing atom: {}, Z={}".format(i,atom.GetAtomicNum())
+                    print("Info: FragIt [FRAGMENTATION] Temporarily removing atom: {}, Z={}".format(i,atom.GetAtomicNum()))
+                    if len(self.getExplicitlyBreakAtomPairs()) > 0:
+                        print([" WARNING"]*8)
+                        print("    You have requested to manually fragment atom indices. However,")
+                        print("    because you _also_ have metal atoms in your input file, atom")
+                        print("    induces might have shifted around and you will likely see an")
+                        print("    error below about atoms not being connected with a bond.")
+                        print("")
+                        print("    A possible fix is to move metal atoms to the end of your file.")
+                        print([" WARNING"]*8)
                     # the atoms are most-likely counter ions, so we give them an
                     # appropriate formal charge (of +/- 1)
                     atomic_charge = 0 # default
@@ -94,12 +103,14 @@ class Fragmentation(FragItConfig):
             print("Info: Fragment charges are not available.")
 
         # add back the metals, use the formal charges
-        for atom in _metalAtoms:
-            if not self.mol.AddAtom(atom):
-                raise Exception("Error: FragIt [FRAGMENTATION] encountered an error when reinserting the metals.")
-            else:
-                self._atoms.append(atom)
-                self.formalCharges.append(atom.GetFormalCharge())
+        if len(_metalAtoms) > 0:
+            print("Info: FragIt [FRAGMENTATION] appending metal atoms.")
+            for atom in _metalAtoms:
+                if not self.mol.AddAtom(atom):
+                    raise Exception("Error: FragIt [FRAGMENTATION] encountered an error when reinserting the metals.")
+                else:
+                    self._atoms.append(atom)
+                    self.formalCharges.append(atom.GetFormalCharge())
 
 
     def beginFragmentation(self):
@@ -324,9 +335,9 @@ class Fragmentation(FragItConfig):
 
     def isValidExplicitBond(self, pair):
         if pair[0] == pair[1]:
-            raise ValueError("Error: Fragment pair '{0:s}' must be two different atoms.".format(str(pair)))
+            raise ValueError("Error: FragIt [FRAGMENTATION] Fragment pair '{0:s}' must be two different atoms.".format(str(pair)))
         if self.mol.GetBond(pair[0],pair[1]) is None:
-            raise ValueError("Error: Fragment pair '{0:s}' must be connected with a bond.".format(str(pair)))
+            raise ValueError("Error: FragIt [FRAGMENTATION] Fragment pair '{0:s}' must be connected with a bond.".format(str(pair)))
         return True
 
 
@@ -455,7 +466,7 @@ class Fragmentation(FragItConfig):
             s += "       patterns or OpenBabel. Or a combination of the above.\n"
             s += "       Total charge = {0:d}. Sum of fragment charges = {1:d}".format(self.total_charge, total_charge2)
             print(s)
-            raise ValueError("Error: Total charge = {0:d}. Sum of fragment charges = {1:d}".format(self.total_charge, total_charge2))
+            raise ValueError("Error: FragIt [FRAGMENTATION] Total charge = {0:d}. Sum of fragment charges = {1:d}".format(self.total_charge, total_charge2))
 
 
     def getAtomsInSameFragment(self, a1, a2 = 0):
@@ -482,7 +493,7 @@ class Fragmentation(FragItConfig):
     def getOBAtom(self, atom_index):
         if not isinstance(atom_index, int): raise ValueError
         if atom_index < 1 or atom_index > self.mol.NumAtoms():
-            raise ValueError("Index '{0:d}' out of range [{1:d},{2:d}]".format(atom_index,1,self.mol.NumAtoms()))
+            raise ValueError("Error: FragIt[FRAGMENTATION] Index '{0:d}' out of range [{1:d},{2:d}]".format(atom_index,1,self.mol.NumAtoms()))
         return self.mol.GetAtom(atom_index)
 
 
@@ -501,7 +512,7 @@ class Fragmentation(FragItConfig):
         charge_lbls = ["", "+", "-"]
 
         if len(atoms) == 0:
-            raise ValueError("Cannot name empty fragments. Aborting.")
+            raise ValueError("Error: FragIt [FRAGMENTATION] Cannot name empty fragments. Aborting.")
 
         if len(atoms) == 1:
             atom = self.mol.GetAtom(atoms[0])
