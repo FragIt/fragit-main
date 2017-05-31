@@ -76,7 +76,7 @@ class Fragmentation(FragItConfig):
             print("\n WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING")
             print("    You have requested to manually fragment atom indices. However,")
             print("    because you _also_ have metal atoms in your input file, atom")
-            print("    induces might have shifted around and you will likely see an")
+            print("    indices might have shifted around and you will likely see an")
             print("    error below about atoms not being connected with a bond.\n")
             print("    A possible fix is to move metal atoms to the end of your file.\n")
             #print(" WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING")
