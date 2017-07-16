@@ -150,7 +150,7 @@ class QMMM(object):
 
     def _add_fragments_to_QM(self, qmfragments):
         """ Adds nearby fragments to the QM region if they fulfill
-            certain requirenments:
+            certain requirements:
 
                 hydrogen binds to QM region
                 covalently bound to QM region
