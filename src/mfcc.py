@@ -106,7 +106,7 @@ class MFCC(object):
 
 
     def _extend_cap(self, atms, ids, typs, nbs, nams, is_final_cap):
-        """ Extends the current cap with neighboring atoms.
+        """ Extends the current cap with neighboring atom IDs.
 
             If called with is_final_cap == True then atoms replaced with
             hydrogens and will OPTIONALLY be translated later.
