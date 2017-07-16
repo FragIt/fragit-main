@@ -18,6 +18,12 @@ class QMMM(object):
     """
 
     def __init__(self, fragmentation, qmlist):
+        if not isinstance(qmlist, list):
+            raise TypeError("Expected a list of fragments to be included in the QM region")
+
+        if len(qmlist) == 0:
+            raise ValueError("List of fragments to be included in QM region is empty")
+
         self._fragmentation = fragmentation
         self._qmfrags = map(int, qmlist)
         self._fd = FragmentDistances(fragmentation)
