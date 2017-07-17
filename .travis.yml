@@ -4,12 +4,13 @@ sudo: required
 dist: trusty
 
 python:
-  - "2.7_with_system_site_packages"
+  - 2.7
 
 before_install:
   - sudo apt-get update -qq
 
 install:
   - sudo apt-get install -qq swig openbabel python-openbabel
+  - export PYTHONPATH=/usr/lib/python2.7/dist-packages:$PYTHONPATH
 
 script: nosetests
