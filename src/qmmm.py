@@ -8,9 +8,9 @@ except ImportError:
     raise OBNotFoundException("OpenBabel not found. Please install OpenBabel to use FragIt.")
 import numpy
 
-from util import calculate_hydrogen_position
-from util import ravel2D, listDiff, Uniqify
-from util import getOBAtomVector
+from .util import calculate_hydrogen_position
+from .util import ravel2D, listDiff, Uniqify
+from .util import getOBAtomVector
 
 
 class QMMM(object):
