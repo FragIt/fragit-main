@@ -486,8 +486,9 @@ class Fragmentation(FragItConfig):
             raise ValueError
         tmp = openbabel.vectorInt()
         self.mol.FindChildren(tmp, a2, a1)
-        fragment = sorted(toList(tmp) + [a1])
-        return fragment
+
+        fragment = [value for value in tmp] + [a1]
+        return sorted(fragment)
 
 
     def getOBAtom(self, atom_index):

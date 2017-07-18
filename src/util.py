@@ -13,9 +13,6 @@ except ImportError:
 
 import numpy
 
-def isEqual(a, b):
-    return a == b and type(a) == type(b)
-
 def file_exists(filename):
     if not isinstance(filename, str):
         raise TypeError("filename provided must be a string.")
@@ -39,10 +36,6 @@ def getFilenameAndExtension(path_to_file):
         raise TypeError
     basename = os.path.split(path_to_file)[1]
     return os.path.splitext(basename)
-
-
-def toList(input):
-    return [p for p in input]
 
 
 def Uniqify(thelist):

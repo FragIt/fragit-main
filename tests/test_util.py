@@ -31,6 +31,7 @@ class TestUtilModule(unittest.TestCase):
             os.remove(filename)
 
     def test_file_exists(self):
+        """ file exist """
         self.assertRaises(TypeError, util.file_exists, self.ione)
         self.assertRaises(TypeError, util.file_exists, self.fone)
         self.assertRaises(TypeError, util.file_exists, self.btrue)
@@ -45,6 +46,7 @@ class TestUtilModule(unittest.TestCase):
         self.delete_file("temp")
 
     def test_file_extension(self):
+        """ file extension """
         self.assertRaises(TypeError, util.file_extension, self.ione)
         self.assertRaises(TypeError, util.file_extension, self.fone)
         self.assertRaises(TypeError, util.file_extension, self.btrue)
@@ -70,25 +72,9 @@ class TestUtilModule(unittest.TestCase):
         teststring2 = "/home/user/file2.ext"
         self.assertEqual(util.file_basename(teststring2), "file2")
 
-    def test_isEqual_integer(self):
-        answer1 = util.isEqual(self.ione, self.isix)
-        answer2 = util.isEqual(self.isix, self.ione)
-        self.assertEqual( answer1, answer2 )
-
-#    def test_TupleToStringTypeRepresentation(self):
-#        self.assertRaises(TypeError, util.TupleToStringTypeRepresentation, self.ione)
-#        self.assertRaises(TypeError, util.TupleToStringTypeRepresentation, self.fone)
-#
-#        test_tuple = (self.ione, self.isix)
-#        answer1 = util.TupleToStringTypeRepresentation( test_tuple )
-#        self.assertEqual( answer1, "Int: 1, Int: 6")
-        
-    def test_toList(self):
-        self.assertEqual( util.toList( self.lsimple ), self.lsimple )
-        self.assertEqual( util.toList( self.tsimple ), self.lsimple )
-        self.assertEqual( util.toList( "123" ), ['1','2','3'] )
 
     def test_Uniqify(self):
+        """ unique items in a list """
         self.assertRaises( TypeError, util.Uniqify, self.ione )
         self.assertRaises( TypeError, util.Uniqify, self.fone )
         self.assertRaises( TypeError, util.Uniqify, self.btrue )
@@ -98,6 +84,7 @@ class TestUtilModule(unittest.TestCase):
 
 
     def test_uniqifyListOfLists(self):
+        """ unique list of lists """
         test_array = [[1,2,3,4],[5,2,3,4],[1,2,3,4]]
         self.assertEqual( util.uniqifyListOfLists( test_array ), [[1,2,3,4],[5,2,3,4]] )
 
