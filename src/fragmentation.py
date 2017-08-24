@@ -122,10 +122,10 @@ class Fragmentation(FragItConfig):
 
 
     def beginFragmentation(self):
-        """ Performs the nescessary actions before fragmentation
+        """ Performs nescessary actions before fragmentation can begin
 
             This includes identifying fragments which could
-            potentially be of importance. It also identifies
+            potentially be of importance later. It also identifies
             which atoms are potentially excluded from parti-
             cipating in fragmentation
         """
@@ -202,7 +202,7 @@ class Fragmentation(FragItConfig):
 
 
     def doFragmentation(self):
-        """ Performas the actual fragmentation based on the
+        """ Performs the actual fragmentation based on the
             actions performed in beginFragmentation
         """
         self.breakBonds()
@@ -239,10 +239,6 @@ class Fragmentation(FragItConfig):
 
     def setProtectedAtoms(self):
         self.applySmartProtectPatterns()
-
-
-    def clearProtectionPatterns(self):
-        self.protected_atoms = list()
 
 
     def applySmartProtectPatterns(self):
@@ -287,9 +283,10 @@ class Fragmentation(FragItConfig):
         return result
 
 
-    def isBondProtected(self, bond_pair):
+    def isBondProtected(self, atom_pair):
+        """ Returns whether a bond between two atoms is protected """
         protected_atoms = self.getExplicitlyProtectedAtoms()
-        for bond_atom in bond_pair:
+        for bond_atom in atom_pair:
             if bond_atom in protected_atoms:
                 return True
         return False
@@ -302,23 +299,23 @@ class Fragmentation(FragItConfig):
 
     def _deleteOBMolBonds(self):
         """ Deletes all bonds in the OBMol instance where fragmentation points are found """
-        for pair in self.getExplicitlyBreakAtomPairs():
-            if not self.isValidExplicitBond(pair):
+        for atom_pair in self.getExplicitlyBreakAtomPairs():
+            if not self.isValidExplicitBond(atom_pair):
                 continue
 
-            if self.isBondProtected(pair):
+            if self.isBondProtected(atom_pair):
                 continue
 
-            self._deleteOBMolBond(pair)
+            self._deleteOBMolBond(atom_pair)
 
 
-    def _deleteOBMolBond(self,pair):
+    def _deleteOBMolBond(self, atom_pair):
         """ Deletes the bond in the OBMol instance between an atom pair
 
             Arguments:
             pair -- a tuple (i, j) of the atoms with the bond between them
         """
-        bond = self.mol.GetBond(pair[0],pair[1])
+        bond = self.mol.GetBond(atom_pair[0],atom_pair[1])
         self.mol.DeleteBond(bond)
 
 
