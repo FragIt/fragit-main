@@ -18,6 +18,14 @@ from .config import FragItConfig, FragItDataBase
 class Fragmentation(FragItConfig):
 
     def __init__(self, mol, **kwargs):
+        """ Readies a fragmentation object for an OpenBabel molecule
+
+            Arguments:
+            mol -- molecule
+
+            Keyword Arguments:
+            defaults -- FragItConfig object defaults
+        """
         conffile = kwargs.get('conffile', None)
         defaults = kwargs.pop('defaults', FragItDataBase)
         FragItConfig.__init__(self, defaults=defaults, filename=conffile, **kwargs)
@@ -132,6 +140,7 @@ class Fragmentation(FragItConfig):
 
 
     def identifyBackboneAtoms(self):
+        """ Identifies protein-backbone atons """
         pattern = "N([*])C([H])C(=O)"
         self.pat.Init(pattern)
         self.pat.Match(self.mol)
@@ -206,6 +215,12 @@ class Fragmentation(FragItConfig):
 
 
     def getFragments(self):
+        """
+            Note:
+            Probably should be a copy (instead of a reference)
+            but there are some dependencies that in the QM/MM
+            module that fails such a check.
+        """
         return self._fragments
 
 
@@ -252,7 +267,7 @@ class Fragmentation(FragItConfig):
 
 
     def identifyResidues(self):
-        if (len(self._residue_names) > 0):
+        if len(self._residue_names) > 0:
             return self._residue_names
         patterns =     {
                 "WATER"    : "[H]O[H]",
@@ -272,7 +287,7 @@ class Fragmentation(FragItConfig):
         return result
 
 
-    def isBondProtected(self,bond_pair):
+    def isBondProtected(self, bond_pair):
         protected_atoms = self.getExplicitlyProtectedAtoms()
         for bond_atom in bond_pair:
             if bond_atom in protected_atoms:
@@ -281,11 +296,12 @@ class Fragmentation(FragItConfig):
 
 
     def breakBonds(self):
-        self._BreakPatternBonds()
-        self._DeleteOBMolBonds()
+        self._searchFragmentationAtomPairs()
+        self._deleteOBMolBonds()
 
 
-    def _DeleteOBMolBonds(self):
+    def _deleteOBMolBonds(self):
+        """ Deletes all bonds in the OBMol instance where fragmentation points are found """
         for pair in self.getExplicitlyBreakAtomPairs():
             if not self.isValidExplicitBond(pair):
                 continue
@@ -293,20 +309,31 @@ class Fragmentation(FragItConfig):
             if self.isBondProtected(pair):
                 continue
 
-            self._DeleteOBMolBond(pair)
+            self._deleteOBMolBond(pair)
 
 
-    def _DeleteOBMolBond(self,pair):
+    def _deleteOBMolBond(self,pair):
+        """ Deletes the bond in the OBMol instance between an atom pair
+
+            Arguments:
+            pair -- a tuple (i, j) of the atoms with the bond between them
+        """
         bond = self.mol.GetBond(pair[0],pair[1])
         self.mol.DeleteBond(bond)
 
 
-    def _BreakPatternBonds(self):
+    def _searchFragmentationAtomPairs(self):
+        """ Searches for places to break bonds via SMARTS
+
+            When bonds are found, they are added to the list of
+            bonds that must be exclusively broken (along with user
+            defined places)
+        """
         breakPatterns = self.getBreakPatterns()
-        for bondType in breakPatterns.keys():
-            pattern = breakPatterns[bondType]
+        for bondtype in breakPatterns.keys():
+            pattern = breakPatterns[bondtype]
             if self.getVerbose():
-                print("\n      Searching for '{0:s}' bonds.".format(bondType))
+                print("\n      Searching for '{0:s}' bonds.".format(bondtype))
                 print("      Pattern: '{0:s}'".format(pattern))
 
             if len(pattern) == 0:
@@ -319,20 +346,36 @@ class Fragmentation(FragItConfig):
             self._nbonds_broken += len(matches)
             if self.getVerbose():
                 print("      Found {0:d} matching bonds.".format(len(matches)))
-            for p in matches:
-                self.realBondBreaker(bondType, p)
+            for pair in matches:
+                self.addFragmentationAtomPair(pair)
 
 
-    def realBondBreaker(self, bondtype, bond_pair):
-        if self.isBondProtected(bond_pair):
+    def addFragmentationAtomPair(self, atom_pair):
+        """ Adds an atom pair to the list of fragmentation points
+
+            A test is made to see if the atom pair is protected from
+            fragmentation
+        """
+        if self.isBondProtected(atom_pair):
             if self.getVerbose():
-                s_pair = "({0[0]:d},{0[1]:d})".format(bond_pair)
+                s_pair = "({0[0]:d},{0[1]:d})".format(atom_pair)
                 print("      bond pair {0:>15s} will not be broken.".format(s_pair))
             return
-        self.addExplicitlyBreakAtomPairs([bond_pair])
+        self.addExplicitlyBreakAtomPairs([atom_pair])
 
 
     def isValidExplicitBond(self, pair):
+        """ Returns whether a pair of atoms contains a bond between them
+
+            Arguments:
+            pair -- a tuple (i, j) of the atoms with the bond between them
+
+            Returns:
+            True or False depending on if there is a bond between the atoms
+
+            Raises:
+            ValueError if either i == j or of there is no bond between the atoms
+        """
         if pair[0] == pair[1]:
             raise ValueError("Error: FragIt [FRAGMENTATION] Fragment pair '{0:s}' must be two different atoms.".format(str(pair)))
         if self.mol.GetBond(pair[0],pair[1]) is None:
@@ -434,10 +477,12 @@ class Fragmentation(FragItConfig):
 
 
     def getFragmentCharges(self):
+        """ Returns the fragment charges """
         return self._fragment_charges
 
 
     def determineFragmentCharges(self):
+        """ Computes and stores fragment charges """
         self._fragment_charges = [self.getIntegerFragmentCharge(fragment) for fragment in self._fragments]
         self.total_charge = sum(self._fragment_charges)
         self.validateTotalCharge()
@@ -449,6 +494,17 @@ class Fragmentation(FragItConfig):
 
 
     def getSumOfAtomicChargesInFragment(self,fragment):
+        """ Computes the sum of atomic charges in a fragment
+
+            Arguments:
+            fragment -- the fragment indices used to compute a fragment charge
+
+            Returns:
+            charge -- the fragment charge
+
+            Raises:
+            IndexError if the charges have not been computed
+        """
         charge = 0.0
         try:
             charge = sum([self.formalCharges[atom_idx-1] for atom_idx in fragment])
@@ -494,7 +550,7 @@ class Fragmentation(FragItConfig):
     def getOBAtom(self, atom_index):
         if not isinstance(atom_index, int): raise ValueError
         if atom_index < 1 or atom_index > self.mol.NumAtoms():
-            raise ValueError("Error: FragIt[FRAGMENTATION] Index '{0:d}' out of range [{1:d},{2:d}]".format(atom_index,1,self.mol.NumAtoms()))
+            raise IndexError("Error: FragIt[FRAGMENTATION] Index '{0:d}' out of range [{1:d},{2:d}]".format(atom_index,1,self.mol.NumAtoms()))
         return self.mol.GetAtom(atom_index)
 
 
@@ -535,8 +591,9 @@ class Fragmentation(FragItConfig):
     def getWaterMolecules(self):
         return self._watermolecules
 
+
     def nameAtoms(self):
-        """attempt to name atoms """
+        """Attempts to name atoms """
         has_residues = False
         residue_has_atoms = False
         atoms_no_name = list(range(0, self.mol.NumAtoms()))

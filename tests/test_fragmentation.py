@@ -23,12 +23,12 @@ class TestFragmentationModule(unittest.TestCase):
 
     def delete_file(self,filename):
         try:
-                f = open(filename)
+            f = open(filename)
         except IOError:
-                return
+            return
         finally:
-                f.close()
-                os.remove(filename)
+            f.close()
+            os.remove(filename)
 
     def test_FragmentationDefaultParameters(self):
         frg = self.fragmentation
@@ -65,7 +65,7 @@ class TestFragmentationModule(unittest.TestCase):
 
     def test_FragmentationRealBondBreakerNoProtect(self):
         bond_atoms = (2, 3)
-        self.fragmentation.realBondBreaker("peptide", bond_atoms)
+        self.fragmentation.addFragmentationAtomPair(bond_atoms)
         self.assertEqual(self.fragmentation.getExplicitlyBreakAtomPairs(), [(2, 3)])
 
     def test_FragmentationIsValidExplicitBond(self):
