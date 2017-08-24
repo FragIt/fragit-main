@@ -1,13 +1,9 @@
 """
-Copyright (C) 2013-2016 Casper Steinmann
+Copyright (C) 2013-2017 Casper Steinmann
 """
-from numpy import sqrt, dot, where, array
+import numpy
 
 from .writer import Standard
-from .util import WriteStringToFile
-from .util import file_extension
-from .util import listToRanges,listOfRangesToString,Uniqify,ravel2D
-from .util import deepLength,listDiff,intlistToString
 from .util import getFilenameAndExtension
 
 class XYZ(Standard):
@@ -17,7 +13,6 @@ class XYZ(Standard):
     def setup(self):
         self._setupLayeredInformation()
         self._setupActiveFragmentsInformation()
-        #self._validateMultiLayerInformation()
         if self._do_pymol: self._dump_pymol()
         if self._do_jmol: self._dump_jmol()
 
@@ -26,7 +21,7 @@ class XYZ(Standard):
 
     def _getFragmentLayersFromFragment(self):
         fragments = self._fragmentation.getFragments()
-        return array([1 for i in fragments])
+        return numpy.array([1 for i in fragments])
 
     def _setupActiveFragmentsInformation(self):
         self._active_atoms = []
