@@ -4,6 +4,7 @@ from distutils.core import setup
 
 # use the source code to get version information
 from src.strings import version_str
+from src.strings import doc_str
 
 __author__ = "Casper Steinmann"
 __copyright__ = "Copyright 2017"
@@ -11,15 +12,7 @@ __license__ = 'GPL2 or later'
 __version__ = version_str
 __email__ = "casper.steinmann@gmail.com"
 __url__ = "https://github.com/FragIt/fragit-main"
-__doc__="""FragIt: a tool to fragment molecules for fragment based methods.
-
-FragIt is a python based tool that allows you to quickly fragment
-a molecule and use the output as an input file in quantum chemistry
-programs that supports such fragment based methods.
-
-Currently, only the Fragment Molecular Orbital (FMO) method in GAMESS
-is supported, but FragIt has been developed to easily allow for other
-output writers to be added quickly."""
+__doc__= doc_str
 
 
 # Chosen from http://www.python.org/pypi?:action=list_classifiers

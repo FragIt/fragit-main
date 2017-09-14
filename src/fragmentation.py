@@ -45,6 +45,39 @@ class Fragmentation(FragItConfig):
         self._nbonds_broken = 0
 
 
+    def _fixAtomsAndCharges(self):
+        """ Removes metal atoms to make charge calculation work
+
+            OpenBabel has some issues with metal atoms when trying
+            to obtain the total charge / fragment charges. The
+            strategy is to remove the offending metal atoms from
+            the molecule
+        """
+        _metalAtoms = self._removeMetalAtoms()
+
+        # now lets do the charges (without the metals)
+        model = self.getChargeModel()
+        charge_model = openbabel.OBChargeModel.FindType(model)
+        if charge_model is None:
+            raise ValueError("Error: FragIt [FRAGMENTATION] could not use the charge model '{0:s}'".format(model))
+
+        self.formalCharges = [0.0 for i in range(self.mol.NumAtoms())]
+        if charge_model.ComputeCharges(self.mol):
+            self.formalCharges = list(charge_model.GetPartialCharges())
+        else:
+            print("Info: FragIt [FRAGMENTATION] fragment charges are not available.")
+
+        # add back the metals, use the formal charges
+        if len(_metalAtoms) > 0:
+            print("Info: FragIt [FRAGMENTATION] appending metal atoms.")
+            for atom in _metalAtoms:
+                if not self.mol.AddAtom(atom):
+                    raise Exception("Error: FragIt [FRAGMENTATION] encountered an error when reinserting the metals.")
+                else:
+                    self._atoms.append(atom)
+                    self.formalCharges.append(atom.GetFormalCharge())
+
+
     def _removeMetalAtoms(self):
         _metalAtoms = []
 
@@ -92,35 +125,6 @@ class Fragmentation(FragItConfig):
         return _metalAtoms
 
 
-    def _fixAtomsAndCharges(self):
-        """Removes unwanted atoms to make the charge calculation
-           work. Be sure to re-insert the atoms once it is done
-        """
-        _metalAtoms = self._removeMetalAtoms()
-
-        # now lets do the charges (without the metals)
-        model = self.getChargeModel()
-        charge_model = openbabel.OBChargeModel.FindType(model)
-        if charge_model is None:
-            raise ValueError("Error: FragIt [FRAGMENTATION] could not use the charge model '{0:s}'".format(model))
-
-        self.formalCharges = [0.0 for i in range(self.mol.NumAtoms())]
-        if charge_model.ComputeCharges(self.mol):
-            self.formalCharges = list(charge_model.GetPartialCharges())
-        else:
-            print("Info: FragIt [FRAGMENTATION] fragment charges are not available.")
-
-        # add back the metals, use the formal charges
-        if len(_metalAtoms) > 0:
-            print("Info: FragIt [FRAGMENTATION] appending metal atoms.")
-            for atom in _metalAtoms:
-                if not self.mol.AddAtom(atom):
-                    raise Exception("Error: FragIt [FRAGMENTATION] encountered an error when reinserting the metals.")
-                else:
-                    self._atoms.append(atom)
-                    self.formalCharges.append(atom.GetFormalCharge())
-
-
     def beginFragmentation(self):
         """ Performs nescessary actions before fragmentation can begin
 
@@ -157,6 +161,15 @@ class Fragmentation(FragItConfig):
 
 
     def identifyMergeableAtoms(self):
+        """ Identifies fragmentation points that are to be merged with neighbour fragments
+
+            The fragmentation patterns are "greedy" in the sense that
+            they match _all_ points in a protein. Some fragments (like glycine)
+            are too small to make physically sense in a calculation and is thus
+            merged into neighbours by _not_ fragmenting the points.
+
+            Note: This has 
+        """
         patterns = self.getMergePatterns()
         for pattern in patterns:
             if len(patterns[pattern]) == 0: continue
@@ -167,7 +180,8 @@ class Fragmentation(FragItConfig):
 
     def doFragmentMerging(self):
         fragments_to_merge = self.getFragmentsToMerge()
-        if len(fragments_to_merge) == 0: return
+        if len(fragments_to_merge) == 0:
+            return
         fragments = self.getFragments()
         fragments_to_merge.reverse()
         for fragment_id in fragments_to_merge:
@@ -194,7 +208,7 @@ class Fragmentation(FragItConfig):
     def getFragmentsToMerge(self):
         fragments = self.getFragments()
         fragments_to_merge = []
-        for i,fragment in enumerate(fragments):
+        for i, fragment in enumerate(fragments):
             for sid in self._mergeable_atoms:
                 if sid in fragment and i not in fragments_to_merge:
                     fragments_to_merge.append(i)
@@ -293,6 +307,7 @@ class Fragmentation(FragItConfig):
 
 
     def breakBonds(self):
+        """ Searches for and breaks bonds in the molecule """
         self._searchFragmentationAtomPairs()
         self._deleteOBMolBonds()
 
@@ -381,8 +396,12 @@ class Fragmentation(FragItConfig):
 
 
     def determineFragments(self):
-        """ Determines the individual fragments by gathering up atoms
-            that belong to each fragment.
+        """ Builds all fragments from the fragmentation information
+
+            The process is done in three steps:
+              * obtain unique fragments
+              * find fragments that could not be grouped
+              * check that the fragments are sane
         """
         self.getUniqueFragments()
         self.findRemainingFragments()

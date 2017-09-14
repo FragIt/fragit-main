@@ -12,7 +12,8 @@ Updates since  v1.7.2
     ColorFragments charge
 
     in the PyMol terminal will color the fragments with
-    red and blue
+    red and blue for negative and positive charges of the
+    fragments, respectively.
 
 
 FragIt v1.7.2 Release Notes
