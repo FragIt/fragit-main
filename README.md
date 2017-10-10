@@ -17,13 +17,18 @@ Since you found this file, it is obvious that you also found the source code. Yo
 
 FragIt is a python library and installation is quite straight forward
 
-    python setup.py build
     python setup.py install
 
 to install it in the default locations. To install it in a custom location, you can run the following
 
-    python setup.py build
     python setup.py install --prefix=/path/to/custom/installation
+
+Remember to add the installation paths to your environment variables:
+
+    export PATH=/path/to/custom/installation/bin:$PATH
+    export PYTHONPATH=/path/to/custom/installation/lib/python2.7/site-packages:$PYTHONPATH
+
+shown here for a python 2.7 installation example.
 
 ## Running FragIt
 
