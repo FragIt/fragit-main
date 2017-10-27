@@ -8,4 +8,4 @@ There are many HMOs (Pople and Dunnings basis sets) already distributed with GAM
 
 HMOs with a reference:
 
-  * **pcseg-0, pcseg-1**: Pruitt, S.R. and Steinmann, Casper; J. Phys. Chem. A. *in preparation*.
+  * **pcseg-0, pcseg-1**: Pruitt, S.R. and Steinmann, Casper; *J. Phys. Chem. A*, **2017**, 121 (8), pp 1797-1807
