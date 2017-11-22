@@ -10,7 +10,7 @@ python:
 
 env:
   - OBABEL=2.4 HASH=486b27e48d187ad213a0ff40d2d3029a9512ee52
-  - OBABEL=master HASH=expose-api-python
+  - OBABEL=master HASH=expose-obfunctions_api
 
 before_install:
   - sudo apt-get update -qq
