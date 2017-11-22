@@ -65,9 +65,9 @@ class XYZ(Standard):
         """
         n = len(atms)
         s = "%i\n%s\n" % (n,"")
-        for id, (type, atom) in enumerate(zip(types,atms)):
+        for id, (nucz, atom) in enumerate(zip(types,atms)):
             (x,y,z) = (atom.GetX(), atom.GetY(), atom.GetZ())
-            s += "%s %20.12f %20.12f %20.12f\n" % (Z2LABEL(type),
+            s += "%s %20.12f %20.12f %20.12f\n" % (Z2LABEL[nucz],
                                                    x, y, z)
         return s
 

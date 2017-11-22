@@ -117,7 +117,7 @@ class MFCC(object):
             typs -- the atom types of the atoms in the atms list
             nbs -- the indices of the neighbours of the cap
             nams -- the atom names of the atoms in the atms list
-            is_final_cap -- a boolean that signales that hydrogens should be added if True
+            is_final_cap -- a boolean that signals that hydrogens should be added if True
 
             Returns:
             updated atms, ids, typs, nbs, nams

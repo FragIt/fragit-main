@@ -119,7 +119,7 @@ class XYZMFCC(Standard):
                 # atom is the light atom and it is connected to the nbrs[id] atom
                 heavy_atom = self._fragmentation.getOBAtom( neighbour )
                 (x,y,z) = calculate_hydrogen_position( heavy_atom, atom )
-            s += "%s %20.12f %20.12f %20.12f\n" % (Z2LABEL(nucz),
+            s += "%s %20.12f %20.12f %20.12f\n" % (Z2LABEL[nucz],
                                                    x, y, z)
         return s
 
