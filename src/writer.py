@@ -1,6 +1,6 @@
 """
 Copyright (C) 2010-2011 Mikael W. Ibsen
-Some portions Copyright (C) 2011-2016 Casper Steinmann
+Some portions Copyright (C) 2011-2017 Casper Steinmann
 """
 
 try:
@@ -13,7 +13,6 @@ from .util import floatlistFromString, intlistFromString
 class Standard(object):
     def __init__(self, fragmentation, directories):
         self._fragmentation = fragmentation
-        self._elements = openbabel.OBElementTable()
         self._nlayers = 1
         self._boundaries = []
         self._title = ""

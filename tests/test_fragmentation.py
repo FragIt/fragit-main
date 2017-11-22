@@ -1,34 +1,12 @@
 """
-**********************************************************************
-tests/test_Fragmentation.py - test functionality of Fragmentation
-                              module
-
-Copyright (C) 2011 Casper Steinmann
-
-This file is part of the FragIt project.
-
-FragIt is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-FragIt is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301, USA.
-***********************************************************************/
+Copyright (C) 2011-2017 Casper Steinmann
 """
 import os
 import unittest
 import openbabel
 
 from src.fragmentation import Fragmentation
-from src.util import lenOfLists, fileToMol
+from src.util import fileToMol
 from src.config import FragItDataFMO
 
 class TestFragmentationModule(unittest.TestCase):
@@ -45,12 +23,12 @@ class TestFragmentationModule(unittest.TestCase):
 
     def delete_file(self,filename):
         try:
-                f = open(filename)
+            f = open(filename)
         except IOError:
-                return
+            return
         finally:
-                f.close()
-                os.remove(filename)
+            f.close()
+            os.remove(filename)
 
     def test_FragmentationDefaultParameters(self):
         frg = self.fragmentation
@@ -87,7 +65,7 @@ class TestFragmentationModule(unittest.TestCase):
 
     def test_FragmentationRealBondBreakerNoProtect(self):
         bond_atoms = (2, 3)
-        self.fragmentation.realBondBreaker("peptide", bond_atoms)
+        self.fragmentation.addFragmentationAtomPair(bond_atoms)
         self.assertEqual(self.fragmentation.getExplicitlyBreakAtomPairs(), [(2, 3)])
 
     def test_FragmentationIsValidExplicitBond(self):
@@ -120,21 +98,26 @@ class TestFragmentationModule(unittest.TestCase):
     def test_FragmentationDetermineFragmentsWithBreaking(self):
         self.fragmentation.breakBonds()
         self.fragmentation.determineFragments()
-        self.assertEqual(lenOfLists(self.fragmentation.getFragments()), [7, 21, 12, 14, 15, 14, 7, 14, 24, 10])
+        for fragment, expected_size in zip(self.fragmentation.getFragments(), [7, 21, 12, 14, 15, 14, 7, 14, 24, 10]):
+            self.assertEqual(len(fragment), expected_size)
 
     def test_FragmentationDetermineFragmentsWithBreakingAndGrouping(self):
         self.fragmentation.setFragmentGroupCount(2)
         self.fragmentation.breakBonds()
         self.fragmentation.determineFragments()
         self.fragmentation.doFragmentGrouping()
-        self.assertEqual(lenOfLists(self.fragmentation.getFragments()), [28, 26, 29, 21, 34])
+        self.assertEqual(len(self.fragmentation.getFragments()), 5)
+        for fragment, expected_size in zip(self.fragmentation.getFragments(), [28, 26, 29, 21, 34]):
+            self.assertEqual(len(fragment), expected_size)
 
     def test_FragmentationDetermineFragmentsWithBreakingAndGroupingTriple(self):
         self.fragmentation.setFragmentGroupCount(3)
         self.fragmentation.breakBonds()
         self.fragmentation.determineFragments()
         self.fragmentation.doFragmentGrouping()
-        self.assertEqual(lenOfLists(self.fragmentation.getFragments()), [40, 43, 45, 10])
+        self.assertEqual(len(self.fragmentation.getFragments()), 4)
+        for fragment, expected_size in zip(self.fragmentation.getFragments(), [40, 43, 45, 10]):
+            self.assertEqual(len(fragment), expected_size)
 
     def test_FragmentationFindFragmentsCastErrors(self):
         self.assertRaises(ValueError, self.fragmentation.getAtomsInSameFragment, 1, 1)

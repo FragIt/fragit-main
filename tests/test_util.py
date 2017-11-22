@@ -1,26 +1,5 @@
 """
-**********************************************************************
-tests/test_util.py - test cases for util.py
-
-Copyright (C) 2011 Casper Steinmann
-
-This file is part of the FragIt project.
-
-FragIt is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-FragIt is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-02110-1301, USA.
-***********************************************************************/
+Copyright (C) 2011-2017 Casper Steinmann
 """
 import os
 import unittest
@@ -43,7 +22,6 @@ class TestUtilModule(unittest.TestCase):
         self.dsimple = {'a':'value','b':'myvalue'}
 
     def delete_file(self, filename):
-        print("LOL")
         try:
             f = open(filename)
         except IOError:
@@ -53,6 +31,7 @@ class TestUtilModule(unittest.TestCase):
             os.remove(filename)
 
     def test_file_exists(self):
+        """ file exist """
         self.assertRaises(TypeError, util.file_exists, self.ione)
         self.assertRaises(TypeError, util.file_exists, self.fone)
         self.assertRaises(TypeError, util.file_exists, self.btrue)
@@ -67,6 +46,7 @@ class TestUtilModule(unittest.TestCase):
         self.delete_file("temp")
 
     def test_file_extension(self):
+        """ file extension """
         self.assertRaises(TypeError, util.file_extension, self.ione)
         self.assertRaises(TypeError, util.file_extension, self.fone)
         self.assertRaises(TypeError, util.file_extension, self.btrue)
@@ -92,35 +72,9 @@ class TestUtilModule(unittest.TestCase):
         teststring2 = "/home/user/file2.ext"
         self.assertEqual(util.file_basename(teststring2), "file2")
 
-    def test_isEqual_integer(self):
-        answer1 = util.isEqual(self.ione, self.isix)
-        answer2 = util.isEqual(self.isix, self.ione)
-        self.assertEqual( answer1, answer2 )
-
-#    def test_TupleToStringTypeRepresentation(self):
-#        self.assertRaises(TypeError, util.TupleToStringTypeRepresentation, self.ione)
-#        self.assertRaises(TypeError, util.TupleToStringTypeRepresentation, self.fone)
-#
-#        test_tuple = (self.ione, self.isix)
-#        answer1 = util.TupleToStringTypeRepresentation( test_tuple )
-#        self.assertEqual( answer1, "Int: 1, Int: 6")
-        
-    def test_toString(self):
-        # we check several things here
-        #self.assertEqual( util.toString(self.ione), "Int: 1")
-        #self.assertEqual( util.toString(self.fone), "Float: 1.0")
-        #self.assertEqual( util.toString(self.lsimple), "List: [1, 2, 3, 4, 5]")
-
-        ## the odd case of None type
-        #self.assertEqual( util.toString(None), "None: None" )
-        pass
-
-    def test_toList(self):
-        self.assertEqual( util.toList( self.lsimple ), self.lsimple )
-        self.assertEqual( util.toList( self.tsimple ), self.lsimple )
-        self.assertEqual( util.toList( "123" ), ['1','2','3'] )
 
     def test_Uniqify(self):
+        """ unique items in a list """
         self.assertRaises( TypeError, util.Uniqify, self.ione )
         self.assertRaises( TypeError, util.Uniqify, self.fone )
         self.assertRaises( TypeError, util.Uniqify, self.btrue )
@@ -128,19 +82,9 @@ class TestUtilModule(unittest.TestCase):
         self.assertEqual( util.Uniqify( self.lsimple ), self.lsimple )
         self.assertEqual( util.Uniqify( [1,2,2,3,4,5,5] ), self.lsimple )
 
-    def test_maximum_value(self):
-        # returns the maximum value of the list, be it positive or negative
-        self.assertRaises( TypeError, util.maximum_value, self.ione )
-        self.assertRaises( TypeError, util.maximum_value, self.fone )
-        self.assertRaises( TypeError, util.maximum_value, self.btrue )
-        self.assertRaises( TypeError, util.maximum_value, self.ssimple )
-        test_array = [1,2,3,5,9]
-        self.assertEqual(util.maximum_value(test_array), 9)
-        test_array = [1,2,3,5,-9]
-        self.assertEqual(util.maximum_value(test_array), -9)
-        self.assertEqual(util.maximum_value([]),0)
 
     def test_uniqifyListOfLists(self):
+        """ unique list of lists """
         test_array = [[1,2,3,4],[5,2,3,4],[1,2,3,4]]
         self.assertEqual( util.uniqifyListOfLists( test_array ), [[1,2,3,4],[5,2,3,4]] )
 
@@ -168,11 +112,6 @@ class TestUtilModule(unittest.TestCase):
         test_array1 = range(10)
         test_array2 = range(3,7)
         self.assertEqual( util.listDiff( test_array1, test_array2 ), [0,1,2,7,8,9] )
-
-    def test_lenOfLists(self):
-        test_array = [[1,2,3,4],[1,2,3,4],[5,4,3,2,1]]
-        # returns a list of the individual sub lists
-        self.assertEqual( util.lenOfLists(test_array), [4,4,5] )
 
     def test_listTo2D(self):
         # check empty, it should return the correct dimension still
@@ -234,17 +173,6 @@ class TestUtilModule(unittest.TestCase):
         self.assertEqual(util.floatlistFromString("1.0,2.0,3.0"),[1.0,2.0,3.0])
         self.assertEqual(util.floatlistFromString("-1.0,2.0,3.0"),[-1.0,2.0,3.0])
 
-    def test_listOfDoubleIntTupleToString(self):
-        self.assertEqual(util.listOfDoubleIntTupleToString( [(1,2),(3,4)] ), "(1,2);(3,4)")
-
-    def test_listOfDoubleIntTupleFromString(self):
-        self.assertRaises(TypeError, util.listOfDoubleIntTupleFromString, self.ione)
-        self.assertRaises(TypeError, util.listOfDoubleIntTupleFromString, self.fone)
-        self.assertRaises(TypeError, util.listOfDoubleIntTupleFromString, self.btrue)
-        self.assertRaises(TypeError, util.listOfDoubleIntTupleFromString, self.tsimple)
-        self.assertRaises(TypeError, util.listOfDoubleIntTupleFromString, self.lsimple)
-        self.assertEqual(util.listOfDoubleIntTupleFromString("(1,2);(3,4)"), [(1,2),(3,4)])
-
     def test_isStringList(self):
         self.assertRaises(TypeError, util.isStringList, self.ione)
         self.assertRaises(TypeError, util.isStringList, self.fone)
@@ -301,33 +229,6 @@ class TestUtilModule(unittest.TestCase):
 
         self.delete_file(test_filename)
 
-    def test_WriteStringListToFile(self):
-        test_list=['Hello World','Welcome Home']
-        test_string="Hello World\nWelcome Home\n"
-        test_filename="test.dat"
-        util.WriteStringListToFile(test_filename, test_list)
-        f = open(test_filename,'r')
-        read_string = f.read()
-        f.close()
-        self.assertEqual( read_string, test_string )
-
-        # only lists can be written
-        self.assertRaises(TypeError, util.WriteStringListToFile, test_filename, self.ione)
-        self.assertRaises(TypeError, util.WriteStringListToFile, test_filename, self.fone)
-        self.assertRaises(TypeError, util.WriteStringListToFile, test_filename, self.btrue)
-        self.assertRaises(TypeError, util.WriteStringListToFile, test_filename, self.tsimple)
-        self.assertRaises(TypeError, util.WriteStringListToFile, test_filename, self.ssimple)
-        self.assertRaises(TypeError, util.WriteStringListToFile, test_filename, self.dsimple)
-
-        # filename must be a string
-        self.assertRaises(TypeError, util.WriteStringListToFile, self.ione, test_string)
-        self.assertRaises(TypeError, util.WriteStringListToFile, self.fone, test_string)
-        self.assertRaises(TypeError, util.WriteStringListToFile, self.btrue, test_string)
-        self.assertRaises(TypeError, util.WriteStringListToFile, self.tsimple, test_string)
-        self.assertRaises(TypeError, util.WriteStringListToFile, self.lsimple, test_string)
-        self.assertRaises(TypeError, util.WriteStringListToFile, self.dsimple, test_string)
-
-        self.delete_file(test_filename)
 
     def test_ReadStringFromFile(self):
         test_string = "Hello World"

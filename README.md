@@ -17,13 +17,18 @@ Since you found this file, it is obvious that you also found the source code. Yo
 
 FragIt is a python library and installation is quite straight forward
 
-    python setup.py build
     python setup.py install
 
 to install it in the default locations. To install it in a custom location, you can run the following
 
-    python setup.py build
     python setup.py install --prefix=/path/to/custom/installation
+
+Remember to add the installation paths to your environment variables:
+
+    export PATH=/path/to/custom/installation/bin:$PATH
+    export PYTHONPATH=/path/to/custom/installation/lib/python2.7/site-packages:$PYTHONPATH
+
+shown here for a python 2.7 installation example.
 
 ## Running FragIt
 
@@ -42,4 +47,4 @@ In order to run FragIt, you *need* the following installed on your system:
 * The FragIt source code, look above for information on how to obtain it
 * [Open Babel](http://www.openbabel.org) 2.3 or newer with [python language bindings](http://openbabel.org/docs/dev/Installation/install.html#compile-language-bindings) enabled. Github user [andersx](https://github.com/andersx) [wrote a guide](http://combichem.blogspot.dk/2013/12/compiling-open-babel-with-python.html) to how that is accomplished.
 * [Numpy](http://numpy.scipy.org) 1.5 or newer.
-* [Python](http://www.python.org) version 2.7 or later. There is limited support for 3.X.
+* [Python](http://www.python.org) version 2.7 or 3.5 (or later).

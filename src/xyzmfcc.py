@@ -1,17 +1,13 @@
 """
-Copyright (C) 2013-2016 Casper Steinmann
+Copyright (C) 2013-2017 Casper Steinmann
 """
-from numpy import sqrt, dot, where, array
+import numpy
 
 from .mfcc import MFCC, Cap
 from .pymol import PymolTemplate
 from .jmol import JmolTemplate
 from .writer import Standard
-from .util import WriteStringToFile
-from .util import file_extension
-from .util import listToRanges,listOfRangesToString,Uniqify,ravel2D
-from .util import deepLength,listDiff,intlistToString
-from .util import getFilenameAndExtension
+from .util import getFilenameAndExtension, Z2LABEL
 from .util import shares_elements, calculate_hydrogen_position
 
 
@@ -32,7 +28,7 @@ class XYZMFCC(Standard):
 
     def _getFragmentLayersFromFragment(self):
         fragments = self._fragmentation.getFragments()
-        return array([1 for i in fragments])
+        return numpy.array([1 for i in fragments])
 
     def _setupActiveFragmentsInformation(self):
         self._active_atoms = []
@@ -109,7 +105,8 @@ class XYZMFCC(Standard):
         """
         # NB! the word fragment here is actually of type Cap. Just to be sure
         # nobody is actually doing something utterly wrong, check that here.
-        if not type(fragment) == Cap: raise ValueError("_fragment_xyz expected an object of type Cap.")
+        if not isinstance(fragment, Cap):
+            raise TypeError("_fragment_xyz expected an object of type Cap.")
         atoms = fragment.getAtoms()
         nuczs = fragment.getNuclearCharges()
         nbrls = fragment.getNeighbourList()
@@ -122,7 +119,7 @@ class XYZMFCC(Standard):
                 # atom is the light atom and it is connected to the nbrs[id] atom
                 heavy_atom = self._fragmentation.getOBAtom( neighbour )
                 (x,y,z) = calculate_hydrogen_position( heavy_atom, atom )
-            s += "%s %20.12f %20.12f %20.12f\n" % (self._elements.GetSymbol(nucz),
+            s += "%s %20.12f %20.12f %20.12f\n" % (Z2LABEL[nucz],
                                                    x, y, z)
         return s
 
@@ -133,14 +130,14 @@ class XYZMFCC(Standard):
         filename_template = "{0}_{1}_{2:03d}{3}"
 
         # these are the capped fragments
-        for ifg,fragment in enumerate(self._fragmentation.getFragments()):
+        for ifg, fragment in enumerate(self._fragmentation.getFragments(), start=1):
             capped_fragment = self.BuildCappedFragment( fragment )
             ss = self._fragment_xyz( capped_fragment )
-            with open( filename_template.format(ff, "fragment", ifg+1, ext), 'w' ) as f:
+            with open( filename_template.format(ff, "fragment", ifg, ext), 'w' ) as f:
                 f.write(ss)
 
         # these are the caps
-        for icap, cap in enumerate( self.getCaps() ):
-            ss = self._fragment_xyz( cap )
-            with open( filename_template.format(ff, "cap", icap+1, ext), 'w' ) as f:
+        for icap, cap in enumerate(self.getCaps(), start=1):
+            ss = self._fragment_xyz(cap)
+            with open( filename_template.format(ff, "cap", icap, ext), 'w' ) as f:
                 f.write(ss)

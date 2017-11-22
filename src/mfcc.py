@@ -1,5 +1,5 @@
 """
-Copyright (C) 2013-2016 Casper Steinmann
+Copyright (C) 2013-2017 Casper Steinmann
 """
 
 try:
@@ -84,10 +84,10 @@ class MFCC(object):
         """ Builds a cap around a pair of fragmentation points.
 
             a cap contains the following information:
-            OBAtoms
-            IDs of the OBAtoms
-            Type (or nuclear charge) of the atom
-            Neighbour ID of the atom - this is used to identify hydrogens that needs to be repositioned.
+              a list of OBAtoms that makes out the cap
+              IDs of the neighboring OBAtoms
+              Type (or nuclear charge) of the atom
+              Neighbour ID of the atom - this is used to identify hydrogens that needs to be repositioned later.
         """
         cap_atm = [self._fragmentation.getOBAtom(id) for id in pair]
         cap_atmnam = ["" for id in pair]
@@ -104,10 +104,23 @@ class MFCC(object):
 
         return Cap( cap_atm, cap_atmnam, cap_ids, cap_typ, cap_nbs)
 
+
     def _extend_cap(self, atms, ids, typs, nbs, nams, is_final_cap):
-        """Extends the current cap with neighboring atoms.
-           if this is_final_cap then atoms are hydrogens. they will
-           OPTIONALLY be translated later.
+        """ Extends the current cap with neighboring atom IDs.
+
+            If called with is_final_cap == True then atoms replaced with
+            hydrogens and will OPTIONALLY be translated later.
+
+            Arguments:
+            atms -- the OpenBabel atoms currently in the cap
+            ids -- the IDs of the atoms in the atms list
+            typs -- the atom types of the atoms in the atms list
+            nbs -- the indices of the neighbours of the cap
+            nams -- the atom names of the atoms in the atms list
+            is_final_cap -- a boolean that signals that hydrogens should be added if True
+
+            Returns:
+            updated atms, ids, typs, nbs, nams
         """
         atms_out = atms[:]
         atm_namout = nams[:]
@@ -129,6 +142,7 @@ class MFCC(object):
                         atm_namout.append( " H  " )
                 else:
                     atm_namout.append( "   " )
+
                 if is_final_cap:
                     typs_out.append(1)
                 else:

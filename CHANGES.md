@@ -1,3 +1,43 @@
+FragIt v1.8.0 Release Notes
+===========================
+
+This major update brings several quality of life
+improvements in FragIt.
+
+Updates since  v1.7.2
+
+  * Now full (automated) testing of multiple python
+    versions (2.7, 3.5 and 3.6 as we speak) coupled
+    with multiple (master and 2.4.1 release) versions
+    of openbabel
+
+  * includes preliminary fixes for the upcoming openbabel
+    2.5 release (no idea when it is due) specifically
+    regarding OBElementsTable and implicit valence info
+    which was relocated in the openbabel API.
+
+  * It is now possible to show the charges of fragments
+    in PyMol. The command
+
+    ColorFragments charge
+
+    in the PyMol terminal will color the fragments with
+    red and blue for negative and positive charges of the
+    fragments, respectively.
+
+  * FragIt now dumps it's input file in standard output
+    so one can actually see the options being used. This
+    is mainly to be inline with other programs and to
+    make sure users understand what options were set.
+
+  * FragIt now correctly warns people using explicit
+    fragmentation points in combination with metal atoms
+    that atoms are shifted around. This procedure has
+    not been completely automated.
+
+  * A lot of interal API documentation stuff happened.
+
+
 FragIt v1.7.2 Release Notes
 ===========================
 

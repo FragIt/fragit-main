@@ -13,8 +13,18 @@ except ImportError:
 
 import numpy
 
-def isEqual(a, b):
-    return a == b and type(a) == type(b)
+# converts nuclear charge to atom label
+Z2LABEL = {
+ 1: 'H',                                                             2: 'He',
+ 3: 'Li',  4: 'Be',  5: 'B',   6: 'C',   7: 'N',  8: 'O',  9: 'F',  10: 'Ne',
+11: 'NA', 12: 'Mg', 13: 'Al', 14: 'Si', 15: 'P', 16: 'S', 17: 'Cl', 18: 'Ar'
+}
+
+# converts an atomic label to a nuclear charge
+LABEL2Z = {}
+for key in Z2LABEL:
+    LABEL2Z[Z2LABEL[key]] = key
+
 
 def file_exists(filename):
     if not isinstance(filename, str):
@@ -40,31 +50,6 @@ def getFilenameAndExtension(path_to_file):
     basename = os.path.split(path_to_file)[1]
     return os.path.splitext(basename)
 
-#def TupleToStringTypeRepresentation(tuple_of_vars):
-#    if not isinstance(tuple_of_vars, tuple):
-#        raise TypeError
-#    if (len(tuple_of_vars) == 0): return ""
-#
-#    tuple_string = toString(tuple_of_vars[0])
-#    for i in range(1, len(tuple_of_vars)):
-#        tuple_string += ", " + toString(tuple_of_vars[i])
-#        
-#    return tuple_string
-
-
-def toList(input):
-    return [p for p in input]
-
-
-def maximum_value(list_of_values):
-    if not isinstance(list_of_values, list):
-        raise TypeError
-    if len(list_of_values) == 0: return 0
-    max_value = max(list_of_values)
-    min_value = min(list_of_values)
-    if abs(min_value) > abs(max_value):
-        return min_value
-    return max_value
 
 def Uniqify(thelist):
     invalid_types = [int, float, bool, str]
@@ -106,22 +91,6 @@ def listDiff(list1, list2):
     set1 = set(list1)
     set2 = set(list2)
     return list(set1 - set2)
-
-#def listDiff(list1, list2):
-#    if not is_list(list1) or not is_list(list2): raise TypeError
-#    if len(list2) > len(list1): raise ValueError("The first argument should be the list with the most items.")
-#
-#    difference_list = list()
-#    for i in list1:
-#        if i not in list2:
-#            difference_list.append(i)
-#    return difference_list
-
-def lenOfLists(lol):
-    result = list()
-    for i in lol:
-        result.append(len(i))
-    return result
 
 def listTo2D(list1D, sublength, elmFormat = None):
     list2D     = list()
@@ -192,34 +161,6 @@ def floatlistFromString(string):
     return result
 
 
-
-def listOfDoubleIntTupleToString(diTuple, sep = ";"):
-    assert isinstance(diTuple, list)
-
-    tmp = list()
-
-    for (a1,a2) in diTuple:
-        assert isinstance(a1, int)
-        assert isinstance(a2, int)
-        tmp.append( "(" + str(a1) + "," + str(a2) + ")")
-
-    return ";".join(tmp)
-
-
-def listOfDoubleIntTupleFromString(string, sep = ";"):
-    if not isinstance(string, str):
-        raise TypeError
-    result = list()
-
-    if (string == ""): return list()
-
-    for pair in string.split(";"):
-        pair = pair[1:-1]
-        ints = pair.split(",")
-        result_tuple = (int(ints[0]), int(ints[1]))
-        result.append(result_tuple)
-    return result
-
 def isStringList( string_list ):
     if not isinstance(string_list, list):
         raise TypeError
@@ -254,13 +195,13 @@ def WriteStringToFile(filename, string):
     with open(filename, 'w') as f:
         f.write(string)
 
-def WriteStringListToFile(filename,thelist):
-    if not isStringList(thelist):
-        raise TypeError
-    f = open(filename,'w')
-    for item in thelist:
-        f.write("%s\n" % item)
-    f.close()
+#def WriteStringListToFile(filename,thelist):
+#    if not isStringList(thelist):
+#        raise TypeError
+#    f = open(filename,'w')
+#    for item in thelist:
+#        f.write("%s\n" % item)
+#    f.close()
 
 def ReadStringFromFile(filename):
     if not isinstance(filename, str):

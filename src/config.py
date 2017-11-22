@@ -1,6 +1,6 @@
 """
 Copyright (C) 2010-2011 Mikael W. Ibsen
-Some portions Copyright (C) 2011-2016 Casper Steinmann
+Some portions Copyright (C) 2011-2017 Casper Steinmann
 """
 import sys
 try:
@@ -186,8 +186,17 @@ class FragItConfig(object):
         self._addSections()
 
         if filename is not None:
-            if verbose:
-                print("reading from '{}'".format(filename))
+            # this code needs to be fixed but the verbosity flag should probably
+            # be on by default (lots of stuff printed) and then we should probably
+            # have a quench flag if one wants to remove all the output (for some reason)
+            print("Info: FragIt [CONFIG] reading config from '{}':".format(filename))
+            print("")
+            print("   Contents of the config file")
+            print(" -------------------------------")
+            with open(filename, 'r') as f:
+                print(f.read())
+            print(" -------------------------------")
+
             self.readConfigurationFromFile(filename)
 
     def _addSections(self):
@@ -207,6 +216,7 @@ class FragItConfig(object):
         except IOError:
                 print("The configuration file '{}' does not exist. Aborting.".format(filename))
                 sys.exit()
+
         self.cfg.read(filename)
 
         # code to parse data from sections into values
@@ -417,6 +427,11 @@ class FragItConfig(object):
 
     def getVerbose(self):
         return self.values['output']['verbose']
+
+    def setVerbose(self, value):
+        if not isinstance(value, bool):
+            raise TypeError
+        self.values['output']['verbose'] = value
 
     def getMFCCOrder(self):
         return self.values['mfcc']['order']

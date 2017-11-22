@@ -1,5 +1,5 @@
 """
-Copyright (C) 2013-2016 Casper Steinmann
+Copyright (C) 2013-2017 Casper Steinmann
 """
 
 try:
@@ -8,9 +8,9 @@ except ImportError:
     raise OBNotFoundException("OpenBabel not found. Please install OpenBabel to use FragIt.")
 import numpy
 
-from util import calculate_hydrogen_position
-from util import ravel2D, listDiff, Uniqify
-from util import getOBAtomVector
+from .util import calculate_hydrogen_position
+from .util import ravel2D, listDiff, Uniqify
+from .util import getOBAtomVector
 
 
 class QMMM(object):
@@ -18,6 +18,12 @@ class QMMM(object):
     """
 
     def __init__(self, fragmentation, qmlist):
+        if not isinstance(qmlist, list):
+            raise TypeError("Expected a list of fragments to be included in the QM region")
+
+        if len(qmlist) == 0:
+            raise ValueError("List of fragments to be included in QM region is empty")
+
         self._fragmentation = fragmentation
         self._qmfrags = map(int, qmlist)
         self._fd = FragmentDistances(fragmentation)
@@ -105,21 +111,36 @@ class QMMM(object):
         for ibreak in remove_breaks:
             self._fragmentation.popExplicitlyBreakAtomPairs(breaks[ibreak])
 
-        #print("FRAGIT: [qm] {0}".format(fragment_for_qm))
         return (fragment_for_qm, qm_region_charge)
 
-    def satisfyValency(self, fragment, iheavy, bbreak):
-        """ Satisfies the valency of the heavy atom iheavy in the supplied fragment.
+    def satisfyValency(self, fragment, idx_heavy, bbreak):
+        """ Satisfies the valency of a fragment that had a bond cut by
+            adding a hydrogen atom along the same vector as that bond
+
+            Arguments:
+            fragment -- the fragment which valency needs to be satisfied
+            iheavy -- index of the heavy atom on which the hydrogen is to be satisfied
+            bbreak -- the indices of the atoms that were broken
 
             Returns a new fragment with all atoms in the correct place.
         """
 
+        assert idx_heavy in bbreak
+
         # heavy is the heavy atom that wants a hydrogen
-        heavy = self._fragmentation.getOBAtom(iheavy)
-        ilight = 0
-        if bbreak.index(iheavy) == 0: ilight = 1
-        light = self._fragmentation.getOBAtom(bbreak[ilight])
-        ival = heavy.GetImplicitValence()
+        # the following section of code figures out which
+        # part of the bond we are investigating
+        heavy = self._fragmentation.getOBAtom(idx_heavy)
+        idx_light = 0
+        if bbreak.index(idx_heavy) == 0: idx_light = 1
+        light = self._fragmentation.getOBAtom(bbreak[idx_light])
+
+        # now we add the new hydrogen atom
+        try:
+            ival = heavy.GetImplicitValence()
+        except AttributeError: # openbabel 2.5 API changes
+            openbabel.OBAtomAssignTypicalImplicitHydrogens(heavy)
+            ival = heavy.GetValence() + heavy.GetImplicitHCount()
         rval = heavy.GetValence()
         new_atoms = []
         if ival != rval:
@@ -133,17 +154,15 @@ class QMMM(object):
 
     def _add_fragments_to_QM(self, qmfragments):
         """ Adds nearby fragments to the QM region if they fulfill
-            certain requirenments:
+            certain requirements:
 
                 hydrogen binds to QM region
                 covalently bound to QM region
 
             Arguments:
-            ----------
-            qmfragments : list of QM fragments
+            qmfragments -- list of QM fragments
 
             Returns:
-            --------
             updated list of QM fragments with possible neighbours included.
         """
         qmfrags = qmfragments[:]
@@ -156,8 +175,6 @@ class QMMM(object):
 
 class FragmentDistances(object):
     def __init__(self, fragmentation):
-        """ Fragments   : array of arrays of atomic numbers [[a1,a2,a3],[a4,a5,a6], ... ]
-        """
         self._fragmentation = fragmentation
         self._fragments = fragmentation.getFragments()
         self._fragment_donors = [self._donors_from_fragment(i) for i in range(len(self._fragments))]
@@ -169,11 +186,9 @@ class FragmentDistances(object):
         """ Obtains all hydrogen bound fragments to the idx'th fragment
 
             Arguments:
-            ----------
-            idx : the fragment index to which hydrogen bonds are to be found
+            idx -- the fragment index to which hydrogen bonds are to be found
 
             Returns:
-            --------
             A list of fragments hydrogen bound to the idx'th fragment.
         """
         hb_fragments = []
@@ -187,6 +202,7 @@ class FragmentDistances(object):
 
         if len(donors) > 0 or len(acceptors) > 0:
             print("Info: FragIt will include all hydrogen bound molecules in the QM region.")
+
         # first we will find any donor (current fragment) -> acceptor (whole system) pairs
         isDonor = False
         for ifg, _acceptors in enumerate(self._fragment_acceptors):
@@ -219,11 +235,9 @@ class FragmentDistances(object):
         """ Returns list of fragments that are covalently connected to the idx fragment
 
             Arguments:
-            ----------
-            idx : the fragment index to use when looking for other covalently bound fragments
+            idx -- the fragment index to use when looking for other covalently bound fragments
 
             Returns:
-            --------
             A list of fragments covalently bound to the idx'th fragment.
         """
         atomids = self._fragments[idx]
@@ -235,7 +249,7 @@ class FragmentDistances(object):
         if not self._fragmentation.doQMMMIncludeCovalent():
             return other_fragments
 
-        print("Info: FragIt will include all fragments covalently bound in the QM region.")
+        print("Info: FragIt will include all fragments covalently bound to the QM region.")
 
         # let us find the nearby fragments that are covalently connected
         # currently, this only works with nearest neighbours
@@ -257,9 +271,10 @@ class FragmentDistances(object):
         """ angle > 110 is according to:
             http://pac.iupac.org/publications/pac/pdf/2011/pdf/8308x1637.pdf
 
-            D:   donor
-            H:   hydrogen
-            A:   acceptor
+            Arguments:
+            D -- donor
+            H -- hydrogen
+            A -- acceptor
         """
         RAH = A.GetDistance(H)
         RAD = A.GetDistance(D)
@@ -279,7 +294,7 @@ class FragmentDistances(object):
         # lets locate all the hydrogen atoms connected to a nitrogen or oxygen
         donors = []
         for obatom in obatoms:
-            if obatom.IsHydrogen() and obatom.IsHbondDonorH():
+            if obatom.GetAtomicNum() == 1 and obatom.IsHbondDonorH():
                 for otheratom in obatoms:
                     if obatom == otheratom: continue
                     if obatom.IsConnected(otheratom) and otheratom.IsHbondDonor():
@@ -303,6 +318,11 @@ class FragmentDistances(object):
 
 
     def _is_doner(self, atom):
+        """ Returns whether or not an atom is a hydrogen bond donor
+        
+            Arguments:
+            atom -- OpenBabel atom
+        """
         return atom.IsNitrogen() or atom.IsOxygen()
 
 
@@ -311,11 +331,9 @@ class FragmentDistances(object):
             of the fragment idx
 
             Arguments:
-            ----------
-            idx : the fragment index to use when looking for nearby fragments
+            idx -- the fragment index to use when looking for nearby fragments
 
             Returns:
-            --------
             A list of fragments having at least an atom within a certain distance
         """
         other_fragments = []
@@ -352,6 +370,10 @@ class FragmentDistances(object):
     def _get_min_distances2(self, d1s, d2s):
         """ Returns the minimum distance squared (hence the 2) between
             two sets of coordinates d1s and d2s
+
+            Arguments:
+            d1s -- the first set of coordinates
+            d2s -- the second set of coordinates
         """
         d2s = numpy.array(d2s)
         R_min = 1.0e30

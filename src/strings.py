@@ -2,14 +2,14 @@
 Copyright (C) 2011-2017 Casper Steinmann
 """
 
-version = ("1","7","2")
+version = ("1","8","0")
 version_str = ".".join(version)
 
-doc_str = """FragIt fragments molecules for fragment based methods in quantum chemistry.
-The output of FragIt is an input file which can be run in a suitable quantum chemistry program
-The preferable way to use FragIt is to use the configuration file option
-described below to have access to all options
-The program offers limited access through the command line interface.
+doc_str = """FragIt is a tool to fragment large molecules for use in fragment based quantum chemistry methods.
+The output of FragIt is typically an input file which can be run in a quantum chemistry program.
+The preferable way to use FragIt is to use configuration files (see option -c below) based on
+output from the fragit-conf program also included with FragIt.
+For further usage information, see the wiki on the github repository.
 """
 
 __doc__ = doc_str
