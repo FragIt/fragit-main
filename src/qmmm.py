@@ -136,7 +136,11 @@ class QMMM(object):
         light = self._fragmentation.getOBAtom(bbreak[idx_light])
 
         # now we add the new hydrogen atom
-        ival = heavy.GetImplicitValence()
+        try:
+            ival = heavy.GetImplicitValence()
+        except AttributeError: # openbabel 2.5 API changes
+            openbabel.OBAtomAssignTypicalImplicitHydrogens(heavy)
+            ival = heavy.GetValence() + heavy.GetImplicitHCount()
         rval = heavy.GetValence()
         new_atoms = []
         if ival != rval:
@@ -290,7 +294,7 @@ class FragmentDistances(object):
         # lets locate all the hydrogen atoms connected to a nitrogen or oxygen
         donors = []
         for obatom in obatoms:
-            if obatom.IsHydrogen() and obatom.IsHbondDonorH():
+            if obatom.GetAtomicNum() == 1 and obatom.IsHbondDonorH():
                 for otheratom in obatoms:
                     if obatom == otheratom: continue
                     if obatom.IsConnected(otheratom) and otheratom.IsHbondDonor():

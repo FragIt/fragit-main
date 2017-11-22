@@ -6,6 +6,16 @@ and to the command line interface for FragIt.
 
 Updates since  v1.7.2
 
+  * Now full (automated) testing of multiple python
+    versions (2.7, 3.5 and 3.6 as we speak) coupled
+    with multiple (master and 2.4.1 release) versions
+    of openbabel
+
+  * includes preliminary fixes for the upcoming openbabel
+    2.5 release (no idea when it is due) specifically
+    regarding OBElementsTable and implicit valence info
+    which was relocated in the openbabel API.
+
   * It is now possible to show the charges of fragments
     in PyMol. The command
 

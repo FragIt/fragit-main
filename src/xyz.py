@@ -4,7 +4,7 @@ Copyright (C) 2013-2017 Casper Steinmann
 import numpy
 
 from .writer import Standard
-from .util import getFilenameAndExtension
+from .util import getFilenameAndExtension, Z2LABEL
 
 class XYZ(Standard):
     def __init__(self, fragmentation, directories):
@@ -67,7 +67,7 @@ class XYZ(Standard):
         s = "%i\n%s\n" % (n,"")
         for id, (type, atom) in enumerate(zip(types,atms)):
             (x,y,z) = (atom.GetX(), atom.GetY(), atom.GetZ())
-            s += "%s %20.12f %20.12f %20.12f\n" % (self._elements.GetSymbol(type),
+            s += "%s %20.12f %20.12f %20.12f\n" % (Z2LABEL(type),
                                                    x, y, z)
         return s
 

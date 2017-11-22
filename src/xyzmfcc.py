@@ -7,7 +7,7 @@ from .mfcc import MFCC, Cap
 from .pymol import PymolTemplate
 from .jmol import JmolTemplate
 from .writer import Standard
-from .util import getFilenameAndExtension
+from .util import getFilenameAndExtension, Z2LABEL
 from .util import shares_elements, calculate_hydrogen_position
 
 
@@ -119,7 +119,7 @@ class XYZMFCC(Standard):
                 # atom is the light atom and it is connected to the nbrs[id] atom
                 heavy_atom = self._fragmentation.getOBAtom( neighbour )
                 (x,y,z) = calculate_hydrogen_position( heavy_atom, atom )
-            s += "%s %20.12f %20.12f %20.12f\n" % (self._elements.GetSymbol(nucz),
+            s += "%s %20.12f %20.12f %20.12f\n" % (Z2LABEL(nucz),
                                                    x, y, z)
         return s
 

@@ -5,12 +5,57 @@ dist: trusty
 
 python:
   - 2.7
+  - 3.5
+  - 3.6
+
+env:
+  - OBABEL=2.4 HASH=486b27e48d187ad213a0ff40d2d3029a9512ee52
+  - OBABEL=master HASH=expose-api-python
 
 before_install:
   - sudo apt-get update -qq
 
 install:
-  - sudo apt-get install -qq swig openbabel python-openbabel
-  - export PYTHONPATH=/usr/lib/python2.7/dist-packages:$PYTHONPATH
+  - |
+    if [ ${TRAVIS_PYTHON_VERSION} = "2.7" ]; then
+        sudo apt-get install -qq swig libeigen3-dev python-dev git-core python-numpy
+        git clone https://github.com/cstein/openbabel.git openbabel_source
 
-script: nosetests
+        cd openbabel_source
+        git checkout ${HASH}
+        cd ..
+
+        mkdir openbabel_build
+        cd openbabel_build
+        cmake -DCMAKE_CXX_FLAGS="-march=native -mno-avx" -DRUN_SWIG=ON -DPYTHON_BINDINGS=ON ../openbabel_source
+        make -j 2
+        sudo make install
+        export PYTHONPATH=/usr/local/lib/python${TRAVIS_PYTHON_VERSION}/site-packages:${PYTHONPATH}
+    elif [ ${TRAVIS_PYTHON_VERSION:0:1} = 3 ]; then
+        sudo apt-get install -qq swig libeigen3-dev python-dev git-core python3-numpy python3-nose
+        git clone https://github.com/cstein/openbabel.git openbabel_source
+
+        cd openbabel_source
+        git checkout ${HASH}
+        cd ..
+
+        mkdir openbabel_build
+        cd openbabel_build
+        cmake -DCMAKE_CXX_FLAGS="-march=native -mno-avx" -DRUN_SWIG=ON -DPYTHON_BINDINGS=ON ../openbabel_source
+        make -j 2
+        sudo make install
+        export PYTHONPATH=/usr/local/lib/python${TRAVIS_PYTHON_VERSION}/site-packages:${PYTHONPATH}
+    else
+        echo "ERROR: Unknown Python version. Got '${TRAVIS_PYTHON_VERSION}' from environment."
+    fi
+
+before_script:
+  - cd ${TRAVIS_BUILD_DIR}
+
+script:
+  - |
+    if [ ${TRAVIS_PYTHON_VERSION} = "2.7" ]; then
+        nosetests
+    elif [ ${TRAVIS_PYTHON_VERSION:0:1} = 3 ]; then
+        nosetests3
+    fi

@@ -10,7 +10,7 @@ from .writer import Standard
 from .util import WriteStringToFile
 from .util import file_extension,listTo2D,join2D
 from .util import listToRanges,listOfRangesToString,Uniqify,ravel2D
-from .util import deepLength
+from .util import deepLength, Z2LABEL, LABEL2Z
 
 # $BASIS set data depending on basis set
 GAMESS_BASIS_GROUP = dict()
@@ -456,7 +456,7 @@ class GamessFMO(Standard):
     def _getBasisAtoms(self, ilayer):
         atom_numbers = Uniqify([atom.GetAtomicNum() for atom in self._fragmentation.getAtoms()])
         atom_numbers.sort()
-        atoms = [self._elements.GetSymbol(atom_number) for atom_number in atom_numbers]
+        atoms = [Z2LABEL[atom_number] for atom_number in atom_numbers]
         return "".join([self._formatSingleFMOXYZAtomBasis(ilayer,atom) for atom in atoms])
 
     def _formatSingleFMOXYZAtomBasis(self,ilayer,atom):
@@ -469,7 +469,7 @@ class GamessFMO(Standard):
             In multilayer cases where different basis sets are requested for each
             layer the basis set must be specified here.
         """
-        s = "{0:s}-{1:d} {2:d}\n".format(atom,ilayer,self._elements.GetAtomicNum(atom))
+        s = "{0:s}-{1:d} {2:d}\n".format(atom,ilayer,LABEL2Z[atom])
         basis_sets = self._fragmentation.getQMBasis()
         nbas = len(basis_sets)
         nlayers = self._nlayers
@@ -515,7 +515,7 @@ class GamessFMO(Standard):
              names = self._fragmentation.getAtomNames()
              strindex = "%7s" % (names[index-1])
         return "%7s%7s%17f%13f%13f\n" % (strindex,
-             self._elements.GetSymbol(atom.GetAtomicNum()), atom.GetX(), atom.GetY(), atom.GetZ())
+             Z2LABEL[atom.GetAtomicNum()], atom.GetX(), atom.GetY(), atom.GetZ())
 
     ## The $FMO group
     def FMOgroup(self):
@@ -689,7 +689,7 @@ class GamessFMO(Standard):
                 s += "FRAGNAME=H2ORHF\n"
                 for idx, atom_index in enumerate(fragments[water_fragment], start=1):
                     atom = fragment_atoms[atom_index-1]
-                    symbol = self._elements.GetSymbol(atom.GetAtomicNum())
+                    symbol = Z2LABEL[atom.GetAtomicNum()]
                     s += "{0:s}{1:d}{2:17.6f}{3:13.6f}{4:13.6f}\n".format(symbol, idx, atom.GetX(), atom.GetY(), atom.GetZ())
             s += " $END\n"
         return s

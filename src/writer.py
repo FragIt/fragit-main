@@ -13,7 +13,6 @@ from .util import floatlistFromString, intlistFromString
 class Standard(object):
     def __init__(self, fragmentation, directories):
         self._fragmentation = fragmentation
-        self._elements = openbabel.OBElementTable()
         self._nlayers = 1
         self._boundaries = []
         self._title = ""

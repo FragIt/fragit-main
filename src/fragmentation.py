@@ -41,7 +41,6 @@ class Fragmentation(FragItConfig):
         self._mergeable_atoms = []
         self._atoms = []
         self._fixAtomsAndCharges()
-        self._elements = openbabel.OBElementTable()
         self._nbonds_broken = 0
 
 
@@ -590,7 +589,7 @@ class Fragmentation(FragItConfig):
         if len(atoms) == 1:
             atom = self.mol.GetAtom(atoms[0])
             charge_lbl = charge_lbls[atom.GetFormalCharge()]
-            element = self._elements.GetSymbol(atom.GetAtomicNum())
+            element = LABEL2Z[atom.GetAtomicNum()]
             return "{0:s}{1:s}".format(element, charge_lbl)
         else:
             for residue in openbabel.OBResidueIter( self.mol ):

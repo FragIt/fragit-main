@@ -13,6 +13,19 @@ except ImportError:
 
 import numpy
 
+# converts nuclear charge to atom label
+Z2LABEL = {
+ 1: 'H',                                                             2: 'He',
+ 3: 'Li',  4: 'Be',  5: 'B',   6: 'C',   7: 'N',  8: 'O',  9: 'F',  10: 'Ne',
+11: 'NA', 12: 'Mg', 13: 'Al', 14: 'Si', 15: 'P', 16: 'S', 17: 'Cl', 18: 'Ar'
+}
+
+# converts an atomic label to a nuclear charge
+LABEL2Z = {}
+for key in Z2LABEL:
+    LABEL2Z[Z2LABEL[key]] = key
+
+
 def file_exists(filename):
     if not isinstance(filename, str):
         raise TypeError("filename provided must be a string.")

@@ -6,7 +6,7 @@ try:
     import openbabel
 except ImportError:
     raise OBNotFoundException("OpenBabel not found. Please install OpenBabel to use FragIt.")
-from .util import file_extension
+from .util import file_extension, Z2LABEL
 
 class Molecule(object):
 
@@ -52,8 +52,7 @@ class Molecule(object):
         return int(sum(self.getPartialAtomCharges()))
 
     def getElementSymbol(self,atom_index):
-        table = openbabel.OBElementTable()
-        return table.GetSymbol(atom_index)
+        return Z2LABEL[atom_index]
 
     def getAtomCount(self):
         return self._molecule.NumAtoms()
