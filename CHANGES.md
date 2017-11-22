@@ -1,8 +1,8 @@
-FragIt v1.X.Y Release Notes
+FragIt v1.8.0 Release Notes
 ===========================
 
-This major update brings several changes to default keywords
-and to the command line interface for FragIt.
+This major update brings several quality of life
+improvements in FragIt.
 
 Updates since  v1.7.2
 
@@ -24,6 +24,18 @@ Updates since  v1.7.2
     in the PyMol terminal will color the fragments with
     red and blue for negative and positive charges of the
     fragments, respectively.
+
+  * FragIt now dumps it's input file in standard output
+    so one can actually see the options being used. This
+    is mainly to be inline with other programs and to
+    make sure users understand what options were set.
+
+  * FragIt now correctly warns people using explicit
+    fragmentation points in combination with metal atoms
+    that atoms are shifted around. This procedure has
+    not been completely automated.
+
+  * A lot of interal API documentation stuff happened.
 
 
 FragIt v1.7.2 Release Notes

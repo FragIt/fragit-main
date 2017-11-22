@@ -1,5 +1,5 @@
 """
-Copyright (C) 2013-2016 Casper Steinmann
+Copyright (C) 2013-2017 Casper Steinmann
 """
 
 try:
