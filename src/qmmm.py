@@ -136,12 +136,12 @@ class QMMM(object):
         light = self._fragmentation.getOBAtom(bbreak[idx_light])
 
         # now we add the new hydrogen atom
+        rval = heavy.GetValence()
         try:
             ival = heavy.GetImplicitValence()
         except AttributeError: # openbabel 2.5 API changes
-            openbabel.OBAtomAssignTypicalImplicitHydrogens(heavy)
-            ival = heavy.GetValence() + heavy.GetImplicitHCount()
-        rval = heavy.GetValence()
+            ival = rval + heavy.GetImplicitHCount()
+
         new_atoms = []
         if ival != rval:
             if self._fragmentation.mol.AddHydrogens(heavy):
