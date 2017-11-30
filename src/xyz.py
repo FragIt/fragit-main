@@ -49,10 +49,9 @@ class XYZ(Standard):
         template.override()
         template.write()
 
-    def _build_single_fragment(self,fragment):
+    def _build_single_fragment(self, fragment):
         """
-                fragment: atom idx of the current fragment
-                pairs     : pairs of breaking points
+            fragment -- atom idx of the current fragment
         """
         output_atoms = [self._fragmentation.mol.GetAtom(id) for id in fragment]
         output_types = [atom.GetAtomicNum() for atom in output_atoms]
@@ -60,27 +59,33 @@ class XYZ(Standard):
         return output_atoms, output_types
 
     def fragment_xyz(self, atms, types):
-        """Generates the xyz file format based on the atoms, types,
-           ids and neighbours of each fragment
+        """ Generates the xyz file format for a single fragment
+
+            Arguments:
+            atms -- list of openbabel atoms
+            types -- list of nuclear charges
         """
+        xyz_line = "{0:s} {1:20.12f} {2:20.12f} {3:20.12f}\n"
         n = len(atms)
-        s = "%i\n%s\n" % (n,"")
-        for id, (nucz, atom) in enumerate(zip(types,atms)):
-            (x,y,z) = (atom.GetX(), atom.GetY(), atom.GetZ())
-            s += "%s %20.12f %20.12f %20.12f\n" % (Z2LABEL[nucz],
-                                                   x, y, z)
+        s = "{0:d}\n{1:s}\n".format(n,"")
+        for nucz, _obatom in zip(types, atms):
+            (x,y,z) = (_obatom.GetX(), _obatom.GetY(), _obatom.GetZ())
+            s += xyz_line.format(Z2LABEL[nucz], x, y, z)
+
         return s
 
     def writeFile(self, filename):
-        """Dumps all fragments to individual
-             .xyz files.
-        """
-        ff,ext = getFilenameAndExtension(filename)
-        filename_template = "%s_%s_%03i%s"
+        """ Dumps all fragments to individual .xyz files
 
-        # first we dump all capped fragments
-        for ifg,fragment in enumerate(self._fragmentation.getFragments()):
+            Arguments:
+            filename -- base for the filename with extension
+        """
+        ff, ext = getFilenameAndExtension(filename)
+        filename_template = "{0:s}_{1:s}_{2:03d}{3:s}"
+
+        # dump all fragments
+        for ifg, fragment in enumerate(self._fragmentation.getFragments(), start=1):
             (atms, types) = self._build_single_fragment(fragment)
             ss = self.fragment_xyz(atms, types)
-            with open(filename_template % (ff,"fragment",ifg+1,ext), "w") as f:
+            with open(filename_template.format(ff, "fragment", ifg, ext), "w") as f:
                 f.write(ss)

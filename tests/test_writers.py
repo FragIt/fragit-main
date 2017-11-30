@@ -1,11 +1,16 @@
 """
-Copyright (C) 2012-2016 Casper Steinmann
+Copyright (C) 2012-2017 Casper Steinmann
 """
 import os
 import unittest
-from src.writer import Standard
-from src.util import fileToMol
+
+import openbabel
+
+from src.config import FragItDataPE
 from src.fragmentation import Fragmentation
+from src.util import fileToMol
+from src.writer import Standard
+from src.xyz import XYZ
 
 class TestStandardWriterModule(unittest.TestCase):
 
@@ -54,6 +59,28 @@ class TestXYZWriterModule(unittest.TestCase):
         finally:
             f.close()
             os.remove(filename)
+
+    def test_write_xyz(self):
+        molecule = fileToMol("tests/watercluster4.xyz")
+        fragmentation = Fragmentation(molecule, defaults=FragItDataPE)
+        fragmentation.beginFragmentation()
+        fragmentation.doFragmentation()
+        fragmentation.finishFragmentation()
+
+        xyzwriter = XYZ(fragmentation, {})
+        os.chdir("tests")
+        xyzwriter.writeFile("temp_water.xyz")
+
+        # we do not test the written coordinates but merely number of atoms written
+        nat_written = 0
+        for i in range(len(fragmentation.getFragments())):
+            filename = "temp_water_fragment_{0:03d}.xyz".format(i+1)
+            m2 = fileToMol(filename)
+            nat_written += m2.NumAtoms()
+            self.delete_file(filename)
+        self.assertEqual(nat_written, molecule.NumAtoms())
+
+        os.chdir("..")
 
 def suite():
   s = unittest.TestSuite()
