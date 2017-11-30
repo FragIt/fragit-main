@@ -1,5 +1,5 @@
 """
-Copyright (C) 2011-2012 Casper Steinmann
+Copyright (C) 2011-2017 Casper Steinmann
 """
 
 from .template import Template
