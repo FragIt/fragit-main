@@ -135,30 +135,41 @@ def joinIntList(glue, intlist):
 
 def intlistToString(intlist):
     return joinIntList(",", intlist)
-    
-    
-def intlistFromString(string):
-    if not isinstance(string, str):
-        raise TypeError
-    if (string == ""): return []
-    intlist = string.split(",")
-    result = list()
-    for i in intlist:
-        i = int(i)
-        result.append(i)
 
-    return result
 
-def floatlistFromString(string):
+def valuelist_from_string(string, op, seperator=","):
     if not isinstance(string, str):
-        raise TypeError
-    if(string == ""): return []
-    floatlist = string.split(",")
-    result = list()
-    for f in floatlist:
-        f = float(f)
-        result.append(f)
-    return result
+        raise TypeError("Argument 'string' to valuelist_from_string is not of type str")
+
+    if not isinstance(op, type):
+        raise TypeError("Argument 'op' to valuelist_from_string is not of type int or float")
+
+    if len(string) == 0:
+        return []
+
+    return [op(value) for value in string.split(seperator)]
+
+def intlistFromString(string, seperator=","):
+    """ Returns a list of integers from a string
+
+        Arguments:
+        string -- the string to convert to list of integers
+        seperator -- the seperator to use when converting the string to a list
+
+        Returns list of integers
+    """
+    return valuelist_from_string(string, int, seperator)
+
+def floatlistFromString(string, seperator=","):
+    """ Returns a list of floats from a string
+
+        Arguments:
+        string -- the string to convert to list of floats
+        seperator -- the seperator to use when converting the string to a list
+
+        Returns list of floats 
+    """
+    return valuelist_from_string(string, float, seperator)
 
 
 def isStringList( string_list ):
@@ -195,13 +206,6 @@ def WriteStringToFile(filename, string):
     with open(filename, 'w') as f:
         f.write(string)
 
-#def WriteStringListToFile(filename,thelist):
-#    if not isStringList(thelist):
-#        raise TypeError
-#    f = open(filename,'w')
-#    for item in thelist:
-#        f.write("%s\n" % item)
-#    f.close()
 
 def ReadStringFromFile(filename):
     if not isinstance(filename, str):
