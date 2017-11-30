@@ -42,10 +42,21 @@ class TestStandardWriterModule(unittest.TestCase):
       self.assertEqual(self.standardwriter._nlayers, nlayers)
       self.assertEqual(self.standardwriter._boundaries, [1.0,2.0])
 
+class TestXYZWriterModule(unittest.TestCase):
+    def setUp(self):
+        pass
+
+    def delete_file(self,filename):
+        try:
+            f = open(filename)
+        except IOError:
+            return
+        finally:
+            f.close()
+            os.remove(filename)
+
 def suite():
   s = unittest.TestSuite()
   s.addTest(unittest.makeSuite(TestStandardWriterModule))
+  s.addTest(unittest.makeSuite(TestXYZWriterModule))
   return s
-
-if __name__ == '__main__':
-    unittest.main()
