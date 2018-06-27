@@ -23,6 +23,9 @@ Updates since  v1.8.0
     is -1 and the fifth fragment has charge +1.
     Fragments not listed are assumed to be neutral.
 
+  * Includes some changes necessary for openbabel
+    coorporation.
+
 
 FragIt v1.8.0 Release Notes
 ===========================
