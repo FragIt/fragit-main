@@ -335,12 +335,29 @@ class Fragmentation(FragItConfig):
 
 
     def _deleteOBMolBond(self, atom_pair):
-        """ Deletes the bond in the OBMol instance between an atom pair
+        """ Deletes the bond in the OBMol instance between a pair of atoms
+
+            with version 2.5 of the openbabel API there has been a change in
+            the way bonds are guesstimated and this requires us to increase
+            the implicit hydrogen count on each atom by the bond order of the
+            newly broken bond manually.
 
             Arguments:
             pair -- a tuple (i, j) of the atoms with the bond between them
         """
         bond = self.mol.GetBond(atom_pair[0],atom_pair[1])
+        bond_order = bond.GetBondOrder()
+        try:
+            atom1 = self.getOBAtom(atom_pair[0])
+            atom2 = self.getOBAtom(atom_pair[1])
+            impl_h_count1 = atom1.GetImplicitHCount()
+            impl_h_count2 = atom2.GetImplicitHCount()
+        except AttributeError: # not openbabel 2.5
+            pass
+        else:
+            atom1.SetImplicitHCount(impl_h_count1 + bond_order)
+            atom2.SetImplicitHCount(impl_h_count2 + bond_order)
+
         self.mol.DeleteBond(bond)
 
 
