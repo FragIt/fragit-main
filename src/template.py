@@ -10,10 +10,10 @@ from .util import substitute_file
 
 # filenames for templates
 filenames = {'pymol':'pymol.py',
-             'jmol' :'jmol.py'}
+             'jmol' :'jmol.spt'}
 
 extension = {'pymol':'py',
-             'jmol' :'jmol'}
+             'jmol' :'spt'}
 
 class Template(object):
     def __init__(self, directories, infile, outfile):

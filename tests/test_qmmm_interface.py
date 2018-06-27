@@ -17,12 +17,12 @@ class TestQMMMModule(unittest.TestCase):
 
     def delete_file(self,filename):
         try:
-                f = open(filename)
+            f = open(filename)
         except IOError:
-                return
+            return
         finally:
-                f.close()
-                os.remove(filename)
+            f.close()
+            os.remove(filename)
 
 
     def test_qmmm_simple_0(self):
