@@ -52,7 +52,7 @@ def setup_fragit():
             ('share', ['share/README.md']),
             ('share/templates',
               [
-                'share/templates/pymol.py', 'share/templates/jmol.py'
+                'share/templates/pymol.py', 'share/templates/jmol.spt'
               ]
             ),
             ('share/hmo',
