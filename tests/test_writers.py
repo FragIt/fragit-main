@@ -82,6 +82,42 @@ class TestXYZWriterModule(unittest.TestCase):
 
         os.chdir("..")
 
+
+class TestXYZMFCCWriterModule(unittest.TestCase):
+    def setUp(self):
+        pass
+
+    def delete_file(self,filename):
+        try:
+            f = open(filename)
+        except IOError:
+            return
+        finally:
+            f.close()
+            os.remove(filename)
+
+    def test_write_xyz(self):
+        molecule = fileToMol("tests/watercluster4.xyz")
+        fragmentation = Fragmentation(molecule, defaults=FragItDataPE)
+        fragmentation.beginFragmentation()
+        fragmentation.doFragmentation()
+        fragmentation.finishFragmentation()
+
+        xyzwriter = XYZ(fragmentation, {})
+        os.chdir("tests")
+        xyzwriter.writeFile("temp_water.xyz")
+
+        # we do not test the written coordinates but merely number of atoms written
+        nat_written = 0
+        for i in range(len(fragmentation.getFragments())):
+            filename = "temp_water_fragment_{0:03d}.xyz".format(i+1)
+            m2 = fileToMol(filename)
+            nat_written += m2.NumAtoms()
+            self.delete_file(filename)
+        self.assertEqual(nat_written, molecule.NumAtoms())
+
+        os.chdir("..")
+
 def suite():
   s = unittest.TestSuite()
   s.addTest(unittest.makeSuite(TestStandardWriterModule))
