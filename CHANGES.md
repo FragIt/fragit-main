@@ -3,6 +3,27 @@ FragIt v1.X.X Release Notes
 
 Updates since  v1.8.0
 
+  * FragIt can now read fragment charges from an
+    external file. This is specified in the input
+    configuration files in
+
+    [fragmentation]
+    chargemodel = read test.dat
+
+    where the MMFF94 keyword is replaced with
+    read <filename>. Each line in the supplied
+    file gives two values. The first value is the
+    fragment index and the second value is the
+    fragment charge, i.e.
+
+    1 -1
+    5  1
+
+    to specify that the charge of the first fragment
+    is -1 and the fifth fragment has charge +1.
+    Fragments not listed are assumed to be neutral.
+
+
 FragIt v1.8.0 Release Notes
 ===========================
 
