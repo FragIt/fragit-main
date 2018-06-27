@@ -40,8 +40,10 @@ class Fragmentation(FragItConfig):
         self._backbone_atoms = []
         self._mergeable_atoms = []
         self._atoms = []
+        self._fragment_charges_filename = None # to read in fragment charges
         self._fixAtomsAndCharges()
         self._nbonds_broken = 0
+
 
 
     def _fixAtomsAndCharges(self):
@@ -54,27 +56,36 @@ class Fragmentation(FragItConfig):
         """
         _metalAtoms = self._removeMetalAtoms()
 
-        # now lets do the charges (without the metals)
-        model = self.getChargeModel()
-        charge_model = openbabel.OBChargeModel.FindType(model)
-        if charge_model is None:
-            raise ValueError("Error: FragIt [FRAGMENTATION] could not use the charge model '{0:s}'".format(model))
-
         self.formalCharges = [0.0 for i in range(self.mol.NumAtoms())]
-        if charge_model.ComputeCharges(self.mol):
-            self.formalCharges = list(charge_model.GetPartialCharges())
-        else:
-            print("Info: FragIt [FRAGMENTATION] fragment charges are not available.")
 
-        # add back the metals, use the formal charges
-        if len(_metalAtoms) > 0:
-            print("Info: FragIt [FRAGMENTATION] appending metal atoms.")
-            for atom in _metalAtoms:
-                if not self.mol.AddAtom(atom):
-                    raise Exception("Error: FragIt [FRAGMENTATION] encountered an error when reinserting the metals.")
-                else:
-                    self._atoms.append(atom)
-                    self.formalCharges.append(atom.GetFormalCharge())
+        # We can use either of the following:
+        # None to just have zero charges
+        # openbabel to guess the charges
+        # read a file with fragment charges
+        model = self.getChargeModel()
+        if "read" in model:
+            tmp, self._fragment_charges_filename = model.split()
+        else:
+
+            print("FragIt: The charge model in use is: {}".format(model))
+            charge_model = openbabel.OBChargeModel.FindType(model)
+            if charge_model is None:
+                raise ValueError("Error: FragIt [FRAGMENTATION] could not use the charge model '{0:s}'".format(model))
+
+            if charge_model.ComputeCharges(self.mol):
+                self.formalCharges = list(charge_model.GetPartialCharges())
+            else:
+                print("Info: FragIt [FRAGMENTATION] fragment charges are not available.")
+
+            # add back the metals, use the formal charges
+            if len(_metalAtoms) > 0:
+                print("Info: FragIt [FRAGMENTATION] appending metal atoms.")
+                for atom in _metalAtoms:
+                    if not self.mol.AddAtom(atom):
+                        raise Exception("Error: FragIt [FRAGMENTATION] encountered an error when reinserting the metals.")
+                    else:
+                        self._atoms.append(atom)
+                        self.formalCharges.append(atom.GetFormalCharge())
 
 
     def _removeMetalAtoms(self):
@@ -498,9 +509,17 @@ class Fragmentation(FragItConfig):
 
     def determineFragmentCharges(self):
         """ Computes and stores fragment charges """
-        self._fragment_charges = [self.getIntegerFragmentCharge(fragment) for fragment in self._fragments]
-        self.total_charge = sum(self._fragment_charges)
-        self.validateTotalCharge()
+        if self._fragment_charges_filename is not None:
+            self._fragment_charges = [0 for fragment in self._fragments]
+            print("Reading fragment charges from {}".format(self._fragment_charges_filename))
+            with open(self._fragment_charges_filename, 'r') as charges_in:
+                for line in charges_in:
+                    tokens = map(int, line.split())
+                    self._fragment_charges[tokens[0]-1] = tokens[1]
+        else:
+            self._fragment_charges = [self.getIntegerFragmentCharge(fragment) for fragment in self._fragments]
+            self.total_charge = sum(self._fragment_charges)
+            self.validateTotalCharge()
 
 
     def getIntegerFragmentCharge(self, fragment):
