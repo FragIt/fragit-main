@@ -18,4 +18,3 @@ cd openbabel_build
 cmake -DCMAKE_CXX_FLAGS="-march=native -mno-avx" -DRUN_SWIG=ON -DPYTHON_BINDINGS=ON ../openbabel_source
 make -j 2
 sudo make install
-export PYTHONPATH=/usr/local/lib/python${TRAVIS_PYTHON_VERSION}/site-packages:${PYTHONPATH}

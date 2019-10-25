@@ -16,7 +16,8 @@ before_install:
   - sudo apt-get update -qq
 
 install:
-  - ./travis/build.sh
+  - bash travis/build.sh
+  - export PYTHONPATH=/usr/local/lib/python${TRAVIS_PYTHON_VERSION}/site-packages:${PYTHONPATH}
 
 before_script:
   - cd ${TRAVIS_BUILD_DIR}

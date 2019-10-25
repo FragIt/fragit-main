@@ -136,10 +136,14 @@ class QMMM(object):
         light = self._fragmentation.getOBAtom(bbreak[idx_light])
 
         # now we add the new hydrogen atom
-        rval = heavy.GetValence()
+        try:
+            rval = heavy.GetValence()
+        except AttributeError: # OpenBabel3 has a different name
+            rval = heavy.GetExplicitDegree()
+
         try:
             ival = heavy.GetImplicitValence()
-        except AttributeError: # openbabel 2.5 API changes
+        except AttributeError: # openbabel3 API changes
             ival = rval + heavy.GetImplicitHCount()
 
         new_atoms = []
