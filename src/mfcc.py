@@ -52,9 +52,6 @@ class Cap(object):
     def getIgnore(self):
         return self._ignore
 
-    def getAtomNames(self):
-        return self._atom_names
-
 class MFCC(object):
 
     def __init__(self, fragmentation):
