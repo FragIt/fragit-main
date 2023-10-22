@@ -18,7 +18,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Set up OpenBabel
-        run: sudo apt-get install -y openbabel python3-openbabel
+        run: pip install openbabel
 
       # You can test your matrix by printing the current Python version
       - name: Display Python version
