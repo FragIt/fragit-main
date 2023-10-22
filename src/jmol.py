@@ -15,7 +15,7 @@ class JmolTemplate(Template):
         for atom in fragment:
             s+="atomno=%s, " % (atom)
         s = s[:-2]
-        return s + "\ndefine frag%i selected\ncolor %s frag%i\n" % (i,color,i)
+        return s + "\ndefine frag%i selected\ncolor %s\n" % (i, color)
 
     def formatFragments(self):
         colors = ["green", "blue", "red","cyan", "magenta", "yellow"]*len(self.fragments_data)
@@ -60,3 +60,5 @@ class JmolTemplate(Template):
             s += "atomno=%s, " % (atom)
         return fragments % s[:-2] + "\ndefine backbone selected\ncolor red backbone\n"
 
+    def formatFragmentCharges(self):
+        return ""
