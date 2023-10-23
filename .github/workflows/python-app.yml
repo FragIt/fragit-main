@@ -18,10 +18,23 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install OpenBabel Dependencies
-        run: sudo apt-get install -y openbabel python3-openbabel
-      - name: Set up OpenBabel
-        run: pip install openbabel
+      - name: OpenBabel Dependencies
+        run: sudo apt-get install -y swig libeigen3-dev python-dev git-core python3-numpy python3-nose openbabel python3-openbabel
+      - name: OpenBabel Configure
+        run: |
+          git clone https://github.com/openbabel/openbabel.git openbabel_source
+          mkdir openbabel_build
+          cd openbabel_build
+          cmake -DCMAKE_CXX_FLAGS="-march=native -mno-avx" -DRUN_SWIG=ON -DPYTHON_BINDINGS=ON ../openbabel_source
+
+      - name: OpenBabel Build
+        run: |
+          cd openbabel_build
+          make
+      - name: OpenBabel Install
+        run: |
+          cd openbabel_build
+          make install
 
       # You can test your matrix by printing the current Python version
       - name: Display Python version
