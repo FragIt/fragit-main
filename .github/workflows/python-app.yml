@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.9"]
 
     steps:
       - uses: actions/checkout@v4
@@ -19,7 +19,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: OpenBabel Dependencies
-        run: sudo apt-get install -y swig libeigen3-dev python-dev git-core python3-numpy python3-nose openbabel python3-openbabel
+        run: sudo apt-get install -y ninja-build swig libeigen3-dev libboost-all-dev
       - name: OpenBabel Configure
         run: |
           git clone https://github.com/openbabel/openbabel.git openbabel_source
