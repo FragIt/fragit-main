@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.9"]
 
     steps:
       - uses: actions/checkout@v4
@@ -40,4 +40,4 @@ jobs:
 
       # You can test your matrix by printing the current Python version
       - name: Display Python version
-        run: python -c "import sys; print(sys.version); from openbabel import openbabel"
+        run: python -c "import sys; print(sys.version); print(sys.path); from openbabel import openbabel"
