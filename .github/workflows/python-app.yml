@@ -17,13 +17,10 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-<<<<<<< Updated upstream
-      - name: Set up OpenBabel
-        run: pip install openbabel
-=======
 
       - name: OpenBabel Dependencies
         run: sudo apt-get install -y ninja-build swig libeigen3-dev libboost-all-dev
+
       - name: OpenBabel Configure
         run: |
           git clone https://github.com/openbabel/openbabel.git openbabel_source
@@ -35,11 +32,11 @@ jobs:
         run: |
           cd openbabel_build
           make
+
       - name: OpenBabel Install
         run: |
           cd openbabel_build
           sudo make install
->>>>>>> Stashed changes
 
       # You can test your matrix by printing the current Python version
       - name: Display Python version
