@@ -11,12 +11,12 @@ then
   rm -rf htmlcov
 fi
 
-PATH_TO_SRC=../src
+PATH_TO_SRC=../fragit
 OLD_PYTHONPATH=$PYTHONPATH
 
 export PYTHONPATH=$PYTHONPATH:$PATH_TO_SRC
 
-coverage run --include=../src/*.py test_all.py $PARAM
+coverage run --include=../fragit/*.py test_all.py $PARAM
 
 coverage html
 

@@ -6,10 +6,10 @@ import os
 import sys
 import unittest
 
-from src.config import FragItDataPE
-from src.fragmentation import Fragmentation
-from src.util import fileToMol
-from src.qmmm import QMMM
+from fragit.config import FragItDataPE
+from fragit.fragmentation import Fragmentation
+from fragit.util import fileToMol
+from fragit.qmmm import QMMM
 
 class TestQMMMModule(unittest.TestCase):
     def setUp(self):

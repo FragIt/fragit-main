@@ -5,9 +5,9 @@ import os
 import unittest
 import openbabel
 
-from src.fragmentation import Fragmentation
-from src.util import fileToMol
-from src.config import FragItDataFMO
+from fragit.fragmentation import Fragmentation
+from fragit.util import fileToMol
+from fragit.config import FragItDataFMO
 
 class TestFragmentationModule(unittest.TestCase):
 

@@ -3,8 +3,8 @@ import sys
 from distutils.core import setup
 
 # use the source code to get version information
-from src.strings import version_str
-from src.strings import doc_str
+from fragit.strings import version_str
+from fragit.strings import doc_str
 
 __author__ = "Casper Steinmann"
 __copyright__ = "Copyright 2017"
@@ -44,7 +44,7 @@ def setup_fragit():
         long_description = "\n".join(doclines[2:]),      
         classifiers = filter(None, classifiers.split("\n")),
         platforms = "Any",
-        package_dir={'fragit': 'src'},
+        package_dir={'fragit': 'fragit'},
         packages=['fragit'],
         scripts=['scripts/fragit', 'scripts/fragit-conf'],
         data_files=[
