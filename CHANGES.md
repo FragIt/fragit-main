@@ -1,5 +1,8 @@
-FragIt v1.X.X Release Notes
+FragIt v2.X.X Release Notes
 ===========================
+
+This is a much-needed major revision to remove bugs
+and squash problems related to the old-age of FragIt
 
 Updates since  v1.8.0
 
