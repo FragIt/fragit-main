@@ -40,4 +40,7 @@ jobs:
 
       # You can test your matrix by printing the current Python version
       - name: Display Python version
-        run: python -c "import sys; print(sys.version); print(sys.path); from openbabel import openbabel"
+        run: |
+          env
+          export PYTHONPATH=/usr/local/lib/python${{ matrix.python-version }}/site-packages:$PYTHONPATH
+          python -c "import sys; print(sys.version); print(sys.path); from openbabel import openbabel"
