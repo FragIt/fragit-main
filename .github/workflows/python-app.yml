@@ -26,7 +26,7 @@ jobs:
           git clone https://github.com/openbabel/openbabel.git openbabel_source
           mkdir openbabel_build
           cd openbabel_build
-          cmake -DCMAKE_CXX_FLAGS="-march=native -mno-avx" -DRUN_SWIG=ON -DPYTHON_BINDINGS=ON -DPYTHON_INSTDIR=$Python_ROOT_DIR/lib/${{ matrix.python-version }}/site-packages ../openbabel_source
+          cmake -DCMAKE_CXX_FLAGS="-march=native -mno-avx" -DRUN_SWIG=ON -DPYTHON_BINDINGS=ON -DPYTHON_INSTDIR=$Python_ROOT_DIR/lib/python${{ matrix.python-version }}/site-packages ../openbabel_source
 
       - name: OpenBabel Build
         run: |
