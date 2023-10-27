@@ -4,8 +4,6 @@ Copyright (C) 2012-2017 Casper Steinmann
 import os
 import unittest
 
-import openbabel
-
 from fragit.config import FragItDataPE
 from fragit.fragmentation import Fragmentation
 from fragit.util import fileToMol

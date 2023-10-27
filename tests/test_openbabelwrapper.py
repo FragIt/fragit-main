@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 """
 import os
 import unittest
-import openbabel
+from openbabel import openbabel
 
 import fragit.openbabelwrapper as OBW
 

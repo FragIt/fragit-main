@@ -2,8 +2,10 @@
 Copyright (C) 2011-2016 Casper Steinmann
 """
 
+from .fragit_exceptions import OBNotFoundException
+
 try:
-    import openbabel
+    from openbabel import openbabel
 except ImportError:
     raise OBNotFoundException("OpenBabel not found. Please install OpenBabel to use FragIt.")
 from .util import file_extension, Z2LABEL

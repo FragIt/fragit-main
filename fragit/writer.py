@@ -2,9 +2,9 @@
 Copyright (C) 2010-2011 Mikael W. Ibsen
 Some portions Copyright (C) 2011-2017 Casper Steinmann
 """
-
+from .fragit_exceptions import OBNotFoundException
 try:
-    import openbabel
+    from openbabel import openbabel
 except ImportError:
     raise OBNotFoundException("OpenBabel not found. Please install OpenBabel to use FragIt.")
 

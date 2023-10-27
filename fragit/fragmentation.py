@@ -4,9 +4,10 @@ Some portions Copyright (C) 2011-2017 Casper Steinmann
 """
 import os
 import sys
+from .fragit_exceptions import OBNotFoundException
 
 try:
-    import openbabel
+    from openbabel import openbabel
 except ImportError:
     raise OBNotFoundException("OpenBabel not found. Please install OpenBabel to use FragIt.")
 import numpy
@@ -98,7 +99,7 @@ class Fragmentation(FragItConfig):
                 break
             for i in range(1, self.mol.NumAtoms()+1):
                 atom = self.mol.GetAtom(i)
-                if atom.GetAtomicNum() in [1,6,7,8,12,15,16]:
+                if atom.GetAtomicNum() in [1,6,7,8,9,12,15,16]:
                     if atom not in self._atoms: self._atoms.append(atom)
                     added += 1
                 else:

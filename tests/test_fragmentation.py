@@ -3,7 +3,7 @@ Copyright (C) 2011-2017 Casper Steinmann
 """
 import os
 import unittest
-import openbabel
+from openbabel import openbabel
 
 from fragit.fragmentation import Fragmentation
 from fragit.util import fileToMol
