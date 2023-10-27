@@ -17,18 +17,26 @@ Updates since  v1.8.0
     read <filename>. Each line in the supplied
     file gives two values. The first value is the
     fragment index and the second value is the
-    fragment charge, i.e.
-
+    fragment charge. The following example shows
+    that the charge of the first fragment  is -1
+    and the fifth fragment has charge +1. Fragments
+    not listed are assumed to be neutral.
+```text
     1 -1
     5  1
-
-    to specify that the charge of the first fragment
-    is -1 and the fifth fragment has charge +1.
-    Fragments not listed are assumed to be neutral.
-
+```
+   
   * Includes some changes necessary for openbabel
-    coorporation.
+    cooperation.
 
+  * Fixed a few errors in the jmol script and template.
+
+  * Switch to GitHub actions for build system testing.
+
+Developer Changes
+
+Made substantial changes to align FragIt with how
+python packages should be organized
 
 FragIt v1.8.0 Release Notes
 ===========================

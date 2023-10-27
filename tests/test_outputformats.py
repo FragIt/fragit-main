@@ -3,10 +3,10 @@ Copyright (C) 2011-2017 Casper Steinmann
 """
 import os
 import unittest
-from src.gamessfmo import GamessFMO
-from src.xyzmfcc import XYZMFCC
-from src.xyz import XYZ
-from src.outputformats import *
+from fragit.gamessfmo import GamessFMO
+from fragit.xyzmfcc import XYZMFCC
+from fragit.xyz import XYZ
+from fragit.outputformats import *
 
 class TestOutputFormatsModule(unittest.TestCase):
 

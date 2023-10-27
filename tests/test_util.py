@@ -4,7 +4,7 @@ Copyright (C) 2011-2017 Casper Steinmann
 import os
 import unittest
 
-import src.util as util
+import fragit.util as util
 
 class TestUtilModule(unittest.TestCase):
 

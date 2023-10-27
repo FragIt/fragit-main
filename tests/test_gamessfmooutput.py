@@ -5,10 +5,10 @@ import os
 import sys
 import unittest
 
-from src.config import FragItDataFMO
-from src.gamessfmo import GamessFMO
-from src.fragmentation import Fragmentation
-from src.util import fileToMol, ReadStringListFromFile
+from fragit.config import FragItDataFMO
+from fragit.gamessfmo import GamessFMO
+from fragit.fragmentation import Fragmentation
+from fragit.util import fileToMol, ReadStringListFromFile
 
 class TestGamessFMOOutputModule(unittest.TestCase):
 

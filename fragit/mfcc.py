@@ -2,8 +2,10 @@
 Copyright (C) 2013-2017 Casper Steinmann
 """
 
+from .fragit_exceptions import OBNotFoundException
+
 try:
-    import openbabel
+    from openbabel import openbabel
 except ImportError:
     raise OBNotFoundException("OpenBabel not found. Please install OpenBabel to use FragIt.")
 import numpy

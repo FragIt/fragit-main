@@ -4,13 +4,11 @@ Copyright (C) 2012-2017 Casper Steinmann
 import os
 import unittest
 
-import openbabel
-
-from src.config import FragItDataPE
-from src.fragmentation import Fragmentation
-from src.util import fileToMol
-from src.writer import Standard
-from src.xyz import XYZ
+from fragit.config import FragItDataPE
+from fragit.fragmentation import Fragmentation
+from fragit.util import fileToMol
+from fragit.writer import Standard
+from fragit.xyz import XYZ
 
 class TestStandardWriterModule(unittest.TestCase):
 

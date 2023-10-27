@@ -2,7 +2,7 @@
 *~
 *.swp
 *.coverage
-src/*.py[co]
+fragit/*.py[co]
 
 # ignore folders used for building and distribution
 build

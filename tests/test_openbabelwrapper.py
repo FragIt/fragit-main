@@ -24,9 +24,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 """
 import os
 import unittest
-import openbabel
+from openbabel import openbabel
 
-import src.openbabelwrapper as OBW
+import fragit.openbabelwrapper as OBW
 
 def write_file(filename):
     f = open(filename,'w')
