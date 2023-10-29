@@ -33,6 +33,8 @@ Updates since  v1.8.0
 
   * Switch to GitHub actions for build system testing.
 
+  * Updated the GAMESS to HMO script to python3
+
 Developer Changes
 
 Made substantial changes to align FragIt with how
