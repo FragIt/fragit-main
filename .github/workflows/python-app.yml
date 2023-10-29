@@ -19,7 +19,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Python Dependencies
-        run: pip install -U pytest
+        run: pip install -U pytest numpy
 
       - name: OpenBabel Dependencies
         run: sudo apt-get install -y ninja-build swig libeigen3-dev libboost-all-dev
