@@ -1,5 +1,5 @@
 """
-Copyright (C) 2013-2017 Casper Steinmann
+Copyright (C) 2013-2023 Casper Steinmann
 """
 import numpy as np
 from typing import List, Optional

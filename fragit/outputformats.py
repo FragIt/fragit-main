@@ -1,5 +1,5 @@
 """
-Copyright (C) 2011-2016 Casper Steinmann
+Copyright (C) 2011-2023 Casper Steinmann
 """
 
 from fragit.gamessfmo import GamessFMO

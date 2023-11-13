@@ -1,4 +1,4 @@
-FragIt v2.X.X Release Notes
+FragIt v1.9.0 Release Notes
 ===========================
 
 This is a much-needed major revision to remove bugs
@@ -27,7 +27,7 @@ Updates since  v1.8.0
 ```
    
   * Includes some changes necessary for openbabel
-    cooperation.
+    cooperation with especially version 3.
 
   * Fixed a few errors in the jmol script and template.
 
@@ -37,8 +37,10 @@ Updates since  v1.8.0
 
 Developer Changes
 
-Made substantial changes to align FragIt with how
+ * Made substantial changes to align FragIt with how
 python packages should be organized
+
+ * code updates and improvements all around
 
 FragIt v1.8.0 Release Notes
 ===========================

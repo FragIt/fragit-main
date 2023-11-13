@@ -1,5 +1,5 @@
 """
-Copyright (C) 2016 Casper Steinmann
+Copyright (C) 2016-2023 Casper Steinmann
 """
 
 class OBNotFoundException(ImportError):

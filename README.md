@@ -1,7 +1,6 @@
 # FragIt
 
 [![GitHub release](https://img.shields.io/github/release/FragIt/fragit-main.svg?style=flat)](https://github.com/FragIt/fragit-main/releases)
-[![Build Status](https://travis-ci.org/FragIt/fragit-main.svg?branch=master)](https://travis-ci.org/FragIt/fragit-main)
 
 FragIt is a python based tool that allows you to quickly fragment ["any"](http://openbabel.org/docs/2.3.0/FileFormats/Overview.html) molecule and use the produced output file(s) as an a starting point for input files in quantum chemistry programs that supports such fragment based methods.
 
@@ -47,4 +46,4 @@ In order to run FragIt, you *need* the following installed on your system:
 * The FragIt source code, look above for information on how to obtain it
 * [Open Babel](http://www.openbabel.org) 2.3 or newer with [python language bindings](http://openbabel.org/docs/dev/Installation/install.html#compile-language-bindings) enabled. Github user [andersx](https://github.com/andersx) [wrote a guide](http://combichem.blogspot.dk/2013/12/compiling-open-babel-with-python.html) to how that is accomplished.
 * [Numpy](http://numpy.scipy.org) 1.5 or newer.
-* [Python](http://www.python.org) version 2.7 or 3.5 (or later).
+* [Python](http://www.python.org) 3.9 (or later).
