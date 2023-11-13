@@ -49,5 +49,5 @@ if __name__ == '__main__':
     if len(args.output) > 0:
         handle = open(args.output, 'w')
 
-    cfg.writeConfigurationToFile(handle)
+    cfg.write_configuration_to_file(handle)
     handle.close()

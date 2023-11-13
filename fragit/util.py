@@ -4,14 +4,15 @@ Some portions Copyright (C) 2011-2016 Casper Steinmann
 """
 import os
 import string
+from typing import List, Tuple, Any, Union, Callable, Optional
 
-from .fragit_exceptions import OBNotFoundException
+from fragit.fragit_exceptions import OBNotFoundException
 try:
     from openbabel import openbabel
 except ImportError:
     raise OBNotFoundException("OpenBabel not found. Please install OpenBabel to use FragIt.")
 
-import numpy
+import numpy as np
 
 # converts nuclear charge to atom label
 Z2LABEL = {
@@ -26,130 +27,114 @@ for key in Z2LABEL:
     LABEL2Z[Z2LABEL[key]] = key
 
 
-def file_exists(filename):
-    if not isinstance(filename, str):
-        raise TypeError("filename provided must be a string.")
-    try:
-        f = open(filename,'r')
-    except IOError:
-        return False
-    f.close()
-    return True
-
-def file_extension(path_to_file):
-    (filename,extension) = getFilenameAndExtension(path_to_file)
+def file_extension(path_to_file: str) -> str:
+    (filename, extension) = get_filename_and_extension(path_to_file)
     return extension
 
-def file_basename(path_to_file):
-    (filename,extension) = getFilenameAndExtension(path_to_file)
+
+def file_basename(path_to_file: str) -> str:
+    (filename, extension) = get_filename_and_extension(path_to_file)
     return filename
 
-def getFilenameAndExtension(path_to_file):
+
+def get_filename_and_extension(path_to_file: str) -> Tuple[str, str]:
     if not isinstance(path_to_file, str):
         raise TypeError
     basename = os.path.split(path_to_file)[1]
     return os.path.splitext(basename)
 
 
-def Uniqify(thelist):
+def remove_duplicates(input_list: Union[List, Tuple]) -> List:
+    """ Removes any duplicates """
     invalid_types = [int, float, bool, str]
     is_invalid = False
     for invalid_type in invalid_types:
-        is_invalid = is_invalid or isinstance(thelist, invalid_type)
+        is_invalid = is_invalid or isinstance(input_list, invalid_type)
 
     if is_invalid:
         raise TypeError
-    unique_set = set(thelist)
+    unique_set = set(input_list)
     return list(unique_set)
 
-def uniqifyListOfLists(thelist):
+
+def uniqifyListOfLists(thelist: List[List[int]]) -> List[List[int]]:
     result = list()
     keys = list()
     
     for sublist in thelist:
-        if (sublist[0] in keys): continue
+        if sublist[0] in keys:
+            continue
         result.append(sublist)
         keys.append(sublist[0])
         
     return result
 
-def ravel2D(input):
-    raveled_list = list()
-    for i in input:
-        for j in i:
-            raveled_list.append(j)
-    return raveled_list
 
-def deepLength(input):
-    count = 0
-    for i in input:
+def flatten(input_list: List[List[Any]]) -> List[Any]:
+    """ Flattens a list of lists into a list """
+    flattened_list = list()
+    for i in input_list:
         for j in i:
-            count += 1
-    return count
+            flattened_list.append(j)
+    return flattened_list
 
-def listDiff(list1, list2):
-    set1 = set(list1)
-    set2 = set(list2)
+
+def difference(first: List[int], second: List[int]) -> List[int]:
+    set1 = set(first)
+    set2 = set(second)
     return list(set1 - set2)
 
-def listTo2D(list1D, sublength, elmFormat = None):
-    list2D     = list()
-    tmplist = list()
+
+def list_to_2d(input_list: List, length: int, element_format: Optional[str] = None) -> List[List]:
+    output_list: List[List] = list()
+    temp_list: List = list()
     
-    for element in list1D:
-        if (elmFormat is None):    tmplist.append(element)
-        else:            tmplist.append(elmFormat % element)
-        if (len(tmplist) == sublength):
-            list2D.append(tmplist)
-            tmplist = list()
+    for element in input_list:
+        if element_format is None:
+            temp_list.append(element)
+        else:
+            temp_list.append(element_format % element)
+        if len(temp_list) == length:
+            output_list.append(temp_list)
+            temp_list = list()
     
     # add the rest
-    if (len(tmplist) != 0):
-        list2D.append(tmplist)
+    if len(temp_list) != 0:
+        output_list.append(temp_list)
 
     # the unusual empty list
-    if (len(list2D) == 0):
-        list2D = [[]]
+    if len(output_list) == 0:
+        output_list = [[]]
 
-    return list2D
+    return output_list
 
-def join2D(list2D, item_divisor, list_divisor):
-    if not isStringList(list2D):
+
+def list_2d_to_str(input_list: List[List[str]], element_divisor: str, list_divisor: str) -> str:
+    if not is_string_list(input_list):
         raise TypeError 
 
-    tmplist = list()
-    for x in list2D:
-        tmplist.append(item_divisor.join(x))
+    output_list = list()
+    x: List[str]
+    for x in input_list:
+        output_list.append(element_divisor.join(x))
 
-    return list_divisor.join(tmplist)
-    
-def joinIntList(glue, intlist):
-    if not isIntegerList(intlist):
-        raise TypeError
-    result = ""
-    for i in intlist:
-        i = int(i)
-        if (result != ""): result += glue
-        result += str(i)
-    return result
-
-def intlistToString(intlist):
-    return joinIntList(",", intlist)
+    return list_divisor.join(output_list)
 
 
-def valuelist_from_string(string, op, seperator=","):
-    if not isinstance(string, str):
+def list_from_string(input_string: str, op: Callable, seperator: str = ","):
+    if not isinstance(input_string, str):
         raise TypeError("Argument 'string' to valuelist_from_string is not of type str")
 
     if not isinstance(op, type):
         raise TypeError("Argument 'op' to valuelist_from_string is not of type int or float")
 
-    if len(string) == 0:
+    if len(input_string) == 0:
         return []
 
-    return [op(value) for value in string.split(seperator)]
+    return [op(value) for value in input_string.split(seperator)]
 
-def intlistFromString(string, seperator=","):
+
+def int_list_from_string(input_string: str, seperator:str = ","):
     """ Returns a list of integers from a string
 
         Arguments:
@@ -158,9 +143,10 @@ def intlistFromString(string, seperator=","):
 
         Returns list of integers
     """
-    return valuelist_from_string(string, int, seperator)
+    return list_from_string(input_string, int, seperator)
 
-def floatlistFromString(string, seperator=","):
+
+def float_list_from_string(input_string: str, seperator: str = ","):
     """ Returns a list of floats from a string
 
         Arguments:
@@ -169,45 +155,47 @@ def floatlistFromString(string, seperator=","):
 
         Returns list of floats 
     """
-    return valuelist_from_string(string, float, seperator)
+    return list_from_string(input_string, float, seperator)
 
 
-def isStringList( string_list ):
+def is_string_list(string_list: Union[List[str], List[List[str]]]) -> bool:
     if not isinstance(string_list, list):
         raise TypeError
 
     for item in string_list:
         if isinstance(item, list):
-            if not isStringList(item):
+            if not is_string_list(item):
                 return False
         elif not isinstance(item, str):
             return False
 
     return True
 
-def isIntegerList(string_list):
+
+def is_integer_list(string_list: Union[List[int], List[List[int]]]) -> bool:
     if not isinstance(string_list, list) and not isinstance(string_list, tuple):
         raise TypeError
 
     for item in string_list:
         if isinstance(item, list):
-            if not isIntegerList(item):
+            if not is_integer_list(item):
                 return False
         elif not isinstance(item, int):
             return False
 
     return True
 
-def WriteStringToFile(filename, string):
+
+def write_string_to_file(filename: str, value: str):
     if not isinstance(filename, str):
         raise TypeError
-    if not isinstance(string, str):
+    if not isinstance(value, str):
         raise TypeError
     with open(filename, 'w') as f:
-        f.write(string)
+        f.write(value)
 
 
-def ReadStringFromFile(filename):
+def read_string_from_file(filename):
     if not isinstance(filename, str):
         raise TypeError
     f = open(filename,'r')
@@ -215,108 +203,126 @@ def ReadStringFromFile(filename):
     f.close()
     return string
 
-def ReadStringListFromFile(filename):
-    string = ReadStringFromFile(filename)
+
+def read_string_list_from_file(filename):
+    string = read_string_from_file(filename)
     string = string.replace("\r","") # windows line endings
     return string.split("\n")
 
 
-def tupleValuesInEitherList(the_tuple,list1,list2):
+def is_tuple_values_in_either_list(the_tuple: Tuple[int, int], list1: List[int], list2: List[int]) -> bool:
     if not isinstance(the_tuple, tuple):
         raise ValueError
     in_lhs = the_tuple[0] in list1 and the_tuple[1] in list2
     in_rhs = the_tuple[1] in list1 and the_tuple[0] in list2
     return in_lhs or in_rhs
 
-def listToRanges(the_list):
-    result = []
-    if len(the_list) == 0: return result
-    first = None
-    last = None
+
+def list_to_ranges(the_list: List[int]) -> List[Union[int, Tuple[int, int]]]:
+    """ Converts a list of numbers into possible ranges defined as tuples
+
+    example: [1,2,3,4] -> [(1,4)]
+
+    :param the_list:
+    :return:
+    """
+    def expand_range(output: List[Union[int, Tuple[int, int]]], first: int, last: int):
+        if first == last:
+            output.append(last)
+        elif first + 1 == last:
+            output.extend([first, last])
+        else:
+            output.append((first, last))
+
+    result: List[Union[int, Tuple[int, int]]] = []
+
+    if len(the_list) == 0:
+        return result
+
+    first_pass = True
+    first: int = 0
+    last: int = 0
     for value in the_list:
-        if first is None:
+        if first_pass:
+            first_pass = False
             first = value
             last = value
             continue
 
         if last+1 != value:
-            RangeAction(result,value,first,last)
+            expand_range(result, first, last)
             first = value
         last = value
-    RangeAction(result,value,first,last)
+    expand_range(result, first, last)
     return result
 
-def RangeAction(result,value,first,last):
-    if first == last:
-        result.append(last)
-    elif first+1 == last:
-        result.extend([first,last])
-    else:
-        result.append((first,last))
 
-def listOfRangesToString(atomList, maxlength = 72, line_format = "%10s", item_format="%7s", tuple_format="%7s%7s",
-            terminator_format="%7i\n"):
-    result = ''
-    line = line_format % ''
-    for i in atomList:
-        if isinstance(i, int):
-            tmp = item_format % i
+def list_of_ranges_to_string(atom_list: List[Union[int, Tuple[int, int]]],
+                             maxlength: int = 72,
+                             line_format: str = "%10s",
+                             item_format: str = "%7s",
+                             tuple_format: str = "%7s%7s",
+                             terminator_format= "%7i\n"
+                             ):
+    result = ""
+    line = line_format % ""
+    for atom_index in atom_list:
+        # atom indices are either direct indices
+        if isinstance(atom_index, int):
+            tmp = item_format % atom_index
         else:
-            tmp = tuple_format % (i[0], ( '-' + str(i[1])))
-        if (len(line+tmp+"\n") >= maxlength):
+            # or they are tuples requiring a special format
+            tmp = tuple_format % (atom_index[0], ('-' + str(atom_index[1])))
+        if len(line+tmp+"\n") >= maxlength:
             result += line + "\n"
-            line = line_format % '' + tmp
+            line = line_format % "" + tmp
         else:
             line += tmp
-    if( terminator_format is not None ):
+    if terminator_format is not None:
         terminator = terminator_format % 0
-        if (len(line+terminator) >= maxlength):
+        if len(line+terminator) >= maxlength:
             result += line + "\n"
-            line    = line_format % ''
+            line = line_format % ""
         result += line + terminator
     else:
         result += line[:-1]
     return result
 
-def fileToMol(filename):
-    file_format = OBGetFormatFromFilename(filename)
-    mol = OBMoleculeFromFilenameAndFormat(filename, file_format)
-    OBCheckMoleculeConsistency(mol)
-    return mol
 
-def OBGetFormatFromFilename(filename):
-    return file_extension(filename)[1:]
-
-def OBMoleculeFromFilenameAndFormat(filename, file_format):
+def file_to_mol(filename: str) -> openbabel.OBMol:
+    """ Converts a filename to an openbabel molecule """
+    file_format = file_extension(filename)[1:]
     obc = openbabel.OBConversion()
     obc.SetInFormat(file_format)
     mol = openbabel.OBMol()
     obc.ReadFile(mol, filename)
+    OBCheckMoleculeConsistency(mol)
     return mol
 
-def OBCheckMoleculeConsistency(molecule):
+
+def OBCheckMoleculeConsistency(molecule: openbabel.OBMol):
     if molecule.NumAtoms() < 1:
         raise ValueError("Molecule has no atoms.")
 
-def getOBAtomVector(atom):
-    return numpy.array([atom.GetX(), atom.GetY(), atom.GetZ()])
 
-def calculate_hydrogen_position(heavy, light):
+def calculate_hydrogen_position(heavy: openbabel.OBAtom, light: openbabel.OBAtom) -> np.ndarray:
     """ Positions a hydrogen atom in the "correct" position between two points
     """
     table = {6: 1.09, 7: 1.01, 8: 0.96, 16: 1.35, 15: 1.42}
-    alpha = table[heavy.GetAtomicNum()]
-    p1 = numpy.array([heavy.GetX(), heavy.GetY(), heavy.GetZ()])
-    p2 = numpy.array([light.GetX(), light.GetY(), light.GetZ()])
-    n = numpy.linalg.norm(p2-p1)
-    return p1 + alpha/n * (p2 - p1)
+    alpha: float = table[heavy.GetAtomicNum()]
+    p1 = np.array([heavy.GetX(), heavy.GetY(), heavy.GetZ()])
+    p2 = np.array([light.GetX(), light.GetY(), light.GetZ()])
+    n = np.linalg.norm(p2-p1)
+    return np.asarray(p1 + alpha/n * (p2 - p1))
 
-def shares_elements(a, b):
-    """Returns True if lists (sets) a and b shares elements. Otherwise false.
+
+def shares_elements(a: List, b: List) -> bool:
+    """Returns True if lists (sets) a and b shares elements. Otherwise, false.
     """
     sa = set(a)
     sb = set(b)
     return len(sa & sb) > 0
+
 
 def directories(from_file):
     """ Sets up directories needed internally in FragIt.

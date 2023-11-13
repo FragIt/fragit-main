@@ -2,13 +2,13 @@
 Copyright (C) 2013-2017 Casper Steinmann
 """
 
-from .fragit_exceptions import OBNotFoundException
+from fragit.fragit_exceptions import OBNotFoundException
 
 try:
     from openbabel import openbabel
 except ImportError:
     raise OBNotFoundException("OpenBabel not found. Please install OpenBabel to use FragIt.")
-import numpy
+
 
 class Cap(object):
     def __init__(self, atoms, atomnames, ids, nucz, nbrs):
@@ -21,63 +21,64 @@ class Cap(object):
         self._recalculate = False
         self._ignore = False
 
-    def getAtoms(self):
+    def get_atoms(self):
         return self._atoms
 
-    def getCharge(self):
+    def get_charge(self):
         return self._charge
 
-    def getNuclearCharges(self):
+    def get_nuclear_charges(self):
         return self._nucz
 
-    def getNeighbourList(self):
+    def get_neighbour_list(self):
         return self._nbrs
 
-    def getAtomIDs(self):
+    def get_atom_ids(self):
         return self._ids
 
-    def getAtomNames(self):
+    def get_atom_names(self):
         return self._atom_names
 
-    def setCharge(self, value):
+    def set_charge(self, value):
         self._charge = value
 
-    def doRecalculation(self):
+    def do_recalculation(self):
         self._recalculate = True
 
-    def getRecalculationState(self):
+    def get_recalculation_state(self):
         return self._recalculate
 
-    def doIgnore(self, value):
+    def do_ignore(self, value):
         self._ignore = value
 
-    def getIgnore(self):
+    def get_ignore(self):
         return self._ignore
+
 
 class MFCC(object):
 
     def __init__(self, fragmentation):
         self._fragmentation = fragmentation
         self._caps = []
-        self._identifyCaps()
+        self._identify_caps()
 
-    def _identifyCaps(self):
+    def _identify_caps(self):
         self._mfcc_order = 0
-        if self._fragmentation.getOutputFormat() == 'XYZ-MFCC':
-            self._mfcc_order = self._fragmentation.getMFCCOrder()
+        if self._fragmentation.get_output_format() == 'XYZ-MFCC':
+            self._mfcc_order = self._fragmentation.get_mfcc_order()
             if self._mfcc_order <= 0:
                 raise ValueError("You must specify the order of capping.")
             self._build_caps()
 
-    def getCaps(self):
+    def get_caps(self):
         return self._caps
 
-    def hasCaps(self):
+    def has_caps(self):
         return len(self._caps) > 0
 
     def _build_caps(self):
-        for pair in self._fragmentation.getExplicitlyBreakAtomPairs():
-            self._caps.append( self._build_cap(pair) )
+        for pair in self._fragmentation.get_explicitly_break_atom_pairs():
+            self._caps.append(self._build_cap(pair))
 
     def _build_cap(self, pair):
         """ Builds a cap around a pair of fragmentation points.
@@ -88,21 +89,20 @@ class MFCC(object):
               Type (or nuclear charge) of the atom
               Neighbour ID of the atom - this is used to identify hydrogens that needs to be repositioned later.
         """
-        cap_atm = [self._fragmentation.getOBAtom(id) for id in pair]
-        cap_atmnam = ["" for id in pair]
-        if self._fragmentation.hasAtomNames():
-            cap_atmnam = [self._fragmentation._atom_names[id-1] for id in pair]
+        cap_atm = [self._fragmentation.get_ob_atom(index) for index in pair]
+        cap_atmnam = ["" for _ in pair]
+        if self._fragmentation.has_atom_names():
+            cap_atmnam = [self._fragmentation._atom_names[index-1] for index in pair]
 
         cap_ids = [a.GetIdx() for a in cap_atm]
         cap_typ = [a.GetAtomicNum() for a in cap_atm]
-        cap_nbs = [-1 for a in cap_atm]
+        cap_nbs = [-1 for _ in cap_atm]
         order = 0
         while order < self._mfcc_order:
             order += 1
             cap_atm, cap_ids, cap_typ, cap_nbs, cap_atmnam = self._extend_cap(cap_atm, cap_ids, cap_typ, cap_nbs, cap_atmnam, order == self._mfcc_order)
 
-        return Cap( cap_atm, cap_atmnam, cap_ids, cap_typ, cap_nbs)
-
+        return Cap(cap_atm, cap_atmnam, cap_ids, cap_typ, cap_nbs)
 
     def _extend_cap(self, atms, ids, typs, nbs, nams, is_final_cap):
         """ Extends the current cap with neighboring atom IDs.
@@ -123,24 +123,25 @@ class MFCC(object):
         """
         atms_out = atms[:]
         atm_namout = nams[:]
-        ids_out  = ids[:]
+        ids_out = ids[:]
         typs_out = typs[:]
         nbs_out = nbs[:]
         for atom in atms:
             for atomext in openbabel.OBAtomAtomIter(atom):
-                if atomext in atms: continue
+                if atomext in atms:
+                    continue
                 atms_out.append(atomext)
                 ids_out.append(atomext.GetIdx())
                 nbs_out.append(atom.GetIdx())
-                if self._fragmentation.hasAtomNames():
+                if self._fragmentation.has_atom_names():
                     if not is_final_cap:
-                        atm_namout.append( self._fragmentation._atom_names[atomext.GetIdx() -1] )
+                        atm_namout.append(self._fragmentation._atom_names[atomext.GetIdx() - 1])
                     else:
                         # we are sure that when it is a final cap, it is
                         # a hydrogen.
-                        atm_namout.append( " H  " )
+                        atm_namout.append(" H  ")
                 else:
-                    atm_namout.append( "   " )
+                    atm_namout.append("   ")
 
                 if is_final_cap:
                     typs_out.append(1)

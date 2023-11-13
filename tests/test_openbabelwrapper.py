@@ -68,28 +68,28 @@ class TestOpenBabelWrapperModule(unittest.TestCase):
         self.assertEqual(self.molecule.NumAtoms(), 9)
 
     def test_OBWMoleculeAtomCount(self):
-        self.assertEqual(self.obwmolecule.getAtomCount(), 9)
+        self.assertEqual(self.obwmolecule.get_atom_count(), 9)
 
     def test_OBWMoleculeIsOK(self):
-        self.assertTrue(self.obwmolecule.isOK())
+        self.assertTrue(self.obwmolecule.is_ok())
 
     def test_OBWMoleculeTotalCharge(self):
-        self.assertEqual(self.obwmolecule.getTotalCharge(), 0)
+        self.assertEqual(self.obwmolecule.get_total_charge(), 0)
 
     def test_OBWMoleculeElementSymbol(self):
         elements = ["H","C","N","O","S","Cl"]
         element_id = [1,6,7,8,16,17]
         for i in element_id:
             idx = element_id.index(i)
-            self.assertEqual(self.obwmolecule.getElementSymbol(i), elements[idx])
+            self.assertEqual(self.obwmolecule.get_element_symbol(i), elements[idx])
 
     def test_OBWMoleculeMatchPatternSimple(self):
-        self.assertEqual(self.obwmolecule.MatchPattern("C"), [(1,),(2,),(3,)])
-        self.assertEqual(self.obwmolecule.MatchPattern("CC=C"), [(3,1,2)])
-        self.assertEqual(self.obwmolecule.MatchPattern("C=C"), [(1,2)])
+        self.assertEqual(self.obwmolecule.match_pattern("C"), [(1,), (2,), (3,)])
+        self.assertEqual(self.obwmolecule.match_pattern("CC=C"), [(3, 1, 2)])
+        self.assertEqual(self.obwmolecule.match_pattern("C=C"), [(1, 2)])
 
     def test_OBWMoleculeMatchPatternAdvanced(self):
-        self.assertEqual(self.obwmolecule.MatchPattern("[$(C=C)][$(CC)]"), [(1,3)])
+        self.assertEqual(self.obwmolecule.match_pattern("[$(C=C)][$(CC)]"), [(1, 3)])
 
 def suite():
     s = unittest.TestSuite()

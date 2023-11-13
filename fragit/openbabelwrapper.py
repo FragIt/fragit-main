@@ -2,13 +2,14 @@
 Copyright (C) 2011-2016 Casper Steinmann
 """
 
-from .fragit_exceptions import OBNotFoundException
+from fragit.fragit_exceptions import OBNotFoundException
 
 try:
     from openbabel import openbabel
 except ImportError:
     raise OBNotFoundException("OpenBabel not found. Please install OpenBabel to use FragIt.")
-from .util import file_extension, Z2LABEL
+from fragit.util import file_extension, Z2LABEL
+
 
 class Molecule(object):
 
@@ -17,44 +18,46 @@ class Molecule(object):
 
     def _setup(self, filename):
         self._molecule = openbabel.OBMol()
-        self._loadMolecule(filename)
-        self._computePartialAtomicCharges()
-        self._setupSmartsPattern()
+        self._load_molecule(filename)
+        self._compute_partial_atomic_charges()
+        self._setup_smarts_pattern()
 
-    def _loadMolecule(self, filename):
+    def _load_molecule(self, filename):
         file_format = self._get_format_from_filename(filename)
         conversion = openbabel.OBConversion()
         conversion.SetInFormat(file_format)
         conversion.ReadFile(self._molecule, filename)
 
-    def _get_format_from_filename(self,filename):
+    @staticmethod
+    def _get_format_from_filename(filename):
         return file_extension(filename)[1:]
 
-    def _computePartialAtomicCharges(self):
+    def _compute_partial_atomic_charges(self):
         self._charge_model = openbabel.OBChargeModel.FindType("mmff94")
         self._charge_model.ComputeCharges(self._molecule)
 
-    def _setupSmartsPattern(self):
+    def _setup_smarts_pattern(self):
         self._pattern = openbabel.OBSmartsPattern()
 
-    def isOK(self):
-        value = self.getAtomCount() > 1
+    def is_ok(self):
+        value = self.get_atom_count() > 1
         return value
 
-    def MatchPattern(self, pattern_to_match):
+    def match_pattern(self, pattern_to_match):
         self._pattern.Init(pattern_to_match)
         self._pattern.Match(self._molecule)
         match = [m for m in self._pattern.GetUMapList()]
         return match
 
-    def getPartialAtomCharges(self):
+    def get_partial_atom_charges(self):
         return self._charge_model.GetPartialCharges()
 
-    def getTotalCharge(self):
-        return int(sum(self.getPartialAtomCharges()))
+    def get_total_charge(self) -> int:
+        return int(sum(self.get_partial_atom_charges()))
 
-    def getElementSymbol(self,atom_index):
+    @staticmethod
+    def get_element_symbol(atom_index: int) -> str:
         return Z2LABEL[atom_index]
 
-    def getAtomCount(self):
+    def get_atom_count(self):
         return self._molecule.NumAtoms()
