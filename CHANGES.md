@@ -1,3 +1,47 @@
+FragIt v1.9.0 Release Notes
+===========================
+
+This is a much-needed major revision to remove bugs
+and squash problems related to the old-age of FragIt
+
+Updates since  v1.8.0
+
+  * FragIt can now read fragment charges from an
+    external file. This is specified in the input
+    configuration files in
+
+    [fragmentation]
+    chargemodel = read test.dat
+
+    where the MMFF94 keyword is replaced with
+    read <filename>. Each line in the supplied
+    file gives two values. The first value is the
+    fragment index and the second value is the
+    fragment charge. The following example shows
+    that the charge of the first fragment  is -1
+    and the fifth fragment has charge +1. Fragments
+    not listed are assumed to be neutral.
+```text
+    1 -1
+    5  1
+```
+   
+  * Includes some changes necessary for openbabel
+    cooperation with especially version 3.
+
+  * Fixed a few errors in the jmol script and template.
+
+  * Switch to GitHub actions for build system testing.
+
+  * Updated the GAMESS to HMO script to python3
+
+Developer Changes
+
+ * Made substantial changes to align FragIt with how
+python packages should be organized
+
+ * code updates and improvements all around
+
 FragIt v1.8.0 Release Notes
 ===========================
 

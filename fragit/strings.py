@@ -1,8 +1,8 @@
 """
-Copyright (C) 2011-2017 Casper Steinmann
+Copyright (C) 2011-2023 Casper Steinmann
 """
 
-version = ("1","8","0")
+version = ("1", "9", "0")
 version_str = ".".join(version)
 
 doc_str = """FragIt is a tool to fragment large molecules for use in fragment based quantum chemistry methods.

@@ -1,0 +1,47 @@
+name: FragIt Tests
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10", "3.11"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Python Dependencies
+        run: pip install -U pytest numpy
+
+      - name: OpenBabel Dependencies
+        run: sudo apt-get install -y ninja-build swig libeigen3-dev libboost-all-dev
+
+      - name: OpenBabel Configure
+        run: |
+          git clone https://github.com/openbabel/openbabel.git openbabel_source
+          mkdir openbabel_build
+          cd openbabel_build
+          cmake -DCMAKE_CXX_FLAGS="-march=native -mno-avx" -DRUN_SWIG=ON -DPYTHON_BINDINGS=ON -DPYTHON_INSTDIR=$Python_ROOT_DIR/lib/python${{ matrix.python-version }}/site-packages ../openbabel_source
+
+      - name: OpenBabel Build
+        run: |
+          cd openbabel_build
+          make
+
+      - name: OpenBabel Install
+        run: |
+          cd openbabel_build
+          sudo make install
+
+      # You can test your matrix by printing the current Python version
+      - name: Display Python version
+        run: python -m pytest tests/*.py
+

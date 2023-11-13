@@ -1,5 +1,5 @@
 """
-Copyright (C) 2016 Casper Steinmann
+Copyright (C) 2016-2023 Casper Steinmann
 
 This program converts a GAMESS output file into
 the appropriate HMO format needed by FMO.
@@ -11,7 +11,7 @@ coding standards.
 """
 import sys
 
-import numpy
+import numpy as np
 
 filename = sys.argv[1]
 basisname = sys.argv[2]
@@ -60,9 +60,9 @@ with open(filename, 'r') as gamlog:
         # orbital type to find the first pz orbital
         # and of course the MO-coefficients.
         orbital_type.append(line_data[3])
-        localized_orbitals.append( map(float, line_data[4:]) )
+        localized_orbitals.append(list(map(float, line_data[4:])))
 
-loc_mo = numpy.transpose(localized_orbitals)
+loc_mo = np.transpose(localized_orbitals)
 
 # find the first instance of a pz orbital in the
 # localized data. This instance marks the important
@@ -73,7 +73,7 @@ val_max = 0.0
 idx_max = 0
 
 # loop through the data one row at a time
-nrow, ncol = numpy.shape(loc_mo)
+nrow, ncol = np.shape(loc_mo)
 for i in range(nrow):
     value = loc_mo[i][idx_z]
     if abs(value) > val_max:
@@ -106,11 +106,11 @@ for i_row in range(nrow):
     # print each number in succesion on the same line
     for i, data in enumerate(row_data):
         s += floatfmt.format(data)
-        # UNLESS we are at the maximum number of columuns of
+        # UNLESS we are at the maximum number of columns of
         # data that we want (n_col_width) then we add a newline
         # UNLESS we are at the first line or at the line which
         # is supposed to end without a newline
         if (i+1)%n_col_width == 0 and i > 0 and i+1 != ncol:
             s += "\n   "
 
-    print s
+    print(s)
