@@ -1,6 +1,6 @@
 """
 Copyright (C) 2010-2011 Mikael W. Ibsen
-Some portions Copyright (C) 2011-2017 Casper Steinmann
+Some portions Copyright (C) 2011-2023 Casper Steinmann
 """
 import os
 from typing import Dict, List, Tuple

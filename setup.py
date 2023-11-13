@@ -7,7 +7,7 @@ from fragit.strings import version_str
 from fragit.strings import doc_str
 
 __author__ = "Casper Steinmann"
-__copyright__ = "Copyright 2017"
+__copyright__ = "Copyright 2023"
 __license__ = 'GPL2 or later'
 __version__ = version_str
 __email__ = "casper.steinmann@gmail.com"
