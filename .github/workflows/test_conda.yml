@@ -1,0 +1,30 @@
+name: FragIt Conda Tests
+
+on: [push]
+
+jobs:
+  test:
+    name: Testing
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -l {0}
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: fragit
+          environment-file: environment.yml
+          python-version: ${{ matrix.python-version }}
+      - name: Conda Informaiton
+        run: |
+          conda env list
+          conda info
+          conda list
+      - name: Test
+        run:
+          pytest .
+
