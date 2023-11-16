@@ -1,10 +1,10 @@
-name: FragIt with OpenBabel build
+name: FragIt with OpenBabel Build
 
 on: [push]
 
 jobs:
   build:
-
+    name: Testing
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -41,6 +41,6 @@ jobs:
           cd openbabel_build
           sudo make install
 
-      - name: Run Tests
-        run: python -m pytest tests/*.py
+      - name: Run Testsuite
+        run: pytest .
 
