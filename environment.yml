@@ -1,0 +1,9 @@
+name: fragit
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python
+  - pytest
+  - numpy
+  - openbabel
