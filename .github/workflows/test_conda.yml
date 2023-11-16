@@ -18,7 +18,9 @@ jobs:
           python-version: ${{ matrix.python-version }}
           auto-activate-base: false
           activate-environment: fragit
-
-      - name: Run Tests
-        run: pytest .
+      - run: |
+          conda info
+          conda list
+      - run:
+          pytest .
 
