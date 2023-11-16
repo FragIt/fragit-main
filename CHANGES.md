@@ -1,7 +1,21 @@
 FragIt v1.X.X Release Notes
 ===========================
 
+This is a minor improvement release.
+
 Updates since  v1.9.0
+
+  * Documentation on installation is now up to date and
+    is fixed (Issue #38)
+          -- thanks to Anthony Nash for pointing
+             out the obsolete instructions.
+
+    See the README file for updated installation
+    instructions.
+
+  * Github actions now cover both the new installation
+    approach with conda and pip as well as the old
+    school approach with compilation of OpenBabel
 
 FragIt v1.9.0 Release Notes
 ===========================

@@ -11,23 +11,45 @@ Currently, FragIt supports the [fragment molecular orbital](http://en.wikipedia.
 ## Obtaining FragIt
 
 Since you found this file, it is obvious that you also found the source code. You can obtain the latest version from [github](https://www.github.com/FragIt/fragit-main) where [tagged releases](https://github.com/FragIt/fragit-main/releases) are also available.
+You get the source code by cloning the repository
 
-## Installing FragIt
+    git clone https://github.com/FragIt/fragit-main.git
+s
+## Installing FragIt in a Conda Environment With Pip
+The easiest installation option is to use conda and pip.
+We have supplied an `environment.yml` file for you to use.
+Simply run
 
-FragIt is a python library and installation is quite straight forward
+    cd fragit-main
+    conda env create -f environment.yml
 
+which creates an environment called fragit.
+After activating the `fragit` environment
+
+    conda activate fragit
+
+you can install fragit using `pip` with the following command
+
+    pip install .
+
+## Installing FragIt Without Conda
+Without conda, the installation of FragIt becomes slightly more
+tedious and of course system dependent.
+If you have root access, you can install all dependencies using
+the system package manager, but if you don't, then you have to
+install OpenBabel manually
+(Github user [andersx](https://github.com/andersx) [wrote a guide](http://combichem.blogspot.dk/2013/12/compiling-open-babel-with-python.html) to how that is accomplished.)
+Finally, the recommended installation method for FragIt is to use pip again 
+
+    pip install . --user
+
+but it is also possible using the old school approach (deprecated and not recommended)
+
+    python setup.py build
     python setup.py install
 
-to install it in the default locations. To install it in a custom location, you can run the following
-
-    python setup.py install --prefix=/path/to/custom/installation
-
-Remember to add the installation paths to your environment variables:
-
-    export PATH=/path/to/custom/installation/bin:$PATH
-    export PYTHONPATH=/path/to/custom/installation/lib/python2.7/site-packages:$PYTHONPATH
-
-shown here for a python 2.7 installation example.
+remember to make sure that environment variables (`PATH` and `PYTHONPATH` at least!) are
+set up correctly or else FragIt will complain that it cannot find itself.
 
 ## Running FragIt
 
@@ -44,6 +66,6 @@ See the [wiki](https://www.github.com/FragIt/fragit-main/wiki) for more examples
 In order to run FragIt, you *need* the following installed on your system:
 
 * The FragIt source code, look above for information on how to obtain it
-* [Open Babel](http://www.openbabel.org) 2.3 or newer with [python language bindings](http://openbabel.org/docs/dev/Installation/install.html#compile-language-bindings) enabled. Github user [andersx](https://github.com/andersx) [wrote a guide](http://combichem.blogspot.dk/2013/12/compiling-open-babel-with-python.html) to how that is accomplished.
+* [Open Babel](http://www.openbabel.org) 3 or newer with [python language bindings](http://openbabel.org/docs/dev/Installation/install.html#compile-language-bindings) enabled.
 * [Numpy](http://numpy.scipy.org) 1.5 or newer.
 * [Python](http://www.python.org) 3.9 (or later).
