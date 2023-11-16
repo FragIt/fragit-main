@@ -17,10 +17,9 @@ jobs:
           environment-file: environment.yml
           python-version: ${{ matrix.python-version }}
       - run: |
-          conda activate test
+          conda env list
           conda info
           conda list
       - run:
-          conda activate test
           pytest .
 
