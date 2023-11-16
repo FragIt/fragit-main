@@ -20,5 +20,5 @@ jobs:
           activate-environment: fragit
 
       - name: Run Tests
-        run: python -m pytest tests/*.py
+        run: pytest .
 
