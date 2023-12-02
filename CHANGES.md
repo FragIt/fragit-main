@@ -1,4 +1,4 @@
-FragIt v1.X.X Release Notes
+FragIt v1.9.1 Release Notes
 ===========================
 
 This is a minor improvement release.
