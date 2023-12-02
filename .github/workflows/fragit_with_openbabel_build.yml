@@ -1,14 +1,14 @@
-name: FragIt Tests
+name: FragIt with OpenBabel Build
 
 on: [push]
 
 jobs:
   build:
-
+    name: Testing
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.9", "3.10", "3.11"]
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
 
     steps:
       - uses: actions/checkout@v4
@@ -41,7 +41,6 @@ jobs:
           cd openbabel_build
           sudo make install
 
-      # You can test your matrix by printing the current Python version
-      - name: Display Python version
-        run: python -m pytest tests/*.py
+      - name: Run Testsuite
+        run: pytest .
 
