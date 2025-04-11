@@ -14,7 +14,7 @@ Since you found this file, it is obvious that you also found the source code. Yo
 You get the source code by cloning the repository
 
     git clone https://github.com/FragIt/fragit-main.git
-s
+
 ## Installing FragIt in a Conda Environment With Pip
 The easiest installation option is to use conda and pip.
 We have supplied an `environment.yml` file for you to use.
