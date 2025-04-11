@@ -1,3 +1,20 @@
+FragIt v1.X.X Release Notes
+===========================
+
+Updates since  v1.9.2
+
+FragIt v1.9.2 Release Notes
+===========================
+
+This is a bugfix release
+
+Updates since  v1.9.1
+
+  * Removed a bug in the XYZ-MFCC fragmentation
+    scheme that produced errornous fragments. This
+    bug was unintentionally introduced as part of
+    the restructuring in v1.9.0
+
 FragIt v1.9.1 Release Notes
 ===========================
 

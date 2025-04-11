@@ -84,7 +84,7 @@ class XYZMFCC(Standard):
             for icap, cap in enumerate(caps):
                 if shares_elements(fragment, cap.get_atom_ids()):
                     for index, atom, atomname, z, nbr in zip(cap.get_atom_ids(), cap.get_atoms(), cap.get_atom_names(), cap.get_nuclear_charges(), cap.get_neighbour_list()):
-                        if id not in fragment:
+                        if index not in fragment:
                             atoms.append(atom)
                             atomnames.append(atomname)
                             nucz.append(z)
@@ -135,7 +135,7 @@ class XYZMFCC(Standard):
         # these are the capped fragments
         for ifg, fragment in enumerate(self._fragmentation.get_fragments(), start=1):
             capped_fragment = self.build_capped_fragment(fragment)
-            ss = self._fragment_xyz( capped_fragment )
+            ss = self._fragment_xyz(capped_fragment)
             with open(filename_template.format(ff, "fragment", ifg, ext), "w") as f:
                 f.write(ss)
 
