@@ -12,7 +12,7 @@ try:
 except ImportError:
     raise OBNotFoundException("OpenBabel not found. Please install OpenBabel to use FragIt.")
 
-from fragit.util import remove_duplicates, flatten, difference, uniqifyListOfLists, is_tuple_values_in_either_list, LABEL2Z
+from fragit.util import remove_duplicates, flatten, difference, uniqifyListOfLists, is_tuple_values_in_either_list, LABEL2Z, Z2LABEL
 from fragit.config import FragItConfig, FragItDataBase
 
 
@@ -97,7 +97,8 @@ class Fragmentation(FragItConfig):
                 break
             for i in range(1, self.mol.NumAtoms()+1):
                 atom = self.mol.GetAtom(i)
-                if atom.GetAtomicNum() in [1, 6, 7, 8, 9, 12, 15, 16]:
+# PX: not make Cl to Cl-
+                if atom.GetAtomicNum() in [1, 6, 7, 8, 9, 12, 15, 16, 17]:
                     if atom not in self._atoms:
                         self._atoms.append(atom)
                     added += 1
@@ -108,8 +109,8 @@ class Fragmentation(FragItConfig):
                     atomic_charge = 0  # default
                     if atom.GetAtomicNum() in [11, 19]:  # Na+ and K+:
                         atomic_charge = 1
-                    elif atom.GetAtomicNum() in [9, 17]:  # F- and Cl-
-                        atomic_charge = -1
+                    #elif atom.GetAtomicNum() in [9, 17]:  # F- and Cl-
+                    #    atomic_charge = -1
 
                     new_atom = openbabel.OBAtom()
                     new_atom.Duplicate(atom)
@@ -191,6 +192,10 @@ class Fragmentation(FragItConfig):
         fragments = self.get_fragments()
         fragments_to_merge.reverse()
         for fragment_id in fragments_to_merge:
+            #PX : for edge case,
+            # when the first fragment is glycine,do not merge.
+            if fragment_id == 0:
+                continue
             previous_fragment = fragment_id-1
             ifrag = fragments.pop(fragment_id)
             jfrag = fragments[previous_fragment].extend(ifrag)
@@ -580,7 +585,7 @@ class Fragmentation(FragItConfig):
         if len(atoms) == 1:
             atom = self.mol.GetAtom(atoms[0])
             charge_lbl = charge_lbls[atom.GetFormalCharge()]
-            element = LABEL2Z[atom.GetAtomicNum()]
+            element = Z2LABEL[atom.GetAtomicNum()]
             return "{0:s}{1:s}".format(element, charge_lbl)
         else:
             for residue in openbabel.OBResidueIter(self.mol):
