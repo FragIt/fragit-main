@@ -29,6 +29,7 @@ GAMESS_BASIS_GROUP['cc-pVDZ'] = "GBASIS=CCD"
 GAMESS_BASIS_GROUP['cc-pVTZ'] = "GBASIS=CCT"
 GAMESS_BASIS_GROUP['aug-cc-pVDZ'] = "GBASIS=ACCD"
 GAMESS_BASIS_GROUP['aug-cc-pVTZ'] = "GBASIS=ACCT"
+GAMESS_BASIS_GROUP['DFTB-C'] = "GBASIS=DFTB"
 
 # basis set data for atoms in $DATA group
 GAMESS_DATA_BASIS: Dict[str, Dict[str, str]] = dict()
