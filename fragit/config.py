@@ -38,6 +38,7 @@ class FragItDataBase(dict):
         self.data_types["includecovalent"] = bool
         self.data_types["includeallwithin"] = float
         self.data_types["verbose"] = bool
+        self.data_types["debug"] = bool
         self.data_types["dohop"] = bool
         self.data_types["efpwaters"] = int
 
@@ -60,6 +61,7 @@ class FragItDataBase(dict):
 
         self["output"] = dict()
         self["output"]["verbose"] = True
+        self["output"]["debug"] = False
         self["output"]["boundaries"] = ""
         self["output"]["buffer"] = 0.0
         self["output"]["active"] = 0.0
@@ -448,6 +450,14 @@ class FragItConfig(object):
         if not isinstance(value, bool):
             raise TypeError
         self.values["output"]["verbose"] = value
+
+    def get_debug(self):
+        return self.values["output"]["debug"]
+    
+    def set_debug(self, value):
+        if not isinstance(value, bool):
+            raise TypeError
+        self.values["output"]["debug"] = value
 
     def get_mfcc_order(self):
         return self.values["mfcc"]["order"]

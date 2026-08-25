@@ -12,7 +12,7 @@ try:
 except ImportError:
     raise OBNotFoundException("OpenBabel not found. Please install OpenBabel to use FragIt.")
 
-from fragit.util import remove_duplicates, flatten, difference, uniqifyListOfLists, is_tuple_values_in_either_list, LABEL2Z
+from fragit.util import remove_duplicates, flatten, difference, uniqifyListOfLists, is_tuple_values_in_either_list, LABEL2Z, Z2LABEL
 from fragit.config import FragItConfig, FragItDataBase
 
 
@@ -97,18 +97,31 @@ class Fragmentation(FragItConfig):
                 break
             for i in range(1, self.mol.NumAtoms()+1):
                 atom = self.mol.GetAtom(i)
-                if atom.GetAtomicNum() in [1, 6, 7, 8, 9, 12, 15, 16]:
+
+# PX: Covalently bonded halogens (F, Cl, Br, I) are retained.
+# Isolated halogens are treated below as halide counterions.
+                atomic_num = atom.GetAtomicNum()
+                
+                is_bonded_halogen = (
+                    atomic_num in [9, 17,35,53] and atom.GetExplicitDegree() > 0
+                )
+ 
+                if atomic_num in [1, 6, 7, 8, 12, 15, 16] or is_bonded_halogen:
                     if atom not in self._atoms:
                         self._atoms.append(atom)
                     added += 1
+
                 else:
                     print("Info: FragIt [FRAGMENTATION] Temporarily removing atom with Z={}".format(atom.GetAtomicNum()))
                     # the atoms are most-likely counter ions, so we give them an
                     # appropriate formal charge (of +/- 1)
                     atomic_charge = 0  # default
+
                     if atom.GetAtomicNum() in [11, 19]:  # Na+ and K+:
                         atomic_charge = 1
-                    elif atom.GetAtomicNum() in [9, 17]:  # F- and Cl-
+                    elif atom.GetAtomicNum() == 20:            # Ca2+
+                        atomic_charge = 2
+                    elif atom.GetAtomicNum() in [9, 17,35,53]:  # F-, Cl-, Br-, I-
                         atomic_charge = -1
 
                     new_atom = openbabel.OBAtom()
@@ -167,22 +180,48 @@ class Fragmentation(FragItConfig):
         self._water_molecules = remove_duplicates(flatten(self.pat.GetUMapList()))
 
     def identify_mergeable_atoms(self):
-        """ Identifies fragmentation points that are to be merged with neighbour fragments
-
-            The fragmentation patterns are "greedy" in the sense that
-            they match _all_ points in a protein. Some fragments (like glycine)
-            are too small to make physically sense in a calculation and is thus
-            merged into neighbours by _not_ fragmenting the points.
-
-            Note: This has 
+        """Identifies fragmentation points that are to be merged with neighbour fragments.
+    
+        Fragmentation patterns are "greedy" in the sense that they match all
+        applicable points in a protein. Some fragments, such as glycine, may be
+        too small to be useful and are therefore merged with neighbouring
+        fragments by suppressing fragmentation at those points.
+    
+        PX: Protein-specific glycine merge patterns are not applied to HETATM ligand
+        atoms.
         """
         patterns = self.get_merge_patterns()
+    
         for pattern in patterns:
-            if len(patterns[pattern]) == 0:
+            smarts = patterns[pattern]
+    
+            if len(smarts) == 0:
                 continue
-            value = self._get_atoms_to_protect(patterns[pattern])
-            value.sort()
-            self._mergeable_atoms.extend(value)
+    
+            self.pat.Init(smarts)
+            self.pat.Match(self.mol)
+    
+            for match in self.pat.GetUMapList():
+    
+                # The glycine merge pattern is intended for protein residues.
+                # Do not allow it to match HETATM ligand atoms.
+                if pattern == "glycine" and any(
+                    self.mol.GetAtom(atom_id).IsHetAtom()
+                    for atom_id in match
+                ):
+                    if self.get_debug():
+                        print(
+                            "DEBUG: FragIt [FRAGMENTATION] "
+                            "Skipping '{}' merge match {} because it "
+                            "contains HETATM atom(s).".format(
+                                pattern, list(match)
+                            )
+                        )
+                    continue
+    
+                self._mergeable_atoms.extend(match)
+    
+        self._mergeable_atoms.sort()
 
     def do_fragment_merging(self):
         fragments_to_merge = self.get_fragments_to_merge()
@@ -191,6 +230,10 @@ class Fragmentation(FragItConfig):
         fragments = self.get_fragments()
         fragments_to_merge.reverse()
         for fragment_id in fragments_to_merge:
+            #PX : for edge case,
+            # when the first fragment is glycine,do not merge.
+            if fragment_id == 0:
+                continue
             previous_fragment = fragment_id-1
             ifrag = fragments.pop(fragment_id)
             jfrag = fragments[previous_fragment].extend(ifrag)
@@ -354,8 +397,28 @@ class Fragmentation(FragItConfig):
             self._nbonds_broken += len(matches)
             if self.get_verbose():
                 print("      Found {0:d} matching bonds.".format(len(matches)))
+#----PX
+            #for pair in matches:
+            #    self.add_fragmentation_atom_pair(pair)
             for pair in matches:
+                atom1 = self.mol.GetAtom(pair[0])
+                atom2 = self.mol.GetAtom(pair[1])
+            
+                # PX: Do not apply peptide-bond fragmentation to HETATM residues.
+                # In VeraChem PDB files, protein atoms are ATOM records and
+                # ligand small-molecule atoms are HETATM records.
+                if BOND_TYPE == "peptide" and (
+                    atom1.IsHetAtom() or atom2.IsHetAtom()
+                ):
+                    if self.get_debug():
+                        print(
+                            "      bond pair ({},{}) will not be broken "
+                            "(involves HETATM).".format(pair[0], pair[1])
+                        )
+                    continue
+            
                 self.add_fragmentation_atom_pair(pair)
+#---END PX 
 
     def add_fragmentation_atom_pair(self, atom_pair: Tuple[int, int]):
         """ Adds an atom pair to the list of fragmentation points
@@ -434,18 +497,58 @@ class Fragmentation(FragItConfig):
     def do_fragment_grouping(self):
         if len(self._fragments) == 0:
             raise ValueError("You must fragment the molecule first.")
+
+#---PX debug
+        if self.get_debug():
+            print("\nDEBUG: fragments BEFORE grouping")
+            for i, frag in enumerate(self._fragments, 1):
+                print(
+                    "DEBUG PRE {:4d}: natom={:4d}, range={}--{}".format(
+                        i, len(frag), min(frag), max(frag)
+                    )
+                )
+#----END PX
         group_size = self.get_fragment_group_count()
         new_fragments: List[List[int]] = []
         last_fragment = None
         group_count = 0
         temporary_fragment = []
-        for fragment in self._fragments:
+
+        for i, fragment in enumerate(self._fragments, 1):
             group_count += 1
+#---PX debug
+            if self.get_debug():
+                print(
+                    "DEBUG STEP {:4d}: frag_size={}, frag_range={}--{}, "
+                    "temp_size={}, group_count={}".format(
+                        i,
+                        len(fragment),
+                        min(fragment),
+                        max(fragment),
+                        len(temporary_fragment),
+                        group_count,
+                    )
+                )
+#---END PX
             if len(temporary_fragment) + len(fragment) > self.get_maximum_fragment_size():
                 # max size is reached
                 is_joinable = False
+#----PX debug
+                if self.get_debug():
+                    print(
+                        "DEBUG: NOT JOINED due to maxfragsize: {} + {} > {}".format(
+                            len(temporary_fragment),
+                            len(fragment),
+                            self.get_maximum_fragment_size(),
+                        )
+                    )
+#---END PX
             else:
                 is_joinable = self.is_fragment_joinable(fragment, last_fragment)
+#---PX debug
+                if self.get_debug(): 
+                    print("DEBUG: is_fragment_joinable =", is_joinable)
+#---END PX
             if group_count < group_size and is_joinable:
                 # joined to previous fragment.
                 temporary_fragment += fragment
@@ -469,7 +572,16 @@ class Fragmentation(FragItConfig):
             new_fragments.append(sorted(temporary_fragment))
 
         self._fragments = new_fragments
-
+#----PX debug
+        if self.get_debug():
+            print("\nDEBUG: fragments AFTER grouping")
+            for i, frag in enumerate(self._fragments, 1):
+                print(
+                    "DEBUG POST {:4d}: natom={:4d}, range={}--{}".format(
+                        i, len(frag), min(frag), max(frag)
+                    )
+                )
+#----END PX
     def is_fragment_joinable(self, frag1: List[int], frag2: List[int]) -> bool:
         if frag2 is None:
             return True
@@ -580,7 +692,7 @@ class Fragmentation(FragItConfig):
         if len(atoms) == 1:
             atom = self.mol.GetAtom(atoms[0])
             charge_lbl = charge_lbls[atom.GetFormalCharge()]
-            element = LABEL2Z[atom.GetAtomicNum()]
+            element = Z2LABEL[atom.GetAtomicNum()]
             return "{0:s}{1:s}".format(element, charge_lbl)
         else:
             for residue in openbabel.OBResidueIter(self.mol):
