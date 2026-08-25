@@ -439,18 +439,58 @@ class Fragmentation(FragItConfig):
     def do_fragment_grouping(self):
         if len(self._fragments) == 0:
             raise ValueError("You must fragment the molecule first.")
+
+#---PX debug
+        if self.get_debug():
+            print("\nDEBUG: fragments BEFORE grouping")
+            for i, frag in enumerate(self._fragments, 1):
+                print(
+                    "DEBUG PRE {:4d}: natom={:4d}, range={}--{}".format(
+                        i, len(frag), min(frag), max(frag)
+                    )
+                )
+#----END PX
         group_size = self.get_fragment_group_count()
         new_fragments: List[List[int]] = []
         last_fragment = None
         group_count = 0
         temporary_fragment = []
-        for fragment in self._fragments:
+
+        for i, fragment in enumerate(self._fragments, 1):
             group_count += 1
+#---PX debug
+            if self.get_debug():
+                print(
+                    "DEBUG STEP {:4d}: frag_size={}, frag_range={}--{}, "
+                    "temp_size={}, group_count={}".format(
+                        i,
+                        len(fragment),
+                        min(fragment),
+                        max(fragment),
+                        len(temporary_fragment),
+                        group_count,
+                    )
+                )
+#---END PX
             if len(temporary_fragment) + len(fragment) > self.get_maximum_fragment_size():
                 # max size is reached
                 is_joinable = False
+#----PX debug
+                if self.get_debug():
+                    print(
+                        "DEBUG: NOT JOINED due to maxfragsize: {} + {} > {}".format(
+                            len(temporary_fragment),
+                            len(fragment),
+                            self.get_maximum_fragment_size(),
+                        )
+                    )
+#---END PX
             else:
                 is_joinable = self.is_fragment_joinable(fragment, last_fragment)
+#---PX debug
+                if self.get_debug(): 
+                    print("DEBUG: is_fragment_joinable =", is_joinable)
+#---END PX
             if group_count < group_size and is_joinable:
                 # joined to previous fragment.
                 temporary_fragment += fragment
@@ -474,7 +514,16 @@ class Fragmentation(FragItConfig):
             new_fragments.append(sorted(temporary_fragment))
 
         self._fragments = new_fragments
-
+#----PX debug
+        if self.get_debug():
+            print("\nDEBUG: fragments AFTER grouping")
+            for i, frag in enumerate(self._fragments, 1):
+                print(
+                    "DEBUG POST {:4d}: natom={:4d}, range={}--{}".format(
+                        i, len(frag), min(frag), max(frag)
+                    )
+                )
+#----END PX
     def is_fragment_joinable(self, frag1: List[int], frag2: List[int]) -> bool:
         if frag2 is None:
             return True

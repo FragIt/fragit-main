@@ -22,6 +22,7 @@ def main(directories, argv=None):
 
     parser.add_argument("-o", "--output", dest="outputfile", type=str, default="", metavar="FILENAME")
     parser.add_argument("--version", action="version", version="%(prog)s {0:s}".format(version_str))
+    parser.add_argument("--debug",action="store_true",default=False,help="Enable developer debugging output.")
     parser.add_argument("input", type=str, metavar="INPUTFILE")
 
 
@@ -85,6 +86,9 @@ are capped (when nescessary) and concaps are created (when nescessary).
     if len(args.useconfigfile) > 0:
         conffile = args.useconfigfile
     fragmentation = Fragmentation(molecule, conffile=conffile)
+# --debug explicitly overrides the config default
+    if args.debug:
+        fragmentation.set_debug(True)
 
 
     # if there is a config file, read it and ignore other command line options
@@ -111,7 +115,33 @@ are capped (when nescessary) and concaps are created (when nescessary).
         fragmentation.enable_merge_glycine_pattern()
     fragmentation.begin_fragmentation()
     fragmentation.do_fragmentation()
+#----PX debug
+    if fragmentation.get_debug():
+        print("DEBUG fragments_to_merge:",
+          fragmentation.get_fragments_to_merge())
+    
+        print("DEBUG mergeable_atoms:",
+          fragmentation._mergeable_atoms)
+    
+        print("\nDEBUG AFTER do_fragmentation")
+        for i, frag in enumerate(fragmentation.get_fragments(), 1):
+            print(
+                "RAW {:4d}: natom={:4d}, range={}--{}".format(
+                    i, len(frag), min(frag), max(frag)
+                )
+            )
+#-----END PX
     fragmentation.do_fragment_merging()
+#---PX debug
+    if fragmentation.get_debug():
+        print("\nDEBUG AFTER do_fragment_merging")
+        for i, frag in enumerate(fragmentation.get_fragments(), 1):
+            print(
+                "MERGED {:4d}: natom={:4d}, range={}--{}".format(
+                    i, len(frag), min(frag), max(frag)
+                )
+            )
+#---END PX
     fragmentation.do_fragment_combination()
     if fragmentation.get_fragment_group_count() > 1:
         fragmentation.do_fragment_grouping()
