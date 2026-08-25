@@ -97,20 +97,32 @@ class Fragmentation(FragItConfig):
                 break
             for i in range(1, self.mol.NumAtoms()+1):
                 atom = self.mol.GetAtom(i)
-# PX: not make Cl to Cl-
-                if atom.GetAtomicNum() in [1, 6, 7, 8, 9, 12, 15, 16, 17]:
+
+# PX: Covalently bonded halogens (F, Cl, Br, I) are retained.
+# Isolated halogens are treated below as halide counterions.
+                atomic_num = atom.GetAtomicNum()
+                
+                is_bonded_halogen = (
+                    atomic_num in [9, 17,35,53] and atom.GetExplicitDegree() > 0
+                )
+ 
+                if atomic_num in [1, 6, 7, 8, 12, 15, 16] or is_bonded_halogen:
                     if atom not in self._atoms:
                         self._atoms.append(atom)
                     added += 1
+
                 else:
                     print("Info: FragIt [FRAGMENTATION] Temporarily removing atom with Z={}".format(atom.GetAtomicNum()))
                     # the atoms are most-likely counter ions, so we give them an
                     # appropriate formal charge (of +/- 1)
                     atomic_charge = 0  # default
+
                     if atom.GetAtomicNum() in [11, 19]:  # Na+ and K+:
                         atomic_charge = 1
-                    #elif atom.GetAtomicNum() in [9, 17]:  # F- and Cl-
-                    #    atomic_charge = -1
+                    elif atom.GetAtomicNum() == 20:            # Ca2+
+                        atomic_charge = 2
+                    elif atom.GetAtomicNum() in [9, 17,35,53]:  # F-, Cl-, Br-, I-
+                        atomic_charge = -1
 
                     new_atom = openbabel.OBAtom()
                     new_atom.Duplicate(atom)
