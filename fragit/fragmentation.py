@@ -180,22 +180,48 @@ class Fragmentation(FragItConfig):
         self._water_molecules = remove_duplicates(flatten(self.pat.GetUMapList()))
 
     def identify_mergeable_atoms(self):
-        """ Identifies fragmentation points that are to be merged with neighbour fragments
-
-            The fragmentation patterns are "greedy" in the sense that
-            they match _all_ points in a protein. Some fragments (like glycine)
-            are too small to make physically sense in a calculation and is thus
-            merged into neighbours by _not_ fragmenting the points.
-
-            Note: This has 
+        """Identifies fragmentation points that are to be merged with neighbour fragments.
+    
+        Fragmentation patterns are "greedy" in the sense that they match all
+        applicable points in a protein. Some fragments, such as glycine, may be
+        too small to be useful and are therefore merged with neighbouring
+        fragments by suppressing fragmentation at those points.
+    
+        PX: Protein-specific glycine merge patterns are not applied to HETATM ligand
+        atoms.
         """
         patterns = self.get_merge_patterns()
+    
         for pattern in patterns:
-            if len(patterns[pattern]) == 0:
+            smarts = patterns[pattern]
+    
+            if len(smarts) == 0:
                 continue
-            value = self._get_atoms_to_protect(patterns[pattern])
-            value.sort()
-            self._mergeable_atoms.extend(value)
+    
+            self.pat.Init(smarts)
+            self.pat.Match(self.mol)
+    
+            for match in self.pat.GetUMapList():
+    
+                # The glycine merge pattern is intended for protein residues.
+                # Do not allow it to match HETATM ligand atoms.
+                if pattern == "glycine" and any(
+                    self.mol.GetAtom(atom_id).IsHetAtom()
+                    for atom_id in match
+                ):
+                    if self.get_debug():
+                        print(
+                            "DEBUG: FragIt [FRAGMENTATION] "
+                            "Skipping '{}' merge match {} because it "
+                            "contains HETATM atom(s).".format(
+                                pattern, list(match)
+                            )
+                        )
+                    continue
+    
+                self._mergeable_atoms.extend(match)
+    
+        self._mergeable_atoms.sort()
 
     def do_fragment_merging(self):
         fragments_to_merge = self.get_fragments_to_merge()
@@ -371,8 +397,28 @@ class Fragmentation(FragItConfig):
             self._nbonds_broken += len(matches)
             if self.get_verbose():
                 print("      Found {0:d} matching bonds.".format(len(matches)))
+#----PX
+            #for pair in matches:
+            #    self.add_fragmentation_atom_pair(pair)
             for pair in matches:
+                atom1 = self.mol.GetAtom(pair[0])
+                atom2 = self.mol.GetAtom(pair[1])
+            
+                # PX: Do not apply peptide-bond fragmentation to HETATM residues.
+                # In VeraChem PDB files, protein atoms are ATOM records and
+                # ligand small-molecule atoms are HETATM records.
+                if BOND_TYPE == "peptide" and (
+                    atom1.IsHetAtom() or atom2.IsHetAtom()
+                ):
+                    if self.get_debug():
+                        print(
+                            "      bond pair ({},{}) will not be broken "
+                            "(involves HETATM).".format(pair[0], pair[1])
+                        )
+                    continue
+            
                 self.add_fragmentation_atom_pair(pair)
+#---END PX 
 
     def add_fragmentation_atom_pair(self, atom_pair: Tuple[int, int]):
         """ Adds an atom pair to the list of fragmentation points
